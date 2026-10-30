@@ -1,164 +1,141 @@
+import React from "react";
 import Link from "next/link";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 
 export default function TokenPreviewPage() {
   return (
     <div className="flex-1 max-w-6xl w-full mx-auto p-6 md:p-10 space-y-10">
       {/* Header */}
-      <div className="border-b border-border-default pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="font-mono text-xs uppercase px-2 py-0.5 rounded bg-accent-indigo/20 text-accent-indigo border border-accent-indigo/30">
-              Phase 0 Foundation
+            <span className="font-mono text-xs uppercase px-2 py-0.5 rounded bg-cobalt-50 text-cobalt-600 border border-cobalt-200">
+              Forgent Bespoke Brand Tokens
             </span>
-            <span className="font-mono text-xs uppercase px-2 py-0.5 rounded bg-status-success/20 text-status-success border border-status-success/30">
-              Neon PostgreSQL Connected
+            <span className="font-mono text-xs uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-600" />
+              Verified Spec
             </span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            ProofHire Design Token & Foundation Preview
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+            Brand Identity & Design Tokens
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Verification harness for dark graphite B2B console tokens, surface hierarchy, and system health.
+          <p className="text-sm text-slate-600 mt-1 font-sans">
+            Bespoke brand tokens: Porcelain White base, Deep Royal Cobalt, Vibrant Azure, and High-contrast Dark text.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/buyer/overview"
-            className="px-4 py-2 bg-surface-primary hover:bg-surface-secondary text-foreground border border-border-default rounded-md text-sm font-mono transition-colors"
+            href="/marketplace"
+            className="px-4 py-2 bg-cobalt-500 hover:bg-cobalt-600 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
           >
-            ← Buyer Overview
+            <span>Marketplace</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
-            href="/api/health"
-            target="_blank"
-            className="px-4 py-2 bg-surface-elevated hover:bg-surface-secondary text-accent-cyan border border-border-default rounded-md text-sm font-mono transition-colors"
+            href="/buyer/overview"
+            className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors"
           >
-            GET /api/health →
+            Enterprise Hub
           </Link>
         </div>
       </div>
 
-      {/* Surface Hierarchy */}
+      {/* 1. Core Brand Palette */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
-          <span>1. Surface Hierarchy</span>
-          <span className="text-xs font-mono text-zinc-500 font-normal">Layered depth</span>
+        <h2 className="font-serif text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <span>1. Bespoke Brand Palette</span>
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-lg border border-border-subtle bg-background space-y-2">
-            <span className="text-xs font-mono text-zinc-400">--background</span>
-            <div className="text-sm font-semibold">Application Base</div>
-            <p className="text-xs text-zinc-500">#090a0f Deep graphite viewport canvas</p>
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-3">
+            <div className="w-full h-16 rounded-lg bg-[#F5F9FD] border border-slate-200 flex items-center justify-center font-mono text-xs text-slate-600">
+              #F5F9FD
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900">Porcelain White</div>
+              <div className="text-xs font-mono text-slate-500">Base viewport canvas</div>
+            </div>
           </div>
-          <div className="p-5 rounded-lg border border-border-subtle bg-surface-primary space-y-2">
-            <span className="text-xs font-mono text-zinc-400">--surface-primary</span>
-            <div className="text-sm font-semibold">Primary Surface</div>
-            <p className="text-xs text-zinc-500">#11131a Main content cards & tables</p>
+
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-3">
+            <div className="w-full h-16 rounded-lg bg-[#0B4FBA] flex items-center justify-center font-mono text-xs text-white font-semibold">
+              #0B4FBA
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900">Deep Royal Cobalt</div>
+              <div className="text-xs font-mono text-slate-500">Primary brand & action accent</div>
+            </div>
           </div>
-          <div className="p-5 rounded-lg border border-border-subtle bg-surface-secondary space-y-2">
-            <span className="text-xs font-mono text-zinc-400">--surface-secondary</span>
-            <div className="text-sm font-semibold">Secondary Surface</div>
-            <p className="text-xs text-zinc-500">#171b26 Sidebars & toolbars</p>
+
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-3">
+            <div className="w-full h-16 rounded-lg bg-[#5EA2FF] flex items-center justify-center font-mono text-xs text-slate-950 font-semibold">
+              #5EA2FF
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900">Vibrant Azure</div>
+              <div className="text-xs font-mono text-slate-500">Secondary highlight token</div>
+            </div>
           </div>
-          <div className="p-5 rounded-lg border border-border-subtle bg-surface-elevated space-y-2">
-            <span className="text-xs font-mono text-zinc-400">--surface-elevated</span>
-            <div className="text-sm font-semibold">Elevated Surface</div>
-            <p className="text-xs text-zinc-500">#1e2333 Modals & dropdown menus</p>
+
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-3">
+            <div className="w-full h-16 rounded-lg bg-[#0F172A] flex items-center justify-center font-mono text-xs text-white font-semibold">
+              #0F172A
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900">High-Contrast Dark</div>
+              <div className="text-xs font-mono text-slate-500">Primary body & heading text</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Accents & Brand Tokens */}
+      {/* 2. Typography Pairing */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
-          <span>2. Restrained Accents</span>
-          <span className="text-xs font-mono text-zinc-500 font-normal">Functional indicators</span>
+        <h2 className="font-serif text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <span>2. Typography Pairing</span>
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-lg border border-border-default bg-surface-primary flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-accent-indigo">Indigo Accent</div>
-              <div className="text-xs font-mono text-zinc-400">--accent-indigo (#6366f1)</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-cobalt-600 font-semibold">
+              Italiana — Editorial Serif Headings
+            </span>
+            <div className="font-serif text-3xl font-bold text-slate-900 leading-tight">
+              The Verified AI Agent Marketplace
             </div>
-            <div className="w-8 h-8 rounded-full bg-accent-indigo" />
+            <p className="text-xs text-slate-500 font-mono">
+              Font family: &quot;Italiana&quot;, Georgia, serif
+            </p>
           </div>
-          <div className="p-5 rounded-lg border border-border-default bg-surface-primary flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-accent-cyan">Cyan Accent</div>
-              <div className="text-xs font-mono text-zinc-400">--accent-cyan (#06b6d4)</div>
+
+          <div className="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-cobalt-600 font-semibold">
+              Jeju Gothic — Crisp UI / Sans Body
+            </span>
+            <div className="font-sans text-base text-slate-800 leading-relaxed">
+              Hire autonomous agents on demand. Pay per task. Cryptographically verified with formal benchmark audits.
             </div>
-            <div className="w-8 h-8 rounded-full bg-accent-cyan" />
-          </div>
-          <div className="p-5 rounded-lg border border-border-default bg-surface-primary flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-accent-violet">Violet Accent</div>
-              <div className="text-xs font-mono text-zinc-400">--accent-violet (#8b5cf6)</div>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-accent-violet" />
+            <p className="text-xs text-slate-500 font-mono">
+              Font family: &quot;Jeju Gothic&quot;, -apple-system, sans-serif
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Objective Status Tokens */}
+      {/* 3. Currency & Ledger Formats */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
-          <span>3. Objective Status Badges</span>
-          <span className="text-xs font-mono text-zinc-500 font-normal">Verification states</span>
+        <h2 className="font-serif text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <span>3. Dual-Currency Display Format</span>
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg border border-border-default bg-surface-primary space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-status-success/15 text-status-success border border-status-success/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-status-success" />
-              VERIFIED / PASS
-            </span>
-            <div className="text-xs text-zinc-500">10/10 acceptance checks pass</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">
+            <span className="text-xs font-mono text-slate-500">USD Task Ledger ($)</span>
+            <div className="text-2xl font-bold font-mono text-slate-900">$50.00</div>
+            <p className="text-xs text-slate-500">Integer cents formatting with strict float safety</p>
           </div>
-          <div className="p-4 rounded-lg border border-border-default bg-surface-primary space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-status-warning/15 text-status-warning border border-status-warning/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-status-warning" />
-              REQUIRES REVIEW
-            </span>
-            <div className="text-xs text-zinc-500">Inventory commit gate blocked</div>
-          </div>
-          <div className="p-4 rounded-lg border border-border-default bg-surface-primary space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-status-error/15 text-status-error border border-status-error/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-status-error" />
-              FAILED / REPLACED
-            </span>
-            <div className="text-xs text-zinc-500">v1.0.0 schema invalid (?0 payout)</div>
-          </div>
-          <div className="p-4 rounded-lg border border-border-default bg-surface-primary space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-status-inactive/15 text-status-inactive border border-status-inactive/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-status-inactive" />
-              PENDING / SEEDED
-            </span>
-            <div className="text-xs text-zinc-500">Candidate A single-agent baseline</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Typography & Spacing */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
-          <span>4. Operational Typography</span>
-          <span className="text-xs font-mono text-zinc-500 font-normal">Technical clarity</span>
-        </h2>
-        <div className="p-6 rounded-lg border border-border-default bg-surface-primary space-y-4 font-mono text-sm">
-          <div className="flex justify-between border-b border-border-subtle pb-2">
-            <span className="text-zinc-400">Canonical Job ID</span>
-            <span className="text-accent-cyan">WH-204</span>
-          </div>
-          <div className="flex justify-between border-b border-border-subtle pb-2">
-            <span className="text-zinc-400">PO / Invoiced / Scanned</span>
-            <span className="text-foreground">12 / 12 / 10</span>
-          </div>
-          <div className="flex justify-between border-b border-border-subtle pb-2">
-            <span className="text-zinc-400">Inventory Invariant</span>
-            <span className="text-status-success">42 → 42 (Commit Blocked)</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-400">Commercial Settlement</span>
-            <span className="text-accent-indigo">₹10,000 Total (Builder: ₹5,500)</span>
+          <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">
+            <span className="text-xs font-mono text-slate-500">INR Task Ledger (₹)</span>
+            <div className="text-2xl font-bold font-mono text-slate-900">₹4,000</div>
+            <p className="text-xs text-slate-500">Indian Rupee (1 USD = 80 INR) locale formatting</p>
           </div>
         </div>
       </section>
