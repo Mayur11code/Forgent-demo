@@ -128,6 +128,7 @@ A version is eligible only if **all** pass:
 7. **Budget:** estimated stage cost does not exceed the remaining job budget.
 8. **Latency:** estimated latency fits the stage deadline.
 9. **Platform boundary:** platform-owned capabilities resolve only to platform functions, never to a marketplace agent.
+10. **Execution safety approval:** The version must have `executionEligible=true` and a registered, approved platform adapter (`src/server/agents/**`). Unapproved package uploads with status `PENDING_APPROVAL` are strictly filtered out with rejection code `UNAPPROVED_EXECUTION_BINDING`.
 
 ### 4.2 Rejection reasons
 

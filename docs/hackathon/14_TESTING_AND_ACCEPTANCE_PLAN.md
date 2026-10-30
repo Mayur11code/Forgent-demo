@@ -70,25 +70,55 @@ ProofHire is a trust product. Tests must prove not only that the happy path work
 
 ### 2.3 Integration
 
+### Authentication & Session Integration Tests
+- **TC-AUTH-01:** Valid credentials or 1-click select for `buyer@northstar.demo` and `jordan@demoagent.studio` sets signed httpOnly `proofhire_session` cookie; returns role-specific redirect URL.
+- **TC-AUTH-02:** Invalid login credentials return 401 Unauthorized; missing session cookie on protected routes (`/buyer/**`, `/builder/**`) redirects to `/login`.
+- **TC-AUTH-03:** Server-side role authorization guards reject unauthorized cross-role access (buyer accessing `/builder/**` returns 403 Forbidden; builder accessing `/buyer/**` returns 403 Forbidden).
+- **TC-AUTH-04:** `POST /api/auth/logout` invalidates session cookie; subsequent requests are treated as unauthenticated.
+
+### Agent Package Upload & Execution Safety Tests
+- **TC-PKG-01:** Builder uploads valid ZIP package (<=5MB) containing `manifest.json`, schemas, source, and fixtures; unpacks safely, validates schemas, computes SHA-256 digest, stores artifact in persistent storage abstraction (`artifacts/packages/{packageId}/{versionId}.zip`), and creates `AgentVersion` with status `PENDING_APPROVAL`.
+- **TC-PKG-02:** Upload of file >5MB or non-zip MIME type rejected with 400 Bad Request.
+- **TC-PKG-03:** Malicious ZIP containing path traversal (`../`, absolute paths) rejected with 400 Bad Request; zero files extracted outside storage sandbox.
+- **TC-PKG-04:** Critical execution safety boundary test: compiler and execution runtime reject unapproved uploaded packages with code `UNAPPROVED_EXECUTION_BINDING`; runtime executes ONLY approved, platform-hosted adapters (`src/server/agents/**`).
+
+### Workflow & Core Integration Tests
 - Create job + contract in one transaction; no orphan.
 - Compile twice with the same key → same candidates; no duplicates.
-- Audition → thirty fixture results; re-run creates a new run number.
-- Selection persists C and A/B reasons.
-- Approve work order twice → same record; allocations sum.
+- Audition → thirty fixture results across 10 fixtures for Candidates A, B, and C.
+- Selection persists winning candidate dynamically from persisted audition runs; A, B, or C can qualify.
+- Approve work order twice → same record; fail-closed safety limits and 42->42 inventory lock enforced.
 - Start execution twice → one execution; no duplicate events.
-- Inject failure → one recovery event; v1.1.0 accepted.
-- Verify twice → one acceptance result; same checks.
-- Receipt twice → same hash.
-- Review acknowledge → commit stays blocked.
-- Contributions twice → one row per stage.
-- Settlement twice → one eligibility row.
+- Inject failure → one recovery event; v1.1.0 accepted; failed v1.0.0 receives ₹0 payout.
+- Verify twice → one acceptance result; ten checks pass (10/10).
+- State diff & inventory invariant → confirms 42 -> 42 inventory on-hand held; commit blocked.
+- Receipt twice → same canonical SHA-256 hash.
+- Review acknowledge → commit stays blocked pending human review.
+- Contributions twice → one row per stage (idempotent `@@unique([executionId, stageId])`).
+- Settlement twice → one eligibility row; builder total ₹5,500; transaction total ₹10,000.
 - Reset twice → identical IDs/counts.
 
-### 2.4 E2E / journey
+### 2.4 E2E / The Canonical 18-Step Demo Journey
 
-**Buyer:** overview → jobs → WH-204 → compiler → auditions → selection → work order → execution → failure/replacement → verification → receipt → review → transactions.
-
-**Builder:** overview → profile → agents → versions → evaluations → contributions → earnings → reputation.
+The end-to-end acceptance run exercises the complete 18-step arc:
+1. Open `/login`
+2. Sign in as Jordan Lee (Builder)
+3. Open My Agents (`/builder/agents`)
+4. Open Publish Agent (`/builder/agents/publish`) and upload package ZIP
+5. Validate archive, verify SHA-256 digest and `PENDING_APPROVAL` status
+6. Sign out via topbar
+7. Sign in as Northstar Warehouse (Buyer)
+8. Open WH-204 job
+9. Review acceptance contract (10/2/42)
+10. Compile and audition candidates dynamically across 10 fixtures
+11. Dynamically select qualifying candidate (persisted in DB)
+12. Approve work order with fail-closed limits & 42->42 lock
+13. Execute workflow
+14. Demonstrate v1.0.0 failure and compatible v1.1.0 replacement
+15. Verify 10 received / 2 discrepancy result (10/10 checks PASS)
+16. Verify 42 -> 42 inventory invariant preserved; commit blocked
+17. Generate evidence receipt with SHA-256 hash
+18. Verify commercial loop: buyer spend ₹10,000, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000
 
 Run each with live APIs, one mid-run reload, and one wrong-role attempt.
 

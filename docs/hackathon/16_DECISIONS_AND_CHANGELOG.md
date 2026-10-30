@@ -15,7 +15,7 @@
 | `SUPERSEDED` | Replaced by a later decision; retained for history. |
 | `REJECTED` | Considered and not adopted; reason recorded. |
 
-At the documentation baseline, stack and interface decisions are `PROPOSED — FREEZE AT P0`. Scope and documentation decisions are `ACCEPTED` for planning. Nothing here claims that implementation has occurred.
+Phase 0 foundation is complete and tagged `p0-foundation`. Stack, database, adapter architecture, and interface contracts are frozen and `ACCEPTED`.
 
 ---
 
@@ -26,7 +26,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | Joint |
 | Context | The repository is greenfield; three teams need one deployable surface. |
 | Decision | Build the UI and API in one Next.js 15 App Router app with React 19 and strict TypeScript. |
@@ -39,7 +39,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B |
 | Context | Blueprint specifies PostgreSQL; serverless architecture deployed on Vercel requires connection pooling and serverless-compatible database drivers. |
 | Decision | Use Prisma 7 with Neon PostgreSQL datasource via `@prisma/adapter-neon` and `@neondatabase/serverless`. Use pooled `DATABASE_URL` (with `?sslmode=require`) for runtime queries and `DIRECT_URL` for migrations/schema push. |
@@ -52,7 +52,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | The demo must show authentic AI capabilities without risking judge failure from network timeouts or missing API keys. |
 | Decision | Adopt a hybrid adapter architecture. Evidence Reader v1.0.0 is model-backed (calling Gemini 1.5/2.0 Flash or OpenAI when `GEMINI_API_KEY`/`OPENAI_API_KEY` is present in `.env.local`), falling back automatically to a local deterministic adapter on timeout or error. Reconciliation and Acceptance Verification strictly use deterministic business logic (arithmetic and integrity assertions must not hallucinate). Ordinary code is never falsely presented as autonomous external AI agents; provider identities are labelled accurately. |
@@ -65,7 +65,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B |
 | Context | The demo needs buyer/builder role separation without an auth build. |
 | Decision | Use a `proofhire_persona` cookie plus server-side role guards. Label it explicitly as demo-only. |
@@ -78,7 +78,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B/C |
 | Context | Serverless functions have execution timeouts; durable background execution and retries are required. |
 | Decision | Use Upstash QStash (`@upstash/qstash`) to dispatch durable execution step events to a signed webhook endpoint (`/api/webhooks/qstash/execution-step`). Frontend monitors stage progression via live polling (`/api/jobs/:jobId/execution`) with state persisted in Neon PostgreSQL. |
@@ -91,7 +91,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B |
 | Context | Complex structured data (manifests, contracts, graphs, receipts) requires reliable indexing and serialization. |
 | Decision | Store JSON payloads as native PostgreSQL JSONB using Prisma `Json` type; parse and validate runtime payloads through shared Zod schemas. |
@@ -104,7 +104,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B/C |
 | Context | Database-level enums in PostgreSQL can complicate zero-downtime migrations when adding new statuses. |
 | Decision | Store enum fields as `String` / `VARCHAR` in Neon PostgreSQL and enforce strict validation at service boundaries and API envelopes via shared Zod enums. |
@@ -130,7 +130,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | The blueprint's example mixes platform functions with marketplace agents. |
 | Decision | Policy validation, inventory proposal and acceptance verification are deterministic ProofHire-owned capabilities. They are not agent listings and cannot be hired. |
@@ -143,7 +143,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | A/B/C comparison needs a generalist baseline, but it is not freelancer supply. |
 | Decision | `baseline-single-agent` is `registryVisible=false`, not owned by Jordan, labelled “Evaluation baseline — not for hire”, and absent from marketplace results. |
@@ -156,7 +156,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | The failure/recovery story needs a compatible replacement from the same builder. |
 | Decision | Reconciliation v1.1.0 is the declared fallback for v1.0.0; it handles duplicate scans and malformed upstream values and produces 10/2. |
@@ -169,7 +169,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | Joint |
 | Context | The demo needs coherent, auditable economics. |
 | Decision | Buyer total ₹10,000 = builder ₹5,500 + platform fee ₹2,500 + execution/recovery reserve ₹1,200 + human-review reserve ₹800. |
@@ -208,7 +208,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | The comparison needs enough coverage to be credible without exposing every expected value. |
 | Decision | `wh204-suite-v1` has ten fixtures: normal short, exact, short, over-receipt, missing scan, malformed quantity, duplicate scan, contradiction, permission violation (held out), fallback incompatibility (held out). |
@@ -221,7 +221,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B |
 | Context | No payment provider is integrated. |
 | Decision | Contributions are `ELIGIBLE_SIMULATED`; `provider: null`; no `SETTLED` claim; UI says “eligible (simulated)”. |
@@ -273,7 +273,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C/B |
 | Context | The product must prove a consequential action stays under human control. |
 | Decision | `commit:inventory` is never granted to an agent; the diff is 42→42; review acknowledgement does not approve inventory; a direct commit returns 403 and is audited. |
@@ -286,7 +286,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | The receipt must provide tamper-evidence without claiming absolute distributed immutability. |
 | Decision | Generate a SHA-256 integrity hash over canonical `RECEIPT_BODY_V1` with recursively sorted keys, excluding `integrity`. Label the receipt as **tamper-evident and hash-verified**, rather than immutable. Explicitly document SHA-256 limitations (guarantees payload serialization integrity, does not prove physical truth of external inputs, relies on platform storage controls in Neon PostgreSQL). Status remains `VERIFIED_PENDING_HUMAN_APPROVAL` for WH-204 while inventory approval is pending. |
@@ -299,7 +299,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | B/C |
 | Context | Three teams consume the same endpoints; inconsistent envelopes cause integration bugs. |
 | Decision | `{ data, meta }` on success; `{ error: { code, message, details, requestId, retryable } }` on failure; 400/401/403/404/409/422/503 mapping as in `07`. |
@@ -312,7 +312,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
-| Status | `PROPOSED — FREEZE AT P0` |
+| Status | `ACCEPTED` |
 | Owner | C |
 | Context | Fake star ratings would undermine the trust story. |
 | Decision | Stats are per version, derived from auditions/executions, reliability in basis points; no LLM rating; no cross-version inheritance. |
@@ -354,7 +354,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Status | `ACCEPTED` |
 | Owner | Joint |
 | Context | Initial task estimates totalled 4,080 minutes, leaving Team A with only 10 minutes of buffer across 24 hours. |
-| Decision | Rebalance core planned workload to 3,425 person-minutes across the three developers (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). This leaves 895 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Move cosmetic polish and nonessential export wiring (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) to optional scope (110m total). |
+| Decision | Rebalance core planned workload to 3,445 person-minutes across the three developers (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). This leaves 875 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Move cosmetic polish and nonessential export wiring (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) to optional scope (110m total). |
 | Alternatives | Cut core economic/trust features; keep 4,080m plan and risk integration failure. |
 | Consequences | Ample integration buffer; Team A capacity deficit resolved; all critical-path features preserved. |
 | Revisit | At each phase gate checkpoint. |
@@ -466,6 +466,26 @@ Risk to next gate:
 
 Record the filled note here and in the tracker checkpoint log. Never overwrite an old tag.
 
+### Checkpoint: P0 — Architecture freeze, shared contracts, running foundation
+```text
+Checkpoint: P0 — Architecture freeze, shared contracts, running foundation
+Tag: p0-foundation
+Target / actual elapsed: H1 / H1
+Gate result: PASS
+Evidence:
+  - command/test: npm run typecheck (0 errors); npm run lint (0 warnings); npm run test (14 passed); npm run build (0 errors, /api/health dynamic); curl /api/health (200 OK, database=ok, dbLatencyMs=1940ms)
+  - counts/hash: 14 tests passing across 3 test suites; Neon PostgreSQL ping verified
+  - database: Neon PostgreSQL connection pool verified via PrismaNeon & Prisma 7
+Prototype demonstrated by: Lead Fullstack & Integration Engineer
+Verified by (second workstream): Teams A, B, and C Joint Verification
+Tasks completed: P0-B-001, P0-A-001, P0-C-001, P0-B-002, P0-A-002, P0-C-002, P0-A-003, P0-B-003, P0-C-003 (9 tasks, 100% of P0)
+Tasks cut/blocked: None (0 blocked, 0 cut)
+Contract changes / decision IDs: D-001 through D-007, D-009 through D-012, D-015, D-016 frozen and ACCEPTED; Prisma 7 with Neon adapter configuration finalized in prisma.config.ts and src/server/db.ts
+Known gaps: None for P0 foundation scope (domain schemas and authentication belong to P1)
+Next owner and tasks: Teams A, B, C executing Phase 1 (P1-A-001, P1-B-001, P1-C-001)
+Risk to next gate: Low; core database connectivity, strict typing, and contract engine fully operational
+```
+
 ---
 
 ## 6. Change protocol
@@ -477,6 +497,18 @@ Record the filled note here and in the tracker checkpoint log. Never overwrite a
 5. Record the checkpoint outcome.
 
 If a change affects money, verification, inventory or a demo claim, it requires all three workstreams to acknowledge.
+
+---
+
+### D-029 — Constrained Demo Authentication, Safe Agent-Package Submission Pipeline, and Execution Safety Boundary
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Principal Architect |
+| Context | The previous role switcher was insufficient for demonstrating authentic multi-tenant platform mechanics, while manifest-only agent registration failed to demonstrate realistic software package submission. At the same time, allowing untrusted uploaded code to execute inside the runtime would introduce unacceptable security vulnerabilities during a 24-hour hackathon. |
+| Decision | 1. **Constrained Demo Authentication:** Replace the role switcher with a minimal authenticated session flow (`/login`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`). Seeded accounts for Northstar Warehouse (`buyer@northstar.demo`) and Jordan Lee (`jordan@demoagent.studio`). Server-managed signed session cookie `proofhire_session` with server-side role authorization (`BUYER` vs `BUILDER`) and route guards. Clear demo account indicator in the application shell. Public sign-up, OAuth providers, and enterprise IAM are explicitly deferred.<br>2. **Constrained Agent-Package Submission Pipeline:** Replace manifest-only registration with a developer ZIP upload pipeline (`POST /api/builder/packages/upload`). Accepts archives up to 5MB containing `manifest.json`, input/output schemas, configuration schemas, evaluation fixtures, and dependency metadata. Backend validates archive structure, rejects path traversal attacks (`../`), computes a SHA-256 digest, stores the artifact in a persistent storage abstraction (`artifacts/packages/{packageId}/{versionId}.zip`), and creates an immutable `AgentVersion` record with status `PENDING_APPROVAL`. Frontend provides Publish Agent screen (`/builder/agents/publish`) and My Agents version manager (`/builder/agents`).<br>3. **Critical Execution Safety Boundary:** Uploading arbitrary source code does NOT make it executable inside ProofHire! The Northstar MVP runtime executes ONLY approved, platform-hosted adapters (`src/server/agents/**`). Unapproved uploads remain stored and validated (`PENDING_APPROVAL`, `executionEligible: false`) but cannot be bound into workflow execution graphs. The compiler rejects unapproved packages with `UNAPPROVED_EXECUTION_BINDING`. Zero dynamic `eval()` or dynamic `import()`.<br>4. **Canonical 18-Step Journey:** Formally specify the 18-step end-to-end journey from builder sign-in, package upload, and validation to buyer sign-in, WH-204 review, dynamic compilation/audition across 10 fixtures, dynamic candidate selection, work order approval, execution, v1.0.0 failure & v1.1.0 recovery, independent 10-check verification, 42->42 inventory invariant lock, receipt hash, and simulated earnings.<br>5. **Workload Rebalancing:** Rebalance tasks in P1 and P2 (`P1-B-003`, `P1-A-003`, `P1-A-002`, `P2-B-003`, `P2-B-004`, `P2-A-005`, `P2-C-003`, `P2-C-004`). Total core planned workload is frozen at **3,445 person-minutes** across 108 tasks, leaving an **875-minute (~20.3%) team integration buffer** across the 24 hours (plus 180m in P9 unallocated contingency reserve). |
 
 ---
 

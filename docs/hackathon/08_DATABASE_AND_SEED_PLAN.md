@@ -101,10 +101,12 @@ erDiagram
 
 | Table | Important fields | Notes |
 |---|---|---|
+| `UserAccount` | `userId @id`, `email @unique`, `passwordHash`, `name`, `role` (`BUYER` \| `BUILDER`), `buyerId?`, `builderId?`, `createdAt` | Seeded demo accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`). |
 | `Buyer` | `buyerId @id`, `name`, `contactName`, `contactEmail`, `isSeeded`, timestamps | Northstar only. |
 | `Builder` | `builderId @id`, `displayName`, `studioName`, `bio`, `isSeeded`, timestamps | Jordan Lee / Demo Agent Studio only. |
 | `Agent` | `agentId @id`, `builderId`, `name`, `summary`, `registryVisible`, timestamps | Stable identity. |
-| `AgentVersion` | `versionId @id`, `agentId`, `version`, `status`, `inputSchemaId`, `outputSchemaId`, `permissionsJson`, `pricingModel`, `pricePaise`, `estimatedLatencyMs`, `limitationsJson`, `fallbackVersionIdsJson`, `runtimeAdapter`, `runtimeMode`, `registryVisible`, `isSeeded`, timestamps | Unique `(agentId, version)`. Published versions immutable. |
+| `AgentVersion` | `versionId @id`, `agentId`, `version`, `status`, `executionEligible`, `inputSchemaId`, `outputSchemaId`, `permissionsJson`, `pricingModel`, `pricePaise`, `estimatedLatencyMs`, `limitationsJson`, `fallbackVersionIdsJson`, `runtimeAdapter`, `runtimeMode`, `registryVisible`, `isSeeded`, timestamps | Unique `(agentId, version)`. Uploaded unapproved packages have `executionEligible=false` and `runtimeAdapter=null`. |
+| `AgentPackageArtifact` | `artifactId @id`, `versionId`, `builderId`, `filename`, `fileSize`, `sha256Digest`, `storagePath`, `storageBackend`, `validationStatus`, `validationErrorsJson`, `createdAt` | Stores uploaded ZIP package archives with SHA-256 digest and safety metadata. |
 | `Capability` | `key @id`, `label`, `description`, `isPlatformOwned` | Six capability keys. |
 | `AgentVersionCapability` | `versionId`, `capabilityKey`, composite primary key | Explicit many-to-many. |
 | `AgentManifestSnapshot` | `snapshotId`, `versionId`, `manifestJson`, `createdAt` | Frozen manifest used by auditions/receipts. |
@@ -175,6 +177,29 @@ erDiagram
 ## 5. Seed specification
 
 The seed is created by `prisma/seed.ts` using `upsert` with fixed IDs. It must be safe to run twice.
+
+### 5.0 Seeded Demo User Accounts
+
+```json
+[
+  {
+    "userId": "user-buyer-maya",
+    "email": "buyer@northstar.demo",
+    "passwordHash": "$2b$10$demo_hash_maya",
+    "name": "Maya Rao",
+    "role": "BUYER",
+    "buyerId": "buyer-northstar"
+  },
+  {
+    "userId": "user-builder-jordan",
+    "email": "jordan@demoagent.studio",
+    "passwordHash": "$2b$10$demo_hash_jordan",
+    "name": "Jordan Lee",
+    "role": "BUILDER",
+    "builderId": "builder-jordan-lee"
+  }
+]
+```
 
 ### 5.1 Buyer
 

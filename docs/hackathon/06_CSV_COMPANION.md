@@ -65,8 +65,8 @@ Descriptions contain commas, currency symbols, arrows and semicolons. Quoting ev
 | `Priority = P2` | 5 |
 | `Priority = P3` | 2 |
 | Sum `EstimatedMinutes` | 3535 |
-| Core minutes (non-optional) | 3425 |
-| Integration buffer | 895 |
+| Core minutes (non-optional) | 3445 |
+| Integration buffer | 875 |
 
 Per phase: P0 9, P1 10, P2 13, P3 15, P4 12, P5 13, P6 13, P7 11, P8 12.
 
@@ -101,7 +101,7 @@ $rows.Count                                      # 108
 $rows | Group-Object Phase | Select-Object Name, Count
 $rows | Group-Object Workstream | Select-Object Name, Count
 $rows | Group-Object Priority | Select-Object Name, Count
-($rows | Measure-Object -Property EstimatedMinutes -Sum).Sum # 3535 (Core: 3425)
+($rows | Measure-Object -Property EstimatedMinutes -Sum).Sum # 3555 (Core: 3445)
 ```
 
 ### 5.2 Structural checks
@@ -115,7 +115,7 @@ $rows | Group-Object Priority | Select-Object Name, Count
 7. No self-dependency; no cycle.
 8. Every `DROPPED` row has `EstimatedMinutes = 0` and a reason in the Markdown register.
 9. Phase/workstream counts match the Markdown Summary.
-10. Total minutes match 3535 (3425 core).
+10. Total minutes match 3555 (3445 core).
 
 ### 5.3 Filter examples
 

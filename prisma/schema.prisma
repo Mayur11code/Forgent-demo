@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SystemHealth {
+  id        String   @id @default(cuid())
+  service   String   @unique
+  status    String   @default("ok")
+  checkedAt DateTime @default(now())
+  metadata  Json?
+
+  @@map("system_health")
+}

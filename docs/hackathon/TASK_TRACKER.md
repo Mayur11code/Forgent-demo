@@ -1,6 +1,6 @@
 # ProofHire Hackathon Task Tracker
 
-**Status:** `NOT_STARTED` (0 completed of 108 tasks)  
+**Status:** `IN_PROGRESS` (9 completed of 108 tasks)  
 **Execution window:** 24 elapsed hours, 3 parallel workstreams (A = Frontend/UX, B = Platform/Backend, C = Compiler/AI)  
 **Stack:** Next.js App Router, TypeScript, Neon PostgreSQL, Prisma 7, QStash, Vercel Serverless, Zod  
 **Task authority:** This document and its CSV companion ([`TASK_TRACKER.csv`](TASK_TRACKER.csv)) are the canonical source of implementation truth. Every commit must reference at least one task ID from this register.  
@@ -14,33 +14,33 @@
 | Measure | Value | Notes |
 |---|---:|---|
 | **Total planned tasks** | **108** | 108 total tasks across 3 workstreams and 10 phases (P0-P9) |
-| **Completed tasks** | **0** | Zero tasks claimed before verification evidence exists |
-| **Actionable remaining** | **106** | Active tasks awaiting execution |
+| **Completed tasks** | **9** | Phase P0 foundation complete; all 9 tasks verified |
+| **Actionable remaining** | **97** | Active tasks awaiting execution |
 | **Dropped/deferred** | **2** | `P5-A-005` (PDF export) and `P7-B-004` (audit event browser) |
 | **Optional scope** | **5** | `P3-A-006` (25m), `P5-A-004` (20m), `P6-A-005` (20m), `P7-A-004` (20m), `P8-C-004` (25m) |
 | **Critical path** | **46** | Sequential dependency chain defining the release boundary |
-| **Core planned minutes** | **3425** | Across 3 developers (Team A: 1145m, Team B: 1140m, Team C: 1140m) |
+| **Core planned minutes** | **3445** | Across 3 developers (Team A: 1155m, Team B: 1145m, Team C: 1145m) |
 | **Optional planned minutes** | **110** | 5 non-critical polish tasks |
-| **Total estimated minutes** | **3535** | Core + optional minutes |
+| **Total estimated minutes** | **3555** | Core + optional minutes |
 | **Total developer capacity** | **4,320** | 3 developers × 1,440 minutes (24 hours) |
-| **Integration buffer** | **895** | ~14.9 person-hours reserve (~20.7% of total developer capacity) |
+| **Integration buffer** | **875** | ~14.6 person-hours reserve (~20.3% of total developer capacity) |
 
 ### Workstream breakdown
 
 | Workstream | Tasks | Core minutes | Optional minutes | Total minutes | Developer buffer |
 |---|---:|---:|---:|---:|---:|
-| **A — Frontend/UX** | 40 | 1145m | 85m | 1230m | 295m core buffer (210m total) |
-| **B — Backend/Platform** | 34 | 1140m | 0m | 1140m | 300m core buffer (300m total) |
-| **C — AI/Compiler/Eval** | 34 | 1140m | 25m | 1165m | 300m core buffer (275m total) |
-| **TOTAL** | **108** | **3425m** | **110m** | **3535m** | **895m core buffer** (785m total) |
+| **A — Frontend/UX** | 40 | 1155m | 85m | 1240m | 285m core buffer (200m total) |
+| **B — Backend/Platform** | 34 | 1145m | 0m | 1145m | 295m core buffer (295m total) |
+| **C — AI/Compiler/Eval** | 34 | 1145m | 25m | 1170m | 295m core buffer (270m total) |
+| **TOTAL** | **108** | **3445m** | **110m** | **3555m** | **875m core buffer** (765m total) |
 
 ### Planned effort per phase and workstream (minutes)
 
 | Phase | WS A | WS B | WS C | Capacity per dev | Core Total | Phase Capacity | Phase Utilization | Status |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | P0 | 55 | 55 | 55 | 60 | 165m | 180m | 91.7% | PASS |
-| P1 | 160 | 145 | 140 | 180 | 445m | 540m | 82.4% | PASS |
-| P2 | 160 | 160 | 150 | 180 | 470m | 540m | 87.0% | PASS |
+| P1 | 160 | 150 | 140 | 180 | 450m | 540m | 83.3% | PASS |
+| P2 | 170 | 160 | 155 | 180 | 485m | 540m | 89.8% | PASS |
 | P3 | 160 (185) | 155 | 160 | 180 | 475m | 540m | 88.0% | PASS |
 | P4 | 160 | 175 | 175 | 180 | 510m | 540m | 94.4% | PASS |
 | P5 | 150 (170) | 165 | 130 | 180 | 445m | 540m | 82.4% | PASS |
@@ -49,7 +49,7 @@
 | P8 | 95 | 90 | 95 (120) | 120 | 280m | 360m | 77.8% | PASS |
 | P9 | 0 | 0 | 0 | 60 | 0m | 180m | 0.0% | PASS |
 
-> Optional tasks are excluded from core phase totals. All workstreams are balanced within each phase capacity, leaving a collective 895-minute integration buffer across the 24-hour hackathon.
+> Optional tasks are excluded from core phase totals. All workstreams are balanced within each phase capacity, leaving a collective 875-minute integration buffer across the 24-hour hackathon.
 
 ---
 
@@ -57,7 +57,7 @@
 
 | Phase | Window | Gate outcome | Tasks | DONE | Gate status |
 |---|---|---|---:|---:|---|
-| **P0** — Architecture freeze, shared contracts, running foundation | H0-H1 | App boots, contracts compile, /api/health returns 200 with Neon DB connected, tag p0-foundation | 9 | 0 | ⬜ NOT_STARTED |
+| **P0** — Architecture freeze, shared contracts, running foundation | H0-H1 | App boots, contracts compile, /api/health returns 200 with Neon DB connected, tag p0-foundation | 9 | 9 | ✅ PASS |
 | **P1** — Premium dashboard shell and demo personas | H1-H4 | Both personas see seeded overviews; buyer/builder navigation and demo labels work; Neon schema v1 applied | 10 | 0 | ⬜ NOT_STARTED |
 | **P2** — Marketplace, builder profile, agent registry and job creation | H4-H7 | Northstar browses versions and creates/opens WH-204 with a compiled contract in Neon PostgreSQL | 13 | 0 | ⬜ NOT_STARTED |
 | **P3** — Capability matching, Team Compiler, auditions | H7-H10 | Auditions complete across 10 fixtures for Candidates A, B, and C; results persisted in Neon; comparison matrix displays audition scores and breakdown (selection in P4) | 12 | 0 | ⬜ NOT_STARTED |
@@ -133,15 +133,15 @@ Critical-path tasks in this tracker: P0-B-001, P0-C-001, P0-C-002, P1-B-001, P1-
 
 | ID | Owner | Pri | Kind | Task and implementation | Deps | Output / files | Acceptance criteria | Min | ∥ | Status | Blocker | Verification |
 |---|---|---|---|---|---|---|---|---:|---|---|---|---|
-| ☐ **P0-B-001** | B | P0 | CRITICAL | **Initialize the runnable Next.js foundation.** Create the Next.js 15 App Router project with strict TypeScript, Tailwind CSS, ESLint, Node 22 engine pin, npm scripts (dev, build, typecheck, lint, test, db:generate, db:push, db:seed, db:reset), .env.example and a minimal README run note. Do not add product features yet. | — | package.json, tsconfig.json, next.config.ts, Tailwind/PostCSS config, .env.example, README run section | npm install completes; npm run dev serves a page; npm run typecheck and npm run lint pass on the empty app. | 25 | YES | NOT_STARTED | None | Run install, dev, typecheck and lint; capture commands in the P0 checkpoint note. |
-| ☐ **P0-A-001** | A | P0 | PARALLEL | **Scaffold the app shell and design-token foundation.** Create src/app/layout.tsx, src/app/globals.css, src/app/page.tsx and route-group folders for buyer and builder. Define the dark graphite tokens (background, surface, border, text, accent, status colours), font variables and base reset. Redirect / to /buyer/overview. | P0-B-001 | src/app/layout.tsx, globals.css, page.tsx, (buyer)/(builder) route stubs | Dev server renders the token palette page; / redirects to /buyer/overview; no console errors; no hard-coded colours outside tokens. | 25 | YES | NOT_STARTED | None | Open / and /buyer/overview; inspect CSS variables; check browser console. |
-| ☐ **P0-C-001** | C | P0 | CRITICAL | **Freeze shared domain and API contracts.** Implement src/lib/contracts/constants.ts, domain.ts, schemas.ts and api.ts from 07_INTEGRATION_CONTRACTS.md. Cover Job, AcceptanceContract, AgentManifest, WorkflowGraph, EvaluationRun, ExecutionEvent, RecoveryEvent, EvidenceReceipt and API envelopes with Zod schemas and inferred TypeScript types. | P0-B-001 | src/lib/contracts/constants.ts, domain.ts, schemas.ts, api.ts | tsc --noEmit passes; example WH-204 payloads parse; invalid status and quantity payloads are rejected by Zod. | 30 | YES | NOT_STARTED | None | Run npm run typecheck and contract unit tests with valid and invalid fixtures. |
-| ☐ **P0-B-002** | B | P0 | PARALLEL | **Add Prisma 7, Neon PostgreSQL datasource and health endpoint.** Add Prisma 7 with PostgreSQL datasource, Neon serverless adapter (@prisma/adapter-neon, @neondatabase/serverless), src/server/db.ts connection pool singleton, generate/migrate scripts and GET /api/health returning app version, Neon DB connectivity status and timestamp. | P0-B-001 | prisma/schema.prisma, src/server/db.ts, src/app/api/health/route.ts | prisma generate succeeds; /api/health returns 200 with database=up; migrations apply cleanly against Neon via DIRECT_URL. | 20 | YES | NOT_STARTED | None | Run prisma db push; curl /api/health; verify connection pool metrics. |
-| ☐ **P0-A-002** | A | P0 | PARALLEL | **Freeze the route map and role-aware navigation model.** Write src/lib/navigation.ts and a route inventory covering every page in 09_UI_UX_SPECIFICATION.md. Each item declares route, label, icon, role, section and implementation phase. No navigation item may point to an unplanned or dead route. | P0-A-001 | src/lib/navigation.ts, route inventory in 09_UI_UX_SPECIFICATION.md | Buyer and builder navigation arrays match the page list; every route has an owner phase; no dead links. | 20 | YES | NOT_STARTED | None | Walk the navigation arrays against the page list and click every stub route. |
-| ☐ **P0-C-002** | C | P0 | CRITICAL | **Create the agent adapter interface and registry skeleton.** Implement src/server/agents/adapter.ts with the AgentAdapter interface, AgentExecutionContext, AgentExecutionResult and manifest validation. Add a registry skeleton that resolves manifests by agent/version and rejects invalid manifests. Do not add product adapters yet. | P0-C-001 | src/server/agents/adapter.ts, src/server/agents/registry.ts, adapter contract test | Registry resolves a valid fixture manifest; duplicate agent/version and unknown capability are rejected with typed errors; tests pass. | 15 | YES | NOT_STARTED | None | Run the adapter contract unit test and a negative manifest fixture. |
-| ☐ **P0-A-003** | A | P0 | INTEGRATION | **P0 foundation checkpoint and tag.** Boot the app jointly with Teams B and C, resolve route/type/config conflicts, confirm the transport and contract assumptions, record deviations in 16_DECISIONS_AND_CHANGELOG.md and tag p0-foundation. | P0-A-001<br>P0-A-002<br>P0-B-001<br>P0-B-002<br>P0-C-001<br>P0-C-002 | Checkpoint note, git tag p0-foundation | Dev server, health endpoint and typecheck pass; tag exists; no unresolved P0 blocker. | 10 | NO | NOT_STARTED | None | git tag --list p0-foundation; run the P0 smoke commands. |
-| ☐ **P0-B-003** | B | P0 | INTEGRATION | **P0 database, Neon pooling and environment sign-off.** Review Prisma 7 datasource, Neon connection pooling (DATABASE_URL) and direct migration connection (DIRECT_URL), QStash environment keys, Node 22 pin, and script matrix with Teams A and C. Confirm native PostgreSQL types, integer paise fields, and Vercel serverless deployment conventions. | P0-B-001<br>P0-B-002<br>P0-C-001 | Signed P0 environment checklist, decision log entries | DATABASE_URL, DIRECT_URL and QStash keys documented; PostgreSQL types verified; no secret committed. | 10 | NO | NOT_STARTED | None | Run db:push from a clean checkout and confirm .env.example is complete. |
-| ☐ **P0-C-003** | C | P0 | INTEGRATION | **P0 contract freeze sign-off.** Confirm every cross-team payload has a named TypeScript type and Zod schema, resolve naming conflicts, and ensure the contracts document and code agree. Record any unapproved deviation; do not silently change a frozen shape. | P0-C-001<br>P0-C-002 | Contract sign-off note, updated decision log | No unresolved TODO in src/lib/contracts; contracts doc matches code; all teams acknowledge the freeze. | 10 | NO | NOT_STARTED | None | Diff the contracts doc against exported types; run typecheck. |
+| ☑ **P0-B-001** | B | P0 | CRITICAL | **Initialize the runnable Next.js foundation.** Create the Next.js 15 App Router project with strict TypeScript, Tailwind CSS, ESLint, Node 22 engine pin, npm scripts (dev, build, typecheck, lint, test, db:generate, db:push, db:seed, db:reset), .env.example and a minimal README run note. Do not add product features yet. | — | package.json, tsconfig.json, next.config.ts, Tailwind/PostCSS config, .env.example, README run section | npm install completes; npm run dev serves a page; npm run typecheck and npm run lint pass on the empty app. | 25 | YES | DONE | None | Run install, dev, typecheck and lint; capture commands in the P0 checkpoint note. |
+| ☑ **P0-A-001** | A | P0 | PARALLEL | **Scaffold the app shell and design-token foundation.** Create src/app/layout.tsx, src/app/globals.css, src/app/page.tsx and route-group folders for buyer and builder. Define the dark graphite tokens (background, surface, border, text, accent, status colours), font variables and base reset. Redirect / to /buyer/overview. | P0-B-001 | src/app/layout.tsx, globals.css, page.tsx, (buyer)/(builder) route stubs | Dev server renders the token palette page; / redirects to /buyer/overview; no console errors; no hard-coded colours outside tokens. | 25 | YES | DONE | None | Open / and /buyer/overview; inspect CSS variables; check browser console. |
+| ☑ **P0-C-001** | C | P0 | CRITICAL | **Freeze shared domain and API contracts.** Implement src/lib/contracts/constants.ts, domain.ts, schemas.ts and api.ts from 07_INTEGRATION_CONTRACTS.md. Cover Job, AcceptanceContract, AgentManifest, WorkflowGraph, EvaluationRun, ExecutionEvent, RecoveryEvent, EvidenceReceipt and API envelopes with Zod schemas and inferred TypeScript types. | P0-B-001 | src/lib/contracts/constants.ts, domain.ts, schemas.ts, api.ts | tsc --noEmit passes; example WH-204 payloads parse; invalid status and quantity payloads are rejected by Zod. | 30 | YES | DONE | None | Run npm run typecheck and contract unit tests with valid and invalid fixtures. |
+| ☑ **P0-B-002** | B | P0 | PARALLEL | **Add Prisma 7, Neon PostgreSQL datasource and health endpoint.** Add Prisma 7 with PostgreSQL datasource, Neon serverless adapter (@prisma/adapter-neon, @neondatabase/serverless), src/server/db.ts connection pool singleton, generate/migrate scripts and GET /api/health returning app version, Neon DB connectivity status and timestamp. | P0-B-001 | prisma/schema.prisma, src/server/db.ts, src/app/api/health/route.ts | prisma generate succeeds; /api/health returns 200 with database=up; migrations apply cleanly against Neon via DIRECT_URL. | 20 | YES | DONE | None | Run prisma db push; curl /api/health; verify connection pool metrics. |
+| ☑ **P0-A-002** | A | P0 | PARALLEL | **Freeze the route map and role-aware navigation model.** Write src/lib/navigation.ts and a route inventory covering every page in 09_UI_UX_SPECIFICATION.md. Each item declares route, label, icon, role, section and implementation phase. No navigation item may point to an unplanned or dead route. | P0-A-001 | src/lib/navigation.ts, route inventory in 09_UI_UX_SPECIFICATION.md | Buyer and builder navigation arrays match the page list; every route has an owner phase; no dead links. | 20 | YES | DONE | None | Walk the navigation arrays against the page list and click every stub route. |
+| ☑ **P0-C-002** | C | P0 | CRITICAL | **Create the agent adapter interface and registry skeleton.** Implement src/server/agents/adapter.ts with the AgentAdapter interface, AgentExecutionContext, AgentExecutionResult and manifest validation. Add a registry skeleton that resolves manifests by agent/version and rejects invalid manifests. Do not add product adapters yet. | P0-C-001 | src/server/agents/adapter.ts, src/server/agents/registry.ts, adapter contract test | Registry resolves a valid fixture manifest; duplicate agent/version and unknown capability are rejected with typed errors; tests pass. | 15 | YES | DONE | None | Run the adapter contract unit test and a negative manifest fixture. |
+| ☑ **P0-A-003** | A | P0 | INTEGRATION | **P0 foundation checkpoint and tag.** Boot the app jointly with Teams B and C, resolve route/type/config conflicts, confirm the transport and contract assumptions, record deviations in 16_DECISIONS_AND_CHANGELOG.md and tag p0-foundation. | P0-A-001<br>P0-A-002<br>P0-B-001<br>P0-B-002<br>P0-C-001<br>P0-C-002 | Checkpoint note, git tag p0-foundation | Dev server, health endpoint and typecheck pass; tag exists; no unresolved P0 blocker. | 10 | NO | DONE | None | git tag --list p0-foundation; run the P0 smoke commands. |
+| ☑ **P0-B-003** | B | P0 | INTEGRATION | **P0 database, Neon pooling and environment sign-off.** Review Prisma 7 datasource, Neon connection pooling (DATABASE_URL) and direct migration connection (DIRECT_URL), QStash environment keys, Node 22 pin, and script matrix with Teams A and C. Confirm native PostgreSQL types, integer paise fields, and Vercel serverless deployment conventions. | P0-B-001<br>P0-B-002<br>P0-C-001 | Signed P0 environment checklist, decision log entries | DATABASE_URL, DIRECT_URL and QStash keys documented; PostgreSQL types verified; no secret committed. | 10 | NO | DONE | None | Run db:push from a clean checkout and confirm .env.example is complete. |
+| ☑ **P0-C-003** | C | P0 | INTEGRATION | **P0 contract freeze sign-off.** Confirm every cross-team payload has a named TypeScript type and Zod schema, resolve naming conflicts, and ensure the contracts document and code agree. Record any unapproved deviation; do not silently change a frozen shape. | P0-C-001<br>P0-C-002 | Contract sign-off note, updated decision log | No unresolved TODO in src/lib/contracts; contracts doc matches code; all teams acknowledge the freeze. | 10 | NO | DONE | None | Diff the contracts doc against exported types; run typecheck. |
 
 **Prototype at gate:** A running Next.js App Router app on Vercel serverless with Prisma 7, Neon PostgreSQL connection pool, health endpoint, shell placeholder and p0-foundation tag.
 
@@ -341,5 +341,13 @@ Critical-path tasks in this tracker: P0-B-001, P0-C-001, P0-C-002, P1-B-001, P1-
 *No development tasks scheduled in this phase. Dedicated buffer window.*
 
 **Prototype at gate:** Unallocated buffer window. No implementation tasks scheduled. 180 person-minutes emergency contingency reserve.
+
+---
+
+## 6. Checkpoint Log
+
+| Phase | Tag | Target / Actual | Gate Result | Tagger | Summary / Evidence |
+|---|---|---|---|---|---|
+| **P0** | `p0-foundation` | H1 / H1 | **PASS** | Staff Eng / Joint Lead | Next.js 15 App Router boots cleanly; dark graphite tokens & navigation registry verified; shared Zod contracts & TypeScript types frozen; Prisma 7 with Neon PostgreSQL connection pooling operational; GET `/api/health` returns 200 with `status: ok` and live DB connectivity; 14 Vitest unit/contract tests passing; `tsc --noEmit` and `next lint` 100% clean. |
 
 ---

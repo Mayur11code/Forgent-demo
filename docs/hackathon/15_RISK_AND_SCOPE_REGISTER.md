@@ -95,7 +95,7 @@
 | Likelihood / impact | L / 2 (Reduced from H/3) |
 | Owner | A |
 | Trigger | Complex layout or secondary chart polish consuming integration time |
-| Mitigation | Workload rebalanced: core work reduced to 3,425 minutes across team (Team A core: 1,145m, Team B core: 1,140m, Team C core: 1,140m). 895 minutes (~15h) team buffer created. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) are explicit cuts |
+| Mitigation | Workload rebalanced: core work reduced to 3,425 minutes across team (Team A core: 1,145m, Team B core: 1,140m, Team C core: 1,140m). 875 minutes (~15h) team buffer created. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) are explicit cuts |
 | Response | Drop optional tasks; reuse core primitives; protect the core demo critical path |
 | Residual | Low |
 
@@ -176,16 +176,16 @@
 | Response | Fix script; rerun reset/seed; do not hand-edit database state |
 | Residual | Low |
 
-### R-15 — No real auth creates a role bypass
+### R-15 — Session authentication bypass or role spoofing
 
 | Field | Detail |
 |---|---|
 | Likelihood / impact | M / 3 |
 | Owner | B |
-| Trigger | Direct route access as wrong persona; API call without role guard |
-| Mitigation | Server-side role guard; persona cookie; 403 tests; explicit demo-only label |
-| Response | Fix the guard; test buyer/builder negative cases; never claim production security |
-| Residual | Medium for the demo, accepted limitation |
+| Trigger | Direct route access without valid session or as unauthorized role; API call bypassing route guards |
+| Mitigation | Server-managed signed httpOnly session cookie (`proofhire_session`); Next.js middleware guards (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`); seeded accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`); explicit 401/403 negative tests |
+| Response | Reject unauthorized requests with 401/403; redirect to `/login`; log security event |
+| Residual | Low for demo scope, accepted limitation |
 
 ### R-16 — Receipt hash instability
 
@@ -242,15 +242,15 @@
 | Response | Reassign by ownership matrix; cut optional scope; protect the trust/economics chain |
 | Residual | Low |
 
-### R-21 — Arbitrary third-party code execution vulnerability
+### R-21 — Malicious package archive upload or untrusted code execution
 
 | Field | Detail |
 |---|---|
 | Likelihood / impact | L / 5 |
 | Owner | B / C |
-| Trigger | Attempting to execute unvetted developer code or arbitrary scripts within the production runtime |
-| Mitigation | Hackathon MVP strictly executes curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads are explicitly deferred to the future roadmap requiring microVM/container isolation (Firecracker/gVisor), resource quotas, egress network firewalls, and secret protection |
-| Response | Reject arbitrary package execution; enforce platform adapter allow-list |
+| Trigger | Uploading malicious ZIP archives containing path traversal (`../`), ZIP bombs, or attempting to execute unvetted uploaded code in the runtime |
+| Mitigation | Strict archive safety validator enforces 5MB limit, .zip MIME type, and rejects path traversal (`../`) before extraction; SHA-256 digest computed; package stored in persistent storage abstraction with `PENDING_APPROVAL` status (`executionEligible: false`). **Execution Safety Boundary:** runtime orchestrator strictly invokes only approved platform adapters (`src/server/agents/**`); compiler rejects unapproved packages with `UNAPPROVED_EXECUTION_BINDING`; zero dynamic `eval()` or untrusted dynamic `import()` |
+| Response | Fail closed with 400 Bad Request on malformed/malicious ZIP; compile rejection on unapproved packages |
 | Residual | Low by architecture |
 
 ---
