@@ -59,7 +59,8 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 
 1. [`01 — Repository Audit`](01_REPOSITORY_AUDIT.md)
 2. [`DOCUMENTATION_AUDIT.md`](DOCUMENTATION_AUDIT.md)
-3. [`16 — Decisions/Changelog`](16_DECISIONS_AND_CHANGELOG.md)
+3. [`PRE_IMPLEMENTATION_READINESS.md`](PRE_IMPLEMENTATION_READINESS.md)
+4. [`16 — Decisions/Changelog`](16_DECISIONS_AND_CHANGELOG.md)
 
 ---
 
@@ -86,6 +87,7 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | — | [Task Tracker](TASK_TRACKER.md) | Canonical 108-task execution state |
 | — | [Task Tracker CSV](TASK_TRACKER.csv) | Machine-readable export of the same tasks |
 | — | [Documentation Audit](DOCUMENTATION_AUDIT.md) | Coverage and consistency verification |
+| — | [Pre-Implementation Readiness](PRE_IMPLEMENTATION_READINESS.md) | Phase capacity audit, dependency verification, model fallback, no-mock gate, ₹10k economics, reset tests |
 
 ---
 
