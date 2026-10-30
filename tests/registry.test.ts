@@ -21,6 +21,7 @@ describe("AgentRegistry Foundation Suite", () => {
     fallbackVersionIds: ["1.1.0"],
     runtimeAdapter: "test-adapter",
     executionEligible: true,
+    registryVisible: true,
   };
 
   const mockAdapter: AgentAdapter = {
