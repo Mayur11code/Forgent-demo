@@ -70,9 +70,9 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 | Platform verifier | `sys-proofhire-verifier-v1` | Acceptance Verifier | Not an agent, not a registry listing |
 | Job | `job-wh-204` | WH-204 — Inbound shipment reconciliation | Seeded, starts `CONTRACT_READY` |
 | Contract | `contract-wh-204-v1` | Acceptance Contract v1 | Frozen at job creation |
-| Candidate A | `cand-wh204-single` | Single-agent baseline | Rejected |
-| Candidate B | `cand-wh204-fixed` | Fixed specialist team | Rejected |
-| Candidate C | `cand-wh204-compiled` | ProofHire-selected team | Selected |
+| Candidate A | `cand-wh204-single` | Single-agent baseline | Evaluated against WH-204 fixtures; baseline comparison |
+| Candidate B | `cand-wh204-fixed` | Fixed specialist team | Evaluated against WH-204 fixtures; no fallback bound |
+| Candidate C | `cand-wh204-compiled` | ProofHire dynamic team | Evaluated alongside A and B; selected if constraints pass |
 | Audition suite | `audsuite-wh204-v1` | `wh204-suite-v1` | Ten fixtures |
 | Work order | `wo-wh-204-v1` | WH-204 work order | ₹10,000 buyer total |
 | Execution | `exec-wh-204-001` | WH-204 execution | One run per reset |
@@ -269,7 +269,13 @@ export interface AgentVersion {
   estimatedLatencyMs: number;
   limitations: string[];
   fallbackVersionIds: string[];
-  runtime: { adapter: string; mode: "DETERMINISTIC" | "MODEL" | "HYBRID"; registryVisible: boolean };
+  runtime: {
+    adapter: string;
+    mode: "HYBRID" | "DETERMINISTIC" | "MODEL";
+    modelProvider?: "google-gemini" | "openai" | null;
+    fallbackAdapter?: string;
+    registryVisible: boolean;
+  };
   isSeeded: boolean;
 }
 
@@ -411,6 +417,12 @@ export interface AgentExecutionResult<TOutput> {
   latencyMs: number;
   traceId: string;
   attempt: number;
+  executionMode: "MODEL_BACKED" | "DETERMINISTIC_FALLBACK" | "DETERMINISTIC";
+  modelDetails?: {
+    provider: "google-gemini" | "openai" | null;
+    modelName: string;
+    tokensUsed?: number;
+  };
 }
 
 export interface AgentAdapter<TInput = unknown, TOutput = unknown> {
@@ -444,10 +456,10 @@ The independent verifier deliberately does **not** implement `AgentAdapter` and 
 
 ```json
 {
-  "expected": 12,
-  "invoiced": 12,
-  "physicallyReceived": 10,
-  "discrepancy": 2,
+  "expectedQuantity": 12,
+  "invoicedQuantity": 12,
+  "scannedQuantity": 10,
+  "discrepancyQuantity": 2,
   "direction": "SHORT",
   "status": "EXCEPTION_REQUIRES_REVIEW",
   "inventoryCommit": "BLOCKED_PENDING_APPROVAL",
@@ -696,7 +708,12 @@ export interface EvidenceReceipt {
 }
 ```
 
-The receipt hash is computed over a canonical JSON body with recursively sorted keys, excluding the `integrity` object. It makes later modification detectable; it does **not** prove the original observations were true.
+The receipt hash is computed over a canonical JSON body with recursively sorted keys, excluding the `integrity` object. The receipt is **tamper-evident and hash-verified**, rather than claiming absolute distributed immutability.
+
+### Limitations of SHA-256 receipt hashing:
+1. **Payload integrity only:** SHA-256 guarantees that the serialized record has not been altered or corrupted after hash generation.
+2. **Observation vs physical truth:** The hash confirms that the recorded observations (e.g. 10 scanned units, PO 12 units) match what the pipeline processed; it does not and cannot guarantee that external physical reality was not misrepresented upstream (e.g., fraudulent vendor packing or human camera misplacement).
+3. **Storage anchor boundary:** Without distributed ledger consensus or an external public timestamping authority (deferred post-hackathon), local SQLite records rely on platform operating controls to prevent administrator-level row replacements.
 
 ---
 
@@ -751,6 +768,12 @@ export interface ContributionRecord {
   evidenceRef: string;
   createdAt: string;
 }
+
+// Duplicate earnings prevention rule:
+// ContributionRecord enforces @@unique([executionId, stageId]).
+// Failed stage runs (e.g. Reconciliation v1.0.0) earn amountPaise = 0 (status: "ZERO_ALLOCATION_STAGE_FAILED").
+// The successful replacement (Reconciliation v1.1.0) earns the stage allocation (amountPaise: 250,000 / ₹2,500).
+// Stage retries and fallbacks never double-credit builder earnings. Total builder payout stays exactly ₹5,500.
 
 export interface SettlementRecord {
   settlementId: string;

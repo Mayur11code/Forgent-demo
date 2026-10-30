@@ -39,7 +39,7 @@ The plan is deliberately narrower than the long-term product and deliberately wi
 | Team Compiler | Capability matching, compatibility checks, three candidates, ten-fixture audition, hard-constraint selection, capability gaps |
 | Commercial | Work order, ₹10,000 allocation, buyer approval, simulated settlement eligibility |
 | Execution | Six-stage runtime, persisted events, injected failure, bounded replacement, downstream rerun, safe stop |
-| Trust | Independent ten-check verifier, state diff, receipt with SHA-256 hash, human review, blocked inventory commit |
+| Trust | Independent ten-check verifier, state diff, tamper-evident receipt with SHA-256 hash, human review, blocked inventory commit (42 → 42 invariant) |
 | Economics | Stage attribution, v1.0.0 ₹0, v1.1.0 ₹2,500, builder ₹5,500, platform ₹2,500, reserves |
 | Operations | Deterministic seed/reset, health endpoint, demo runbook, backup, rehearsals |
 
@@ -48,7 +48,7 @@ The plan is deliberately narrower than the long-term product and deliberately wi
 - Real authentication, real payments, escrow, KYC, billing or payout rails.
 - Real warehouse or ERP integration; the ledger is simulated.
 - Public builder onboarding, third-party acquisition or unrestricted bidding.
-- Arbitrary agent code execution, external model calls on the critical path, queues or websockets.
+- Arbitrary untrusted agent code execution, queues or websockets. Model calls are isolated to hybrid adapters with deterministic fallbacks.
 - PDF receipt export, cross-job audit browser, disputes centre, crypto settlement.
 - A real capability-bounty submission flow.
 - Production multi-tenancy, horizontal scale, SLA or compliance claims.
@@ -61,29 +61,30 @@ Deferred items are recorded in [15 — Risk and Scope Register](15_RISK_AND_SCOP
 
 ```text
 Northstar Warehouse has a receiving exception.
-  PO 12 / Invoice 12 / Physical scan 10.
-  Inventory must not be changed without human approval.
+  Expected PO: 12 / Invoiced: 12 / Scanned Receiving: 10.
+  Inventory must not be changed without human approval (42 → 42 invariant).
 
-Northstar posts WH-204 with a ₹10,000 budget.
+Northstar posts WH-204 with an illustrative ₹10,000 budget.
 
 ProofHire compiles three candidate workflows:
   A  single-agent baseline          (evaluation only; not for hire)
   B  fixed specialist team          (no recovery path)
   C  compiler-selected team         (with v1.1.0 fallback)
 
-All three audition on the same ten fixtures and fixed seed.
-C is selected because it passes hard constraints and has a recovery path.
+All three audition dynamically on the same ten fixtures and fixed seed.
+The selector evaluates hard constraints and audition metrics from persisted runs;
+any candidate can qualify, and Candidate C ranks highest in the baseline run.
 
 Jordan Lee's agents are hired by the stage:
-  Evidence Reader        ₹1,500
-  Reconciliation v1.0.0  ₹2,500  → fails schema validation
-  Reconciliation v1.1.0  ₹2,500  → replaces it; v1.0.0 earns ₹0
-  Exception Reporter     ₹1,000
+  Evidence Reader (Hybrid) ₹2,000  → model-backed with deterministic fallback
+  Reconciliation v1.0.0   ₹2,500  → fails schema validation (earns ₹0)
+  Reconciliation v1.1.0   ₹2,500  → replaces it; v1.0.0 receives ₹0 payout
+  Exception Reporter      ₹1,000
   Policy + inventory proposal are ProofHire-owned deterministic functions.
 
 The independent verifier passes 10 checks against 10 received / 2 discrepancy.
-The inventory proposal is blocked pending human approval.
-The receipt hashes the evidence, checks, recovery and economics.
+The inventory proposal is blocked pending human approval (42 → 42 preserved).
+The tamper-evident receipt hashes the canonical body with SHA-256.
 Jordan's simulated eligible earnings are ₹5,500.
 ProofHire's platform fee is ₹2,500. Reserves are ₹1,200 and ₹800.
 No money moves. The marketplace and attribution logic are real.
@@ -280,28 +281,28 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | **P0** | H0–H1 | 60m | Architecture freeze and running foundation | App boots, contracts compile, `/api/health` 200, `p0-foundation` tag |
 | **P1** | H1–H4 | 180m | Premium shell, personas, schema and seeded overviews | Both personas see seeded overviews with labelled data |
 | **P2** | H4–H7 | 180m | Marketplace, builder profile, registry, job creation | Northstar browses versions and opens WH-204 with a compiled contract |
-| **P3** | H7–H11 | 240m | Compiler, auditions and selection | A/B rejected with recorded reasons; C selected |
+| **P3** | H7–H11 | 240m | Compiler, auditions and dynamic selection | Auditions run dynamically across 10 fixtures; selection computed from runs; A, B or C can qualify; illustrative 10/10 and ₹10,000 |
 | **P4** | H11–H15 | 240m | Work order, execution, failure and recovery | v1.0.0 fails; v1.1.0 replaces it; downstream completes |
-| **P5** | H15–H18 | 180m | Independent verification, receipt and review | Ten checks pass; receipt hash exists; inventory commit blocked |
-| **P6** | H18–H20 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, simulated eligibility |
-| **P7** | H20–H22 | 120m | Premium UX completion and live integration | Whole journey runs live; reset deterministic; visuals frozen |
+| **P5** | H15–H18 | 180m | Independent verification, receipt and review | Ten checks pass; tamper-evident receipt hash exists; inventory commit blocked 42 → 42 |
+| **P6** | H18–H20 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
+| **P7** | H20–H22 | 120m | Premium UX completion and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); seeded profiles and simulated settlement labelled |
 | **P8** | H22–H24 | 120m | Regression, hardening, rehearsal and lock | Three clean rehearsals; `v1.0-demo`; signed runbook |
 
-### Phase-level capacity warning
+### Phase-level capacity and rebalanced effort
 
-| Phase | A minutes | B minutes | C minutes | Window | Rule |
+| Phase | A minutes | B minutes | C minutes | Window | Buffer & Rule |
 |---|---:|---:|---:|---:|---|
-| P0 | 60 | 60 | 60 | 60 | Zero slack; scaffold is critical path. |
-| P1 | 175 | 160 | 155 | 180 | 5–25m slack. |
-| P2 | 180 | 175 | 175 | 180 | Tight; optional P1 items slip first. |
-| P3 | **245** | 220 | 240 | 240 | A is 5m over before optional work. Cut `P3-A-006` first; parallelize `P3-A-005`. |
-| P4 | 210 | 210 | 210 | 240 | 30m buffer for recovery debugging. |
-| P5 | 180 | 170 | 170 | 180 | No buffer for A; receipt polish is the risk. |
-| P6 | **145** | 115 | 120 | 120 | A is 25m over before optional work. Cut `P6-A-005`; protect `P6-A-001/002`. |
-| P7 | **135** | 95 | 100 | 120 | A is 15m over before optional work. Cut `P7-A-004`; integration wins. |
-| P8 | 100 | 95 | 120 | 120 | Rehearsals are non-negotiable. |
+| P0 | 55 | 55 | 55 | 60 | 5m slack; contract freeze is the gate. |
+| P1 | 160 | 145 | 140 | 180 | 20–40m slack; seeded overviews complete. |
+| P2 | 160 | 160 | 150 | 180 | 20–30m slack; contract compiler and marketplace active. |
+| P3 | 190 (215) | 195 | 200 | 240 | 25–50m buffer. Dynamic selection runs on persisted evaluations. Cut `P3-A-006` if behind. |
+| P4 | 160 | 170 | 180 | 240 | 60–80m buffer for recovery and adapter debugging. |
+| P5 | 120 (140) | 130 | 150 | 180 | 30–60m buffer. Receipt export `P5-A-004` is optional scope. |
+| P6 | 105 (125) | 110 | 105 | 120 | 10–15m core buffer. `P6-A-005` is optional; economics reconcile to ₹10,000. |
+| P7 | 100 (120) | 85 | 85 | 120 | 20–35m buffer. Zero frontend mocks; `P7-A-004` motion polish is optional. |
+| P8 | 95 | 90 | 75 (100) | 120 | 20–45m buffer for rehearsals and regression. |
 
-Optional tasks `P3-A-006`, `P6-A-005`, `P7-A-004` and `P8-C-004` are excluded from the critical path. Never cut marketplace, recovery, verification or attribution work to save optional polish.
+**Capacity rebalancing summary:** Core planned workload is reduced to **3,425 person-minutes** across all three developers (Team A: 1,145m core / 1,230m total; Team B: 1,140m core / 1,140m total; Team C: 1,140m core / 1,165m total). This creates **895 minutes (~15 person-hours)** of team integration buffer. Team A is fully rebalanced from its previous 1,430m load, eliminating the previous capacity deficit. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.
 
 ---
 

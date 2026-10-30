@@ -80,7 +80,7 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 | Area | Owned paths |
 |---|---|
 | Contracts | `src/lib/contracts/**` |
-| Agent layer | `src/server/agents/**` (adapter, registry, manifests, adapters) |
+| Agent layer | `src/server/agents/**` (hybrid adapter architecture: model-backed Evidence Reader with deterministic fallback, deterministic Reconciliation/Exception Reporter, manifests) |
 | Compiler | `src/server/compiler/**` (taxonomy, matcher, compatibility, contract compiler, candidates, auditions, assertions, selector, gaps) |
 | Runtime rules | `src/server/runtime/**` (orchestrator policy, failure injection, recovery, limits) |
 | Verification | `src/server/verification/**` (verifier, state diff, approval gate) |

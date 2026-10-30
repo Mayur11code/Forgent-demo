@@ -339,7 +339,7 @@ If a completed downstream stage depended on the failed output:
 | `AC-04_UNSUPPORTED_INVENTORY_COMMIT_BLOCKED` | Yes | No commit occurred; proposal blocked. |
 | `AC-05_EVIDENCE_REFERENCES_PRESENT` | Yes | PO, invoice, scan references and hashes exist. |
 | `AC-06_HUMAN_APPROVAL_GATE_PENDING` | Yes | Consequential commit pending human approval. |
-| `AC-07_STATE_DIFF_MATCHES_EVIDENCE` | Yes | 42→42 committed, pending 10, variance 2. |
+| `AC-07_STATE_DIFF_MATCHES_EVIDENCE` | Yes | 42→42 committed invariant, pending 10, variance 2. Separate fields: expectedQuantity (12), invoicedQuantity (12), scannedQuantity (10), discrepancyQuantity (2). |
 | `AC-08_NO_DUPLICATE_SIDE_EFFECT` | Yes | One accepted reconciliation, one proposal, no duplicate events. |
 | `AC-09_STATUS_EXCEPTION_REQUIRES_REVIEW` | Yes | Outcome exactly `EXCEPTION_REQUIRES_REVIEW`. |
 | `AC-10_ALL_STAGES_TERMINAL_AND_ATTRIBUTED` | No | Every stage terminal/awaiting approval and attributed once. |
@@ -392,10 +392,16 @@ A passing score elsewhere cannot rescue a critical failure.
 
 ## 8. State diff and inventory gate
 
-### 8.1 Truth
+### 8.1 Truth and separate quantity fields
 
 ```json
 {
+  "quantities": {
+    "expectedQuantity": 12,
+    "invoicedQuantity": 12,
+    "scannedQuantity": 10,
+    "discrepancyQuantity": 2
+  },
   "before": { "committedOnHand": 42, "pendingReceipt": 0, "unresolvedVariance": 0 },
   "after": { "committedOnHand": 42, "pendingReceipt": 10, "unresolvedVariance": 2 },
   "proposed": { "delta": 10, "onHandIfApproved": 52 },
@@ -446,16 +452,20 @@ The receipt snapshots:
 - Economics: buyer total, builder total, platform fee, reserves, settlement status.
 - Integrity hash.
 
-### 9.2 Canonical hash
+### 9.2 Canonical hash and tamper-evident verification
 
 - Algorithm: SHA-256.
 - Scope: `RECEIPT_BODY_V1`.
 - Canonical JSON: recursively sorted keys, stable arrays, no whitespace variance.
 - Exclude the `integrity` object from the hash input.
 - The hash is stored and recomputed on read/export.
-- A mismatch is a defect, not a warning.
+- A mismatch is an integrity violation, not a warning.
+- The receipt is **tamper-evident and hash-verified**, rather than claiming absolute distributed immutability.
 
-The hash proves the receipt body was not modified. It does **not** prove the original observations were true; the verifier does that.
+#### Explicit limitations of SHA-256 receipt hashing:
+1. **Payload integrity only:** SHA-256 guarantees that the serialized receipt payload has not been modified after generation.
+2. **Observation vs physical ground truth:** The hash confirms that the recorded observations (e.g. 10 scanned units, PO 12 units) match what the pipeline processed; it cannot verify whether upstream physical real-world data was mis-scanned or falsified before ingestion.
+3. **Storage anchor boundary:** In a hackathon SQLite setup, hashes are verified in-process; true cryptographic non-repudiation requires external anchoring or distributed consensus (deferred post-hackathon).
 
 ### 9.3 Receipt status
 

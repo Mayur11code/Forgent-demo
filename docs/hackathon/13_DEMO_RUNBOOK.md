@@ -54,14 +54,14 @@ The three moments the judges must remember:
 ### Truth card (memorise)
 
 ```text
-PO 12 · Invoice 12 · Scan 10 · Discrepancy 2
-Inventory 42 → 42 · Pending 10 · Variance 2 · Commit BLOCKED
+Expected PO 12 · Invoiced 12 · Scanned Receiving 10 · Discrepancy 2
+Inventory 42 → 42 (on-hand invariant) · Pending 10 · Variance 2 · Commit BLOCKED
 Buyer ₹10,000
-Builder ₹5,500 = 1,500 + 2,500 + 1,000
+Builder ₹5,500 = 2,000 (Evidence Reader) + 2,500 (Reconciliation v1.1.0) + 1,000 (Reporter)
 Platform fee ₹2,500 · Reserves ₹1,200 + ₹800
-v1.0.0 ₹0 (replaced) · v1.1.0 ₹2,500 (accepted)
+v1.0.0 ₹0 (replaced) · v1.1.0 ₹2,500 (accepted output)
 Status: EXCEPTION_REQUIRES_REVIEW
-Acceptance: 10/10 checks pass · Receipt VERIFIED_PENDING_HUMAN_APPROVAL
+Acceptance: 10/10 checks pass · Tamper-evident receipt hash · VERIFIED_PENDING_HUMAN_APPROVAL
 ```
 
 ---
@@ -108,21 +108,22 @@ Acceptance: 10/10 checks pass · Receipt VERIFIED_PENDING_HUMAN_APPROVAL
 
 ---
 
-### 1:00–1:30 — Compile and audition three teams
+### 1:00–1:30 — Dynamic compile and audition of three teams
 
 **Action:** Compiler tab → **Compile** → **Run auditions**.
 
 **Say:**
 
-> “ProofHire compiles three bounded candidates: a single-agent baseline, a fixed specialist team, and a compiler-selected team with a bound fallback. All three audition on the same ten fixtures and the same seed. These are measured results, not a generated score.”
+> “ProofHire compiles three bounded candidates: a single-agent baseline, a fixed specialist team, and a compiler-selected team with a bound fallback. All three audition dynamically on the same ten fixtures and the same seed. Selection is computed in real time from persisted audition runs — Candidate C is not preordained; any candidate can qualify if it passes hard constraints.”
 
 **Point at:**
+- Candidates A, B, and C auditioning side-by-side.
 - A: fails the physical quantity check (12 vs 10).
 - B: passes quantities but has no recovery path.
-- C: passes hard constraints and has a compatible fallback.
+- C: passes hard constraints and has a compatible fallback (illustrative 10/10 checks, ₹10,000 cost).
 - Two held-out cases are aggregated, not exposed.
 
-**Action:** Select C.
+**Action:** Select C based on measured evaluation results.
 
 **Say:**
 
@@ -166,15 +167,15 @@ Acceptance: 10/10 checks pass · Receipt VERIFIED_PENDING_HUMAN_APPROVAL
 
 ---
 
-### 2:25–2:50 — Independent verification and receipt
+### 2:25–2:50 — Independent verification and tamper-evident receipt
 
 **Action:** Verification tab → scroll ten checks → Receipt tab.
 
 **Say:**
 
-> “The verifier is not an agent. It is ProofHire's independent deterministic module. It does not trust the agent's success message; it recomputes the quantities from evidence. Ten checks pass. The state diff is 42 → 42, pending 10, variance 2. The inventory commit is still blocked.”
+> “The verifier is not an agent. It is ProofHire's independent deterministic module. It does not trust the agent's success message; it recomputes the quantities from evidence. Ten checks pass. The state diff is 42 → 42 on-hand invariant, pending 10, variance 2. The inventory commit is still blocked. The receipt is tamper-evident and hash-verified with SHA-256.”
 
-**Point at:** the copyable SHA-256 receipt hash, v1.0.0 and v1.1.0 both present, status `VERIFIED_PENDING_HUMAN_APPROVAL`.
+**Point at:** the copyable SHA-256 receipt hash, v1.0.0 and v1.1.0 both present, status `VERIFIED_PENDING_HUMAN_APPROVAL`, and explain hash scope.
 
 ---
 

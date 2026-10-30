@@ -47,18 +47,18 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Consequences | Zero external DB ops; deterministic reset; single-writer limits; enums/JSON handled as strings/text with Zod. |
 | Revisit | Migrate to Postgres for multi-user/production. |
 
-### D-003 — Deterministic adapters, no LLM on the critical path
+### D-003 — Hybrid adapter architecture with deterministic fallback
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | C |
-| Context | The demo must be reliable, offline-capable and falsifiable. |
-| Decision | Implement agent behaviour as deterministic TypeScript adapters over structured fixtures. No model call is required. |
-| Alternatives | LLM-driven agents; hybrid with fallback to deterministic. |
-| Consequences | Reproducible outputs, no API keys, fast auditions. The demo proves orchestration/verification, not model quality. |
-| Revisit | Optional prose summaries or model-backed adapters after the hackathon. |
+| Context | The demo must show authentic AI capabilities without risking judge failure from network timeouts or missing API keys. |
+| Decision | Adopt a hybrid adapter architecture. Evidence Reader v1.0.0 is model-backed (calling Gemini 1.5/2.0 Flash or OpenAI when `GEMINI_API_KEY`/`OPENAI_API_KEY` is present in `.env.local`), falling back automatically to a local deterministic adapter on timeout or error. Reconciliation and Acceptance Verification strictly use deterministic business logic (arithmetic and integrity assertions must not hallucinate). Ordinary code is never falsely presented as autonomous external AI agents; provider identities are labelled accurately. |
+| Alternatives | Purely deterministic mock adapters; purely LLM-driven pipelines with no fallback. |
+| Consequences | Authentic AI execution demonstrated when online; zero demo disruption if offline or unkeyed; transparent provider labelling. |
+| Revisit | Additional model-backed agents post-hackathon. |
 
 ### D-004 — Demo persona cookie, not real authentication
 
@@ -281,18 +281,18 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Consequences | Strong safety story; inventory remains simulated and unchanged. |
 | Revisit | Define a real human-approved inventory workflow post-hackathon. |
 
-### D-021 — Receipt hash scope and status
+### D-021 — Tamper-evident receipt hashing and SHA-256 limitations
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | C |
-| Context | The receipt must be tamper-evident without overclaiming truth. |
-| Decision | SHA-256 over canonical `RECEIPT_BODY_V1` with sorted keys, excluding `integrity`; status `VERIFIED_PENDING_HUMAN_APPROVAL` for WH-204. |
-| Alternatives | Hash the stored row; sign with a key; no hash. |
-| Consequences | Stable, copyable integrity check; does not prove observations are true. |
-| Revisit | Add signatures/anchoring post-hackathon. |
+| Context | The receipt must provide tamper-evidence without claiming absolute distributed immutability. |
+| Decision | Generate a SHA-256 integrity hash over canonical `RECEIPT_BODY_V1` with recursively sorted keys, excluding `integrity`. Label the receipt as **tamper-evident and hash-verified**, rather than immutable. Explicitly document SHA-256 limitations (guarantees payload serialization integrity, does not prove physical truth of external inputs, relies on platform storage controls in local SQLite). Status remains `VERIFIED_PENDING_HUMAN_APPROVAL` for WH-204 while inventory approval is pending. |
+| Alternatives | Blockchain anchoring; digital signature without hash; unhashed record. |
+| Consequences | Accurate cryptographic claims; transparent boundaries; no overclaiming of physical truth. |
+| Revisit | Decentralized anchoring or public timestamping post-hackathon. |
 
 ### D-022 — Standard API envelope and HTTP codes
 
@@ -332,6 +332,45 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Alternatives | Present seeded data as real; omit labels. |
 | Consequences | Credible demo; the boundary is explicit. |
 | Revisit | Replace seeds with real participants post-hackathon. |
+
+### D-025 — Dynamic candidate selection from persisted audition runs
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | C |
+| Context | Audition comparison must be authentic and computed, not predetermined or hardcoded. |
+| Decision | The Team Compiler dynamically ranks and selects candidates based on persisted `EvaluationRun` data. Candidate C is not predetermined to win; Candidates A, B or C must each be capable of winning depending on measured pass rate, latency, cost, and buyer constraint weights. Example values (10/10 checks, ₹10,000 cost) are labelled illustrative. |
+| Alternatives | Hardcoded candidate selection; heuristic scoring without persisted test run. |
+| Consequences | Falsifiable compiler engine; authentic judge demonstration; requires persisting evaluation run fixtures. |
+| Revisit | Additional ranking algorithms post-hackathon. |
+
+### D-026 — Workload rebalancing and Team A capacity buffer
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint |
+| Context | Initial task estimates totalled 4,080 minutes, leaving Team A with only 10 minutes of buffer across 24 hours. |
+| Decision | Rebalance core planned workload to 3,425 person-minutes across the three developers (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). This leaves 895 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Move cosmetic polish and nonessential export wiring (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) to optional scope (110m total). |
+| Alternatives | Cut core economic/trust features; keep 4,080m plan and risk integration failure. |
+| Consequences | Ample integration buffer; Team A capacity deficit resolved; all critical-path features preserved. |
+| Revisit | At each phase gate checkpoint. |
+
+### D-027 — Prevention of duplicate earnings during retries and fallback replacements
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | B/C |
+| Context | Retrying a failed stage or replacing an agent must not double-bill the buyer or credit duplicate earnings to the builder. |
+| Decision | Enforce a database constraint `@@unique([executionId, stageId])` on `ContributionRecord`. Failed stages (e.g. Reconciliation v1.0.0) earn amountPaise = 0 with status `ZERO_ALLOCATION_STAGE_FAILED`. Only the accepted replacement (Reconciliation v1.1.0) earns the stage allocation (₹2,500). Total allocations reconcile exactly to ₹10,000 (builder ₹5,500 + platform fee ₹2,500 + reserves ₹2,000). |
+| Alternatives | Allow append-only multiple payouts and sum later; let UI suppress duplicate lines. |
+| Consequences | Bulletproof financial ledger invariant; auditable arithmetic; prevents accounting bugs. |
+| Revisit | Multi-attempt cost-plus pricing post-hackathon. |
 
 ---
 

@@ -176,11 +176,11 @@ The seed is created by `prisma/seed.ts` using `upsert` with fixed IDs. It must b
 
 | Version ID | Agent | Capabilities | Price | Status | Visible | Fallback |
 |---|---|---|---:|---|---|---|
-| `av-evidence-reader-100` | Evidence Reader v1.0.0 | extraction | ₹1,500 (`200000` paise) | ACTIVE | yes | — |
-| `av-reconciliation-100` | Reconciliation Specialist v1.0.0 | reconciliation | ₹2,500 (`250000` paise) | ACTIVE | yes | `av-reconciliation-110` |
-| `av-reconciliation-110` | Reconciliation Specialist v1.1.0 | reconciliation | ₹2,500 (`250000` paise) | ACTIVE | yes | — |
-| `av-exception-reporter-100` | Exception Reporter v1.0.0 | reporting | ₹1,000 (`100000` paise) | ACTIVE | yes | — |
-| `baseline-single-agent` | Evaluation baseline | all worker capabilities | hidden | ACTIVE | **no** | — |
+| `av-evidence-reader-100` | Evidence Reader v1.0.0 | extraction | ₹2,000 (`200000` paise) | ACTIVE | yes | — (Hybrid: model-backed + deterministic fallback) |
+| `av-reconciliation-100` | Reconciliation Specialist v1.0.0 | reconciliation | ₹2,500 (`250000` paise) | ACTIVE | yes | `av-reconciliation-110` (Deterministic rules) |
+| `av-reconciliation-110` | Reconciliation Specialist v1.1.0 | reconciliation | ₹2,500 (`250000` paise) | ACTIVE | yes | — (Deterministic fallback) |
+| `av-exception-reporter-100` | Exception Reporter v1.0.0 | reporting | ₹1,000 (`100000` paise) | ACTIVE | yes | — (Deterministic rules) |
+| `baseline-single-agent` | Evaluation baseline | all worker capabilities | hidden | ACTIVE | **no** | — (Evaluation baseline — not for hire) |
 
 The baseline has `runtime.registryVisible=false`, `registryVisible=false` and `isSeeded=true`. It is not a Jordan Lee listing and must never appear in the marketplace. Its builder reference is `platform-baseline`, clearly labelled “Evaluation baseline — not for hire.”
 
@@ -200,9 +200,11 @@ The verifier (`sys-proofhire-verifier-v1`) is **not** an AgentVersion row.
 | Deadline | seeded demo deadline, not a real contractual date |
 | Risk | MEDIUM |
 | Contract | `contract-wh-204-v1`, version 1 |
-| Expected | received 10, discrepancy 2, status `EXCEPTION_REQUIRES_REVIEW`, commit `BLOCKED_PENDING_APPROVAL` |
+| Expected separate fields | `expectedQuantity: 12`, `invoicedQuantity: 12`, `scannedQuantity: 10`, `discrepancyQuantity: 2` |
+| Expected status | `status: EXCEPTION_REQUIRES_REVIEW`, `inventoryCommit: BLOCKED_PENDING_APPROVAL` |
+| Inventory invariant | Initial simulated on-hand 42 → preserved 42 → 42 pending approval |
 
-The scan fixture must produce exactly ten units. Do not seed `reportedQuantity: 12`; the physical evidence is authoritative.
+The scan fixture must produce exactly ten units. Explicit separate fields are enforced. The physical evidence is authoritative.
 
 ### 5.6 Inventory ledger
 

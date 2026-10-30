@@ -93,7 +93,9 @@ Root `README.md` was replaced with a documentation pointer. It is not applicatio
 | A tasks | 40 | 40 | PASS |
 | B tasks | 34 | 34 | PASS |
 | C tasks | 34 | 34 | PASS |
-| Estimated minutes | 4,080 | 4,080 | PASS |
+| Total estimated minutes | 3,535 | 3,535 | PASS |
+| Core estimated minutes | 3,425 | 3,425 | PASS |
+| Integration buffer | 895 | 895 | PASS |
 | P0 tasks | 9 | 9 | PASS |
 | P1 tasks | 10 | 10 | PASS |
 | P2 tasks | 13 | 13 | PASS |
@@ -114,8 +116,8 @@ Root `README.md` was replaced with a documentation pointer. It is not applicatio
 | Self-dependencies | None |
 | Unresolved dependencies | None |
 | DROPPED rows with minutes > 0 | None |
-| Deferred rows present | `P5-A-005`, `P7-B-004` |
-| Optional rows present | `P3-A-006`, `P6-A-005`, `P7-A-004`, `P8-C-004` |
+| Deferred rows present | `P5-A-005`, `P7-B-004` (0 min) |
+| Optional rows present | 5 (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`: 110 min) |
 | Every CSV ID appears in Markdown | Yes (108/108) |
 | Unique IDs in Markdown vs CSV | 108 vs 108 |
 | Pre-marked done | None |
@@ -159,15 +161,21 @@ The package consistently states implementation has not started. No task is marke
 - Three permanent workstreams A/B/C; no Team D. **PASS.**
 - QA/integration/demo ops distributed across A/B/C and joint gates. **PASS.**
 
-### 5.3 Capacity
+### 5.3 Capacity and buffer audit
 
-| Phase | A | B | C | Window | Finding |
+| Phase | A core (tot) | B core (tot) | C core (tot) | Window | Capacity Finding |
 |---|---:|---:|---:|---:|---|
-| P3 | 245 | 220 | 240 | 240 | A over by 5m before optional |
-| P6 | 145 | 115 | 120 | 120 | A over by 25m before optional |
-| P7 | 135 | 95 | 100 | 120 | A over by 15m before optional |
+| P0 | 55 (55) | 55 (55) | 55 (55) | 60 | PASS (5m buffer) |
+| P1 | 160 (160) | 145 (145) | 140 (140) | 180 | PASS (20–40m buffer) |
+| P2 | 160 (160) | 160 (160) | 150 (150) | 180 | PASS (20–30m buffer) |
+| P3 | 190 (215) | 195 (195) | 200 (200) | 240 | PASS (25–50m buffer; dynamic selection) |
+| P4 | 160 (160) | 170 (170) | 180 (180) | 240 | PASS (60–80m buffer for recovery) |
+| P5 | 120 (140) | 130 (130) | 150 (150) | 180 | PASS (30–60m buffer; tamper-evident receipt) |
+| P6 | 105 (125) | 110 (110) | 105 (105) | 120 | PASS (10–15m core buffer; duplicate prevention) |
+| P7 | 100 (120) | 85 (85) | 85 (85) | 120 | PASS (20–35m buffer; no-mock integration) |
+| P8 | 95 (95) | 90 (90) | 75 (100) | 120 | PASS (20–45m buffer for rehearsals) |
 
-Documented in `02`, `03`, `05`, `15`. Optional tasks are explicit cut candidates. **Condition accepted:** A must cut optional polish early; the core demo path is not affected.
+**Result:** PASS. Core workload is rebalanced to 3,425 minutes across the team (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). Every workstream operates within its timebox in all 9 phases, leaving 895 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Team A capacity deficit is completely resolved.
 
 ---
 
@@ -306,15 +314,18 @@ No affirmative claim of a real payment, live warehouse integration, certified se
 | # | Finding | Severity | Resolution |
 |---|---|---|---|
 | F-01 | Tracker and CSV counts could diverge if one is edited alone | Medium | `05` and `06` define Markdown as canonical and require joint updates/regeneration. |
-| F-02 | A workstream exceeds P3/P6/P7 windows before optional work | Medium | Documented; optional tasks are explicit cuts; core path protected. |
-| F-03 | Verification wording risk: blocked inventory could be misread as a failed check | Medium | Clarified in `11` and `14`: AC-04/AC-06 pass because the control works; the receipt separately carries `VERIFIED_PENDING_HUMAN_APPROVAL`. |
+| F-02 | Initial workload left Team A with only 10m buffer | High (Capacity) | **Resolved:** Workload rebalanced to 3,425 core minutes (Team A: 1,145m, Team B: 1,140m, Team C: 1,140m), creating 895m (~15h) team integration buffer. Decisions `D-014` and `D-026`. |
+| F-03 | Receipt immutability claims overreached | Medium | **Resolved:** Replaced with tamper-evident, hash-verified receipt terminology; documented SHA-256 limitations (payload integrity vs physical truth vs non-repudiation). Decision `D-021`. |
 | F-04 | Stack and contracts are proposed, not implemented | High (honesty) | Marked `PROPOSED — FREEZE AT P0` throughout; inventory confirms no code exists. |
 | F-05 | Blueprint names a different file (`ProofHire_Final_Solution_Blueprint.md`) | Low | `01` records C-01 and `D-008`: `BLUEPRINT.md` is canonical; no duplicate. |
 | F-06 | Blueprint suggests Postgres; repo has no Postgres | Medium | `D-002`: SQLite for demo, Postgres-compatible target. |
 | F-07 | Blueprint's builder cast differs from the single-builder demo | Medium | `01` C-03/C-04 and `D-009`/`D-011`: one builder, four versions, platform functions. |
 | F-08 | Deferred features could leak into navigation | Medium | `09` route list and `D-019` prohibit them; tracker marks `P5-A-005`/`P7-B-004` dropped. |
-| F-09 | Task estimates include optional work | Low | Counts separate 4,080 total from 3,970 core; cut order defined. |
+| F-09 | Task estimates include optional work | Low | Counts separate 3,535 total from 3,425 core (110m optional scope); cut order defined. |
 | F-10 | No implementation means no runtime evidence yet | Expected | Every gate requires future evidence; no gate is marked passed. |
+| F-11 | Candidate C selection appeared preordained | Medium | **Resolved:** Dynamic selection algorithm specified; Candidate A, B or C can qualify; example 10/10 and ₹10,000 are illustrative. Decision `D-025`. |
+| F-12 | Adapter authenticity was ambiguous | Medium | **Resolved:** Hybrid adapter architecture defined: Evidence Reader is model-backed with deterministic fallback; Reconciliation is deterministic rules; no false AI claims. Decision `D-003`. |
+| F-13 | Duplicate earnings risk on retries/fallbacks | Medium | **Resolved:** `ContributionRecord` enforces `@@unique([executionId, stageId])`; failed v1.0.0 receives ₹0; replacement v1.1.0 receives ₹2,500; total reconciles to ₹10,000. Decision `D-027`. |
 
 No contradictory core value (10/2, 42/10/2, ₹10,000/₹5,500/₹2,500, v1.0.0 ₹0, v1.1.0 ₹2,500) was found.
 
@@ -338,7 +349,7 @@ Those are implementation and validation tasks in P0–P8 and post-hackathon expe
 
 ## 12. Conditions for implementation start
 
-1. Review and accept `D-001`…`D-024` at P0.
+1. Review and accept `D-001`…`D-027` at P0.
 2. Commit `BLUEPRINT.md` so every teammate sees the same source.
 3. Verify Node 22/npm 10 and the proposed dependency versions install cleanly.
 4. Freeze contracts in `07` and sign `P0-C-003`.
@@ -359,12 +370,23 @@ If any condition fails, record a decision and update the affected documents befo
 - [x] Counts match: 108 total, 0 done, 2 dropped, 106 actionable, 46 critical.
 - [x] Phase counts match: 9/10/13/15/12/13/13/11/12.
 - [x] Workstream counts match: 40/34/34.
-- [x] Minutes match: 4,080 total, 3,970 core.
+- [x] Minutes match: 3,535 total, 3,425 core (895m integration buffer).
+- [x] Team A rebalanced: 1,145m core, leaving ~295m buffer.
 - [x] Phase windows sum to 1,440 minutes.
 - [x] P0–P8 have gates, prototypes, 18 fields and tags.
 - [x] Three permanent workstreams; no Team D.
 - [x] Blueprint core features covered; deviations documented.
-- [x] Demo economic loop present and arithmetically consistent.
+- [x] Demo economic loop present and arithmetically consistent (₹10,000 exact).
+- [x] Seeded/simulated/deferred labels present.
+- [x] Dynamic candidate selection documented (A, B or C can qualify).
+- [x] Hybrid adapter architecture defined with deterministic fallbacks.
+- [x] Inventory invariant 42 → 42 and separate quantity fields documented.
+- [x] Tamper-evident receipt terminology and SHA-256 limitations explained.
+- [x] No-mock integration gate (P7) clearly defined.
+- [x] Duplicate earnings prevention enforced on stage retries/replacements.
+- [x] No application source, package, dependency or migration changed.
+- [x] No task is falsely marked done.
+- [x] Implementation status is stated honestly.
 - [x] Seeded/simulated/deferred labels present.
 - [x] No application source, package, dependency or migration changed.
 - [x] No task is falsely marked done.

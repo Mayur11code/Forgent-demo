@@ -264,11 +264,11 @@ Exactly three candidates are generated for WH-204.
 
 | Stage | Kind | Implementation |
 |---|---|---|
-| `stage-evidence-read` | `AGENT` | Evidence Reader v1.0.0 |
-| `stage-reconcile` | `AGENT` | Reconciliation v1.0.0; fallback v1.1.0 |
-| `stage-policy-check` | `DETERMINISTIC` | `fn-policy-check-v1` |
-| `stage-exception-report` | `AGENT` | Exception Reporter v1.0.0 |
-| `stage-propose-inventory` | `DETERMINISTIC` | `fn-inventory-proposal-v1` |
+| `stage-evidence-read` | `AGENT (HYBRID)` | Evidence Reader v1.0.0 (model-backed with deterministic fallback) |
+| `stage-reconcile` | `AGENT (DETERMINISTIC)` | Reconciliation v1.0.0; fallback v1.1.0 |
+| `stage-policy-check` | `DETERMINISTIC` | `fn-policy-check-v1` (Platform-owned) |
+| `stage-exception-report` | `AGENT (DETERMINISTIC)` | Exception Reporter v1.0.0 |
+| `stage-propose-inventory` | `DETERMINISTIC` | `fn-inventory-proposal-v1` (Platform-owned, 42 → 42 invariant) |
 | `stage-human-approval` | `HUMAN_APPROVAL` | Buyer checkpoint |
 
 Edges are dependency-ordered and acyclic:
@@ -415,13 +415,20 @@ Rank by:
 
 If no candidate survives, return a typed capability gap or `NO_QUALIFIED_CANDIDATE`; do not select the least-bad failure.
 
-### 9.3 WH-204 selection
+### 9.3 Dynamic selection principle and WH-204 outcome
 
-| Candidate | Decision | Persisted reason |
+Selection is computed dynamically from persisted `EvaluationRun` records and buyer contract constraints. **Candidate C is not predetermined to win; Candidates A, B or C must each be able to qualify depending on measured audition results and buyer weights**:
+- **Candidate A** can win if the buyer relaxes physical receiving assertions and prioritizes minimal cost and single-stage latency.
+- **Candidate B** can win if recovery readiness is made optional and the buyer selects for a monolithic specialist pipeline.
+- **Candidate C** qualifies and wins in the standard WH-204 baseline run because Northstar strictly requires physical quantity verification and recovery readiness (declared compatible fallback).
+
+All demo figures (such as 10/10 fixture pass rate and ₹10,000 work-order cost) are **illustrative example metrics** derived from persisted audition runs, not hardcoded values.
+
+| Candidate | Baseline Run Decision | Persisted reason |
 |---|---|---|
 | A | Rejected | `CRITICAL_ASSERTION_FAILED`: physical received quantity incorrect (12 vs 10); no recovery. |
 | B | Rejected | `NO_RECOVERY_PATH`: no compatible fallback for reconciliation; critical recovery readiness failed. |
-| C | **Selected** | Passes all critical checks; compatible v1.1.0 fallback; within budget and deadline. |
+| C | **Selected (Baseline Run)** | Passes all critical checks; compatible v1.1.0 fallback; within budget and deadline. |
 
 ### 9.4 Selection payload
 

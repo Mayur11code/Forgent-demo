@@ -77,27 +77,27 @@
 | Response | Restore seed; audit event; fix the guard; re-run review/commit tests |
 | Residual | Low |
 
-### R-06 — Demo relies on an external service
+### R-06 — Demo relies on an external service or LLM outage
 
 | Field | Detail |
 |---|---|
-| Likelihood / impact | L / 5 |
+| Likelihood / impact | L / 4 |
 | Owner | C |
-| Trigger | LLM call, model API, external DB, payment provider on the critical path |
-| Mitigation | Deterministic adapters; SQLite; no API keys; offline rehearsal |
-| Response | Remove the dependency or label a recorded fallback; never claim live |
-| Residual | Low by design |
+| Trigger | Model API timeout, quota exhaustion, network disconnect during live demo |
+| Mitigation | Hybrid adapter architecture: Evidence Reader calls LLM if `GEMINI_API_KEY`/`OPENAI_API_KEY` exists, falling back automatically to local deterministic extraction on timeout/error; Reconciliation and Verifier are deterministic rules; SQLite database |
+| Response | Automatic fallback engages with `executionMode: "DETERMINISTIC_FALLBACK"`; demo continues without interruption; offline rehearsal verified |
+| Residual | Low by architecture |
 
-### R-07 — A UI capacity overrun (P3/P6/P7)
+### R-07 — UI capacity overrun
 
 | Field | Detail |
 |---|---|
-| Likelihood / impact | H / 3 |
+| Likelihood / impact | L / 2 (Reduced from H/3) |
 | Owner | A |
-| Trigger | A estimated 245/145/135 minutes against 240/120/120 windows |
-| Mitigation | Optional tasks excluded; mocks early; reuse primitives; cut chart/motion polish |
-| Response | Cut `P3-A-006`, `P6-A-005`, `P7-A-004`; reduce secondary screens; protect the demo path |
-| Residual | High unless cuts are made early |
+| Trigger | Complex layout or secondary chart polish consuming integration time |
+| Mitigation | Workload rebalanced: core work reduced to 3,425 minutes across team (Team A core: 1,145m, Team B core: 1,140m, Team C core: 1,140m). 895 minutes (~15h) team buffer created. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) are explicit cuts |
+| Response | Drop optional tasks; reuse core primitives; protect the core demo critical path |
+| Residual | Low |
 
 ### R-08 — Late integration reveals shape mismatches
 

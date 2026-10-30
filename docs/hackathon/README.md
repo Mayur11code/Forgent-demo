@@ -26,12 +26,12 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | Buyer | Northstar Warehouse (seeded) |
 | Builder | Jordan Lee / Demo Agent Studio (seeded) |
 | Job | WH-204, starts `CONTRACT_READY` |
-| Evidence | PO 12 / invoice 12 / physical scan 10 |
-| Result | 10 received, 2 discrepancy, `EXCEPTION_REQUIRES_REVIEW` |
+| Evidence | Expected PO: 12 / Invoiced: 12 / Scanned Receiving: 10 |
+| Result | Scanned: 10, Discrepancy: 2, `EXCEPTION_REQUIRES_REVIEW` |
 | Failure | Reconciliation v1.0.0 → `AGENT_SCHEMA_INVALID` |
 | Recovery | v1.1.0 replaces it; downstream reruns |
-| Verification | 10 checks pass; receipt hash; `VERIFIED_PENDING_HUMAN_APPROVAL` |
-| Inventory | 42 → 42, pending 10, variance 2, commit `BLOCKED_PENDING_APPROVAL` |
+| Verification | 10 checks pass; tamper-evident receipt hash; `VERIFIED_PENDING_HUMAN_APPROVAL` |
+| Inventory | 42 → 42 (unchanged on-hand invariant), pending 10, variance 2, commit `BLOCKED_PENDING_APPROVAL` |
 | Economics | Buyer ₹10,000; builder ₹5,500; platform fee ₹2,500; reserves ₹1,200/₹800 |
 | Payout | v1.0.0 ₹0; v1.1.0 ₹2,500; `ELIGIBLE_SIMULATED`; no real money moves |
 
@@ -97,16 +97,18 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | DONE | 0 |
 | Actionable remaining | 106 |
 | Dropped/deferred | 2 (`P5-A-005`, `P7-B-004`) |
+| Optional scope | 5 (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) |
 | Critical path | 46 |
-| A tasks | 40 |
-| B tasks | 34 |
-| C tasks | 34 |
-| Total estimated minutes | 4,080 |
-| Core (non-optional) minutes | 3,970 |
+| A tasks | 40 (1,145m core / 1,230m total) |
+| B tasks | 34 (1,140m core / 1,140m total) |
+| C tasks | 34 (1,140m core / 1,165m total) |
+| Total estimated minutes | 3,535 |
+| Core (non-optional) minutes | 3,425 |
+| Total team integration buffer | 895 minutes (~21% buffer) |
 
 Per phase: P0 9 · P1 10 · P2 13 · P3 15 · P4 12 · P5 13 · P6 13 · P7 11 · P8 12.
 
-**Capacity warnings:** A is over its window in P3 (245 vs 240), P6 (145 vs 120) and P7 (135 vs 120) before optional work. Optional tasks are the first cut.
+**Capacity rebalancing:** Core planned workload is reduced to 3,425 person-minutes, leaving 895 minutes (~15 person-hours) of team buffer. Team A has been fully rebalanced to 1,145 core minutes (leaving ~295 minutes of capacity buffer). All workstreams operate strictly within their phase windows in P0–P8.
 
 ---
 
@@ -144,15 +146,17 @@ A phase is complete only when its gate passes, its prototype is usable and its t
 
 | Category | Label | Reality |
 |---|---|---|
-| Northstar, Jordan Lee, agent versions | `Seeded demo data` | Pre-created fixtures |
-| ₹ amounts | `Simulated` | No money moves |
-| Settlement | `Eligible (simulated)` | No provider; `provider: null` |
-| Inventory | `Simulated inventory ledger` | No warehouse mutation |
-| Auditions | `Measured on wh204-suite-v1` | Deterministic local run |
-| Reputation | `Derived from demo evidence` | Not a public rating |
-| Verification | `Independent deterministic verifier` | Not an agent claim |
+| Northstar, Jordan Lee, agent versions | `Seeded demo data` | Pre-created demo fixtures in Studio |
+| Adapters | `Hybrid model-backed` / `Deterministic rules` | Evidence Reader can call LLM with deterministic fallback; Reconciliation is deterministic rules |
+| ₹ amounts | `Simulated` | Illustrative pricing; no money moves |
+| Settlement | `Eligible (simulated)` | No external provider; `provider: null` |
+| Inventory | `Simulated inventory ledger` | 42 → 42 on-hand invariant; commit blocked |
+| Auditions | `Measured on wh204-suite-v1` | Dynamic selection computed from persisted runs; Candidate A, B or C can win |
+| Reputation | `Derived from demo evidence` | Derived from audition/execution stats, not public ratings |
+| Verification | `Independent deterministic verifier` | Platform-owned oracle, not an agent claim |
+| No-mock gate (P7) | `Live Next.js API & SQLite persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
 
-**Never claim:** real payment, live inventory, production auth, public demand, certified compliance or guaranteed earnings.
+**Never claim:** real payment, live inventory mutation, production auth, public demand, certified compliance, guaranteed earnings, or that hardcoded logic is an autonomous third-party AI.
 
 ---
 

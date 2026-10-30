@@ -53,7 +53,7 @@ Descriptions contain commas, currency symbols, arrows and semicolons. Quoting ev
 | Query | Expected |
 |---|---:|
 | Data rows | 108 |
-| `Status = NOT_STARTED` | 104 |
+| `Status = NOT_STARTED` | 106 |
 | `Status = DROPPED` | 2 |
 | `Status = DONE` | 0 |
 | `CriticalPath = YES` | 46 |
@@ -61,15 +61,16 @@ Descriptions contain commas, currency symbols, arrows and semicolons. Quoting ev
 | `Workstream = B` | 34 |
 | `Workstream = C` | 34 |
 | `Priority = P0` | 78 |
-| `Priority = P1` | 24 |
-| `Priority = P2` | 4 |
+| `Priority = P1` | 23 |
+| `Priority = P2` | 5 |
 | `Priority = P3` | 2 |
-| Sum `EstimatedMinutes` | 4080 |
-| Core minutes (non-optional) | 3970 |
+| Sum `EstimatedMinutes` | 3535 |
+| Core minutes (non-optional) | 3425 |
+| Integration buffer | 895 |
 
 Per phase: P0 9, P1 10, P2 13, P3 15, P4 12, P5 13, P6 13, P7 11, P8 12.
 
-> The two `DROPPED` rows (`P5-A-005`, `P7-B-004`) are included in the 108 and carry `EstimatedMinutes = 0`. Four optional rows remain `NOT_STARTED` and are scope-cut candidates.
+> The two `DROPPED` rows (`P5-A-005`, `P7-B-004`) are included in the 108 and carry `EstimatedMinutes = 0`. Five optional rows (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) carry 110 minutes total and remain scope-cut candidates.
 
 ---
 
@@ -100,7 +101,7 @@ $rows.Count                                      # 108
 $rows | Group-Object Phase | Select-Object Name, Count
 $rows | Group-Object Workstream | Select-Object Name, Count
 $rows | Group-Object Priority | Select-Object Name, Count
-($rows | Measure-Object -Property EstimatedMinutes -Sum).Sum # 4080
+($rows | Measure-Object -Property EstimatedMinutes -Sum).Sum # 3535 (Core: 3425)
 ```
 
 ### 5.2 Structural checks
@@ -114,7 +115,7 @@ $rows | Group-Object Priority | Select-Object Name, Count
 7. No self-dependency; no cycle.
 8. Every `DROPPED` row has `EstimatedMinutes = 0` and a reason in the Markdown register.
 9. Phase/workstream counts match the Markdown Summary.
-10. Total minutes match 4080.
+10. Total minutes match 3535 (3425 core).
 
 ### 5.3 Filter examples
 

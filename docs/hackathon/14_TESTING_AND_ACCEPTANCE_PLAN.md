@@ -51,7 +51,7 @@ ProofHire is a trust product. Tests must prove not only that the happy path work
 | Failure injection | Default fails; clean does not; raw output preserved |
 | Recovery | Compatibility checks; replacement; downstream invalidation; limits |
 | Verifier | Ten positive checks; five negative cases; registry isolation |
-| State diff | 42/10/2; no mutation |
+| State diff | Invariant 42 → 42; pending 10; variance 2; separate fields: expectedQuantity (12), invoicedQuantity (12), scannedQuantity (10), discrepancyQuantity (2) |
 | Receipt | Canonical JSON; stable SHA-256; independent recomputation |
 | Attribution | v1.0.0 ₹0; v1.1.0 ₹2,500; total ₹5,500 |
 | Settlement | `ELIGIBLE_SIMULATED`; provider null; replay idempotent |
@@ -181,7 +181,8 @@ Nine required cases at P8:
 | N-06 | Unauthorized action | 403; audit event; state unchanged |
 | N-07 | Failed replacement | `FAILED_SAFE`; no receipt/payout |
 | N-08 | False agent success | Verifier fails; no acceptance |
-| N-09 | Retry causing duplicate payout | One contribution; stable total |
+| N-09 | Retry causing duplicate payout | One contribution per (executionId, stageId); stable total |
+| N-10 | Dynamic candidate selection | When candidate scores vary or buyer constraints relax, Candidate A or B is correctly selected by the algorithm (Candidate C is not hardcoded) |
 
 Additional verifier negatives (P5-C-003): wrong quantity, missing scan, unsupported commit, contradiction, false success.
 

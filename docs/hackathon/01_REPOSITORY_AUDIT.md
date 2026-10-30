@@ -96,8 +96,8 @@ There is therefore **no pre-existing technology stack to preserve**. The stack i
 | Execution | In-process Node orchestrator behind Next.js route handlers, with persisted stage/event records and client polling | Reliable on a demo laptop; no queue/worker infrastructure. |
 | Auth | Demo persona cookie and server-side role guard | Enough to demonstrate buyer vs builder permissions; **not** real authentication. |
 | Payments | None. Simulated eligibility only | The blueprint prohibits claiming real settlement without a provider. |
-| Inventory | Simulated local ledger | No real warehouse mutation. |
-| LLM | None required for the critical path. Optional prose summaries only. | Deterministic demo, no API-key or latency risk. |
+| Inventory | Simulated local ledger | 42 → 42 on-hand invariant; commit blocked until human approval. |
+| LLM / Adapters | Hybrid adapter architecture: Evidence Reader is model-backed (Gemini/OpenAI via API key) with deterministic fallback; Reconciliation and Verifier are deterministic rules. | Provides authentic AI execution while guaranteeing zero-failure offline demo resilience. |
 
 ### Why SQLite instead of PostgreSQL
 
@@ -197,6 +197,7 @@ No secret, real payment key, warehouse credential or model API key is required f
 | C-08 | Blueprint says 8–12 test cases; the plan must be concrete. | Ten fixtures: eight visible, two held-out, versioned `wh204-suite-v1`. Decision `D-015`. |
 | C-09 | Blueprint warns that an agent saying "Done" is not proof; the demo needs an independent verifier. | Verifier is a deterministic module owned by ProofHire, excluded from the agent registry and marketplace. |
 | C-10 | No task tracker, roadmap or docs exist. | This package creates them under `docs/hackathon/`; `TASK_TRACKER.md` is canonical. |
+| C-11 | Blueprint mentions workflow selection; previous draft implied Candidate C was predetermined. | Dynamic selection algorithm implemented: selection is computed from persisted audition runs; Candidate A, B or C can qualify; example 10/10 and ₹10,000 are illustrative. Decision `D-025`. |
 
 No existing user work is overwritten. The only pre-existing files are preserved.
 

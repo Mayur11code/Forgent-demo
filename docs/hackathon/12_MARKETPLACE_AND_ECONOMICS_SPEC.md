@@ -79,13 +79,13 @@ DRAFT → ACTIVE → PAUSED → RETIRED
 
 ### 2.3 Seeded supply
 
-| Version | Capability | Price | Latency | Fallback | Visible |
-|---|---|---:|---:|---|---|
-| Evidence Reader v1.0.0 | extraction | ₹1,500 | 900 ms | — | Yes |
-| Reconciliation v1.0.0 | reconciliation | ₹2,500 | 1,200 ms | v1.1.0 | Yes |
-| Reconciliation v1.1.0 | reconciliation | ₹2,500 | 1,100 ms | — | Yes |
-| Exception Reporter v1.0.0 | reporting | ₹1,000 | 700 ms | — | Yes |
-| Single-agent baseline | all worker capabilities | ₹3,000 | 2,500 ms | — | **No** |
+| Version | Capability | Price | Latency | Fallback | Visible | Runtime Provider |
+|---|---|---:|---:|---|---|---|
+| Evidence Reader v1.0.0 | extraction | ₹2,000 | 900 ms | — | Yes | Hybrid (Model-backed + deterministic fallback) |
+| Reconciliation v1.0.0 | reconciliation | ₹2,500 | 1,200 ms | v1.1.0 | Yes | Deterministic rules engine |
+| Reconciliation v1.1.0 | reconciliation | ₹2,500 | 1,100 ms | — | Yes | Deterministic fallback |
+| Exception Reporter v1.0.0 | reporting | ₹1,000 | 700 ms | — | Yes | Deterministic business logic |
+| Single-agent baseline | all worker capabilities | ₹3,000 | 2,500 ms | — | **No** | Baseline evaluation agent |
 
 Platform functions (policy, inventory proposal, human approval) are not listings and cannot be hired.
 
@@ -105,8 +105,8 @@ The demo prices work per accepted stage, not per token, seat or subscription.
 
 | Stage | Payee | Amount |
 |---|---|---:|
-| Evidence extraction | Jordan Lee / Evidence Reader | ₹1,500 |
-| Reconciliation | Jordan Lee / accepted version | ₹2,500 |
+| Evidence extraction | Jordan Lee / Evidence Reader (Hybrid) | ₹2,000 |
+| Reconciliation | Jordan Lee / accepted version (v1.1.0) | ₹2,500 |
 | Policy validation | ProofHire platform function | no builder payout |
 | Exception reporting | Jordan Lee / Exception Reporter | ₹1,000 |
 | Inventory proposal | ProofHire platform function | no builder payout |
@@ -134,7 +134,7 @@ Builder subtotal: **₹5,500**.
 
 | Component | Amount (₹) | Amount (paise) | Recipient / purpose |
 |---|---:|---:|---|
-| Evidence extraction | 1,500 | 200,000 | Builder |
+| Evidence extraction | 2,000 | 200,000 | Builder |
 | Reconciliation | 2,500 | 250,000 | Builder (accepted version only) |
 | Exception reporting | 1,000 | 100,000 | Builder |
 | **Builder subtotal** | **5,500** | **550,000** | Jordan Lee |
@@ -187,7 +187,7 @@ No floating point. Every allocation is an integer.
 
 | Stage | Accepted implementation | Amount | Status | Reason |
 |---|---|---:|---|---|
-| Evidence read | `av-evidence-reader-100` | ₹1,500 | `ELIGIBLE_SIMULATED` | Accepted output |
+| Evidence read | `av-evidence-reader-100` | ₹2,000 | `ELIGIBLE_SIMULATED` | Accepted output |
 | Reconciliation attempt 1 | `av-reconciliation-100` | ₹0 | `VOID` | `REPLACED_BEFORE_ACCEPTED_OUTPUT` |
 | Reconciliation attempt 2 | `av-reconciliation-110` | ₹2,500 | `ELIGIBLE_SIMULATED` | Accepted output |
 | Policy check | `fn-policy-check-v1` | ₹0 builder | — | Platform function |
