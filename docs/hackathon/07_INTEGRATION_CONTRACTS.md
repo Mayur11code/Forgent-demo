@@ -22,11 +22,11 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 | Contract | Why approval is needed | Decision |
 |---|---|---|
 | Next.js single-app architecture | Determines repository layout and API transport | `D-001` |
-| SQLite + Prisma for the demo | Differs from the blueprint's PostgreSQL suggestion | `D-002` |
-| Deterministic adapters, no LLM dependency | Determines reliability and what the demo proves | `D-003` |
+| Neon PostgreSQL + Prisma 7 for serverless runtime | Fully aligns with the blueprint's PostgreSQL requirement via Neon serverless adapter | `D-002` |
+| Hybrid adapter architecture with deterministic fallback | Real model-backed Evidence Reader with deterministic fallback and local Reconciliation rules | `D-003` |
 | Demo persona cookie instead of real auth | Security boundary is intentionally limited | `D-004` |
-| Polling runtime instead of queues/websockets | Execution visibility and server model | `D-005` |
-| JSON-as-text and enum-as-string on SQLite | Persistence implementation | `D-006`, `D-007` |
+| QStash durable step webhooks and polling API | Durable async execution in serverless environment with frontend polling | `D-005` |
+| Native Json/jsonb and Prisma 7 string enums on Neon PostgreSQL | Persistence implementation on Neon PostgreSQL | `D-006`, `D-007` |
 | Platform-owned policy/inventory/verification capabilities | Avoids falsely presenting ProofHire code as a freelancer agent | `D-009` |
 | Evaluation-only single-agent baseline | Fair three-way comparison without a fake listing | `D-010` |
 | ₹10,000 allocation and 25% platform fee | Commercial demo values, not validated pricing | `D-012` |
@@ -40,8 +40,8 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 - **IDs** are stable strings, not auto-increment integers, for seeded records.
 - **Money** is `amountPaise: number` (integer) and `currency: "INR"`. `₹1 = 100 paise`. Never use floats for money.
 - **Timestamps** are ISO-8601 UTC strings in API payloads; Prisma `DateTime` in storage.
-- **Enums** are uppercase string literals. SQLite stores them as text; Zod validates them.
-- **JSON** fields are stored as text in SQLite and parsed through typed helpers. Never trust stored JSON without validation.
+- **Enums** are uppercase string literals. Neon PostgreSQL stores them as text/VARCHAR with Prisma 7 validation; Zod validates them at runtime.
+- **JSON** fields are stored as native JSON/JSONB in Neon PostgreSQL via Prisma 7 `Json` and parsed through typed Zod helpers. Never trust stored JSON without validation.
 - **Route paths** are lowercase kebab-case. Domain IDs are lowercase kebab-case.
 - **API envelopes** are consistent: `{ data, meta }` for success and `{ error }` for failure.
 - **Idempotency** uses an `Idempotency-Key` header on mutating demo-critical routes.
@@ -713,7 +713,7 @@ The receipt hash is computed over a canonical JSON body with recursively sorted 
 ### Limitations of SHA-256 receipt hashing:
 1. **Payload integrity only:** SHA-256 guarantees that the serialized record has not been altered or corrupted after hash generation.
 2. **Observation vs physical truth:** The hash confirms that the recorded observations (e.g. 10 scanned units, PO 12 units) match what the pipeline processed; it does not and cannot guarantee that external physical reality was not misrepresented upstream (e.g., fraudulent vendor packing or human camera misplacement).
-3. **Storage anchor boundary:** Without distributed ledger consensus or an external public timestamping authority (deferred post-hackathon), local SQLite records rely on platform operating controls to prevent administrator-level row replacements.
+3. **Storage anchor boundary:** Without distributed ledger consensus or an external public timestamping authority (deferred post-hackathon), hosted Neon PostgreSQL records rely on platform operating controls and cryptographically chained SHA-256 hashes to detect row replacements.
 
 ---
 
@@ -855,6 +855,7 @@ All routes are same-origin. The demo session is resolved from the `proofhire_per
 | GET | `/api/jobs/:jobId/work-order` | Work order | buyer/builder |
 | POST | `/api/work-orders/:workOrderId/approve` | Buyer approval | buyer |
 | POST | `/api/jobs/:jobId/executions` | Start/resume execution | buyer |
+| POST | `/api/webhooks/qstash/execution-step` | Durable step progression receiver | QStash signature |
 | GET | `/api/jobs/:jobId/execution` | Poll execution | buyer/builder |
 | GET | `/api/jobs/:jobId/recovery` | Recovery events | buyer/builder |
 | GET | `/api/jobs/:jobId/verification` | Acceptance result | buyer/builder |

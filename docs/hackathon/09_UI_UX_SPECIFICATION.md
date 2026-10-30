@@ -216,7 +216,7 @@ Three columns, horizontally aligned, same row ordering. See §9.
 
 - Header: selected workflow, audition evidence, selected candidate.
 - Participating agents table with version, stage, price, fallback.
-- Allocation table: evidence ₹1,500; reconciliation ₹2,500; exception reporting ₹1,000; builder subtotal ₹5,500; platform fee ₹2,500; execution/recovery reserve ₹1,200; human-review reserve ₹800; total ₹10,000.
+- Allocation table: evidence ₹2,000; reconciliation ₹2,500; exception reporting ₹1,000; builder subtotal ₹5,500; platform fee ₹2,500; execution/recovery reserve ₹1,200; human-review reserve ₹800; total ₹10,000.
 - Terms: acceptance required, inventory commit approval, max 1 retry, max 1 replacement, simulated eligibility.
 - `Approve work order` requires confirmation; disabled for non-buyer; no double approval.
 
@@ -298,7 +298,7 @@ Three columns, horizontally aligned, same row ordering. See §9.
 - Rows: stage, agent version, accepted/replaced, amount, reason, evidence link.
 - v1.0.0 reconciliation: ₹0, `REPLACED_BEFORE_ACCEPTED_OUTPUT`.
 - v1.1.0 reconciliation: ₹2,500, `ACCEPTED_STAGE_OUTPUT`.
-- Evidence Reader ₹1,500; Exception Reporter ₹1,000.
+- Evidence Reader ₹2,000; Exception Reporter ₹1,000.
 - Builder total ₹5,500; state `ELIGIBLE_SIMULATED`.
 - No “Paid” or “Withdraw” action.
 

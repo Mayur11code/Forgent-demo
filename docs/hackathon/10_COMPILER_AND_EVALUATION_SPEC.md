@@ -492,7 +492,7 @@ Idempotency:
 - Contract compiler: WH-204 snapshot; ambiguous job warning; invalid budget.
 - Candidate generator: exactly three; acyclic; ordered; baseline hidden.
 - Assertions: every fixture's expected codes/severities.
-- Selector: A critical failure; B no recovery; C selected; high score cannot override critical.
+- Dynamic Selector: rule-based selection on persisted audition runs; critical failure disqualified; qualifying candidate (A, B, or C eligible) selected dynamically; high score cannot override critical.
 - Gap: four outcomes; no auto-create language.
 
 ### Integration

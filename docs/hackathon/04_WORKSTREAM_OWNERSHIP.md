@@ -60,7 +60,7 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 
 | Area | Owned paths |
 |---|---|
-| Database | `prisma/schema.prisma`, `prisma/migrations/**`, `prisma/seed.ts`, `prisma/dev.db` (ignored) |
+| Database | `prisma/schema.prisma`, `prisma/migrations/**`, `prisma/seed.ts`, Neon connection pooling and direct migration configuration |
 | DB access | `src/server/db.ts`, `src/server/repositories/**` |
 | API handlers | `src/app/api/**` |
 | Services | `src/server/services/**` (orchestration/persistence only; domain rules delegated to C) |

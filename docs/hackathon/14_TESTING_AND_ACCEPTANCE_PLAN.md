@@ -47,7 +47,7 @@ ProofHire is a trust product. Tests must prove not only that the happy path work
 | Contract compiler | WH-204 snapshot; ambiguity; invalid budget/deadline |
 | Candidate generator | Exactly three; acyclic; ordered; baseline hidden |
 | Assertions | Every code/severity for every fixture |
-| Selector | A critical fail; B no recovery; C selected; no qualifier |
+| Selector | Rule-based selection on audition results; critical failure disqualified; qualifying candidate (A, B, or C eligible) selected dynamically; no-qualifier scenario |
 | Failure injection | Default fails; clean does not; raw output preserved |
 | Recovery | Compatibility checks; replacement; downstream invalidation; limits |
 | Verifier | Ten positive checks; five negative cases; registry isolation |
@@ -145,10 +145,10 @@ Precondition: reset; WH-204 `CONTRACT_READY`; 42/0/0 ledger; zero spend/earnings
 | 1 | Open buyer overview | Northstar, WH-204, seeded labels | ☐ |
 | 2 | Open contract | 12/12/10; 10 checks; commit blocked | ☐ |
 | 3 | Compile | Three candidates A/B/C persisted | ☐ |
-| 4 | Audition | Thirty results; 8 visible / 2 held-out; C qualifies | ☐ |
+| 4 | Audition | Thirty results across 10 fixtures; 8 visible / 2 held-out; dynamic qualification | ☐ |
 | 5 | Inspect A | Critical quantity failure | ☐ |
 | 6 | Inspect B | No recovery path | ☐ |
-| 7 | Select | C selected; A/B reasons persisted | ☐ |
+| 7 | Select | Winning candidate dynamically selected from audition scores (A, B, or C eligible); rejection reasons persisted | ☐ |
 | 8 | Work order | ₹10,000; ₹5,500 builder; ₹2,500 fee; ₹1,200/₹800 reserves | ☐ |
 | 9 | Approve | Buyer-only; idempotent; job `APPROVED` | ☐ |
 | 10 | Execute | Six stages; v1.0.0 fails `AGENT_SCHEMA_INVALID` | ☐ |

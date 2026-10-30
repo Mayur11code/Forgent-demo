@@ -84,7 +84,7 @@
 | Likelihood / impact | L / 4 |
 | Owner | C |
 | Trigger | Model API timeout, quota exhaustion, network disconnect during live demo |
-| Mitigation | Hybrid adapter architecture: Evidence Reader calls LLM if `GEMINI_API_KEY`/`OPENAI_API_KEY` exists, falling back automatically to local deterministic extraction on timeout/error; Reconciliation and Verifier are deterministic rules; SQLite database |
+| Mitigation | Hybrid adapter architecture: Evidence Reader calls LLM if `GEMINI_API_KEY`/`OPENAI_API_KEY` exists, falling back automatically to local deterministic extraction on timeout/error; Reconciliation and Verifier are deterministic rules; hosted Neon PostgreSQL database |
 | Response | Automatic fallback engages with `executionMode: "DETERMINISTIC_FALLBACK"`; demo continues without interruption; offline rehearsal verified |
 | Residual | Low by architecture |
 
@@ -121,15 +121,15 @@
 | Response | Restore backup; fix delete order; verify exact counts before rehearsal |
 | Residual | Medium |
 
-### R-10 — SQLite contention or locking
+### R-10 — Serverless connection pool exhaustion or cold start latency
 
 | Field | Detail |
 |---|---|
 | Likelihood / impact | L / 3 |
 | Owner | B |
-| Trigger | Polling + event writes contend; `database is locked` |
-| Mitigation | Single demo user; short transactions; WAL; no parallel runs |
-| Response | Serialize writes; reduce poll frequency; restart; do not add a queue |
+| Trigger | Polling + QStash step webhooks open concurrent database connections exceeding pool limit |
+| Mitigation | Single demo execution; Neon connection pooling via `@prisma/adapter-neon` and `@neondatabase/serverless`; short transactions; tuned polling interval (700ms) |
+| Response | Adjust Neon connection pool size; throttle frontend polling; rely on QStash webhook retry semantics |
 | Residual | Low |
 
 ### R-11 — UI looks generic or unfinished
@@ -173,7 +173,7 @@
 | Owner | B |
 | Trigger | Scripts assume `/`; CRLF breaks generated files |
 | Mitigation | Node `path` APIs; LF via git attributes; PowerShell commands documented |
-| Response | Fix script; rerun reset/seed; do not hand-edit generated SQLite |
+| Response | Fix script; rerun reset/seed; do not hand-edit database state |
 | Residual | Low |
 
 ### R-15 — No real auth creates a role bypass
@@ -312,7 +312,7 @@ Deferred items have no UI affordance. They exist only in the backlog.
 |---|---|---|
 | A-01 | Three developers, three workstreams | Re-plan phases; cut optional and secondary screens |
 | A-02 | Node 22/npm 10 on the demo machine | Install/pin before P0; document |
-| A-03 | One local demo user and one run | Reduce concurrency, keep SQLite |
+| A-03 | One demo user and one run | Serverless pool handles demo workload |
 | A-04 | No external network needed after install | Offline acceptable |
 | A-05 | Desktop/laptop 1280–1440 primary | Tablet is a documented limitation |
 | A-06 | Seeded demand/supply is acceptable if labelled | Demo claim weakens; do not fake volume |

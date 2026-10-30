@@ -29,7 +29,7 @@ Because this repository currently contains **zero application source code, zero 
 │                          │ physical environment factors to be verified at runtime boot (H0/H1).  │
 ├──────────────────────────┼────────────────────────────────────────────────────────────────────────┤
 │ PENDING_IMPLEMENTATION   │ Executable runtime behavior that cannot be proven until application    │
-│                          │ code, SQLite database, and test suites are built in Phases P0–P8.      │
+│                          │ code, Neon PostgreSQL database, and test suites are built in P0–P8.    │
 ├──────────────────────────┼────────────────────────────────────────────────────────────────────────┤
 │ BLOCKED                  │ Fatal architecture contradiction or missing prerequisite that stops    │
 │                          │ implementation. (0 findings).                                          │
@@ -83,8 +83,8 @@ To establish healthy phase margins while preserving dependency ordering and mile
    - *Dependency fix:* [`P3-A-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L410-L420) dependencies updated from `P3-A-002;P3-A-003;P3-B-003;P3-B-004` to `P3-A-002;P3-A-003;P3-B-003`.
    - *Result for Team B in P3:* Core effort reduced from 195m to **155m** (86.1% utilization $\le$ 180m).
 3. **Team C (40m shifted):**
-   - [`P3-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L420-L430) (*Implement candidate ranking and dynamic selection*, 40m) moved from **P3 $\rightarrow$ P4**.
-   - *Cascade adjustments:* In P4, Team C task [`P4-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L540-L550) (*Implement safe execution limits and state invariant*, 40m) moved from **P4 $\rightarrow$ P5**. In P5, task [`P5-C-003`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L620-L630) (*Add negative verifier regression cases*, 35m) moved from **P5 $\rightarrow$ P7** (where regression testing belongs).
+   - [`P3-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L420-L430) (*Implement candidate ranking and dynamic selection*, 30m) moved from **P3 $\rightarrow$ P4**.
+   - *Execution safety and invariant protection:* Task [`P4-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L540-L550) (*Implement safe execution limits and state invariant*, 35m) is scheduled in **Phase P4 before runtime execution**, locking fail-closed resource limits and the 42→42 inventory guard prior to orchestrator execution. In Phase P5, Team C focuses on independent acceptance verification and state-diff audit (`P5-C-001`, `P5-C-002`, `P5-C-004`, 130m total). Task [`P5-C-003`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L620-L630) (*Add negative verifier regression cases*, 35m) moved from **P5 $\rightarrow$ P7** (where full-system regression testing belongs).
    - *Result for Team C in P3:* Core effort reduced from 200m to **160m** (88.9% utilization $\le$ 180m).
 
 ### 2.3 Recalculated Phase-by-Phase Capacity & Utilization Matrix
@@ -97,11 +97,11 @@ $$\text{Phase Developer Capacity} = \text{Window Duration (minutes)} \times 3\te
 | **P1** | H1–H4 | 180m | 180m | 160m (88.9%) | 145m (80.6%) | 140m (77.8%) | 445m | 540m | 82.4% | 0m | ✅ PASS |
 | **P2** | H4–H7 | 180m | 180m | 160m (88.9%) | 160m (88.9%) | 150m (83.3%) | 470m | 540m | 87.0% | 0m | ✅ PASS |
 | **P3** | H7–H10 | 180m | 180m | **160m (88.9%)** | **155m (86.1%)** | **160m (88.9%)** | **475m** | **540m** | **88.0%** | 25m | ✅ **PASS** |
-| **P4** | H10–H13 | 180m | 180m | 160m (88.9%) | 175m (97.2%) | 180m (100.0%) | 515m | 540m | 95.4% | 0m | ✅ PASS |
-| **P5** | H13–H16 | 180m | 180m | 150m (83.3%) | 165m (91.7%) | 155m (86.1%) | 470m | 540m | 87.0% | 20m | ✅ PASS |
+| **P4** | H10–H13 | 180m | 180m | 160m (88.9%) | 175m (97.2%) | **175m (97.2%)** | **510m** | 540m | **94.4%** | 0m | ✅ PASS |
+| **P5** | H13–H16 | 180m | 180m | 150m (83.3%) | 165m (91.7%) | **130m (72.2%)** | **445m** | 540m | **82.4%** | 20m | ✅ PASS |
 | **P6** | H16–H18 | 120m | 120m | 105m (87.5%) | 110m (91.7%) | 105m (87.5%) | 320m | 360m | 88.9% | 20m | ✅ PASS |
-| **P7** | H18–H21 | 180m | 180m | 100m (55.6%) | 85m (47.2%) | 120m (66.7%) | 305m | 540m | 56.5% | 20m | ✅ PASS |
-| **P8** | H21–H23 | 120m | 120m | 95m (79.2%) | 90m (75.0%) | 75m (62.5%) | 260m | 360m | 72.2% | 25m | ✅ PASS |
+| **P7** | H18–H21 | 180m | 180m | 100m (55.6%) | 85m (47.2%) | **130m (72.2%)** | **315m** | 540m | **58.3%** | 20m | ✅ PASS |
+| **P8** | H21–H23 | 120m | 120m | 95m (79.2%) | 90m (75.0%) | **95m (79.2%)** | **280m** | 360m | **77.8%** | 25m | ✅ PASS |
 | **P9** | H23–H24 | 60m | 60m | 0m (0.0%) | 0m (0.0%) | 0m (0.0%) | 0m | 180m | 0.0% | 0m | ✅ **RESERVE** |
 | **Total** | **24h** | **1440m** | **1440m** | **1145m (79.5%)** | **1140m (79.2%)** | **1140m (79.2%)** | **3425m** | **4320m** | **79.3%** | **110m** | ✅ **PASS** |
 
@@ -203,7 +203,7 @@ The specification defines **38 discrete HTTP endpoints** covering:
 - **Specification Status:** ✅ **SPEC_PASS.** All 38 routes have defined HTTP verbs, request/response Zod envelopes, error payloads, and backing Prisma relational models in [`07_INTEGRATION_CONTRACTS.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/07_INTEGRATION_CONTRACTS.md#L350-L450).
 - **Executable Status:** ⚠️ **PENDING IMPLEMENTATION.**
   - Zero route handlers currently exist on disk in `src/app/api/`.
-  - Zero database tables currently exist in `dev.db`.
+  - Zero database tables currently exist in Neon PostgreSQL.
   - The P7 gate (`NEXT_PUBLIC_USE_MOCKS=false`) is an acceptance gate to be verified at Hour 21, not an existing property of the repository.
 
 **Verdict:** ⚠️ **WARNING (SPEC_PASS / IMPLEMENTATION PENDING).**
@@ -246,7 +246,7 @@ $$\sum = ₹5,500 + ₹2,500 + ₹1,200 + ₹800 = ₹10,000.00 \quad (1,000,000
   2. `SettlementRecord`: `@@unique([workOrderId])` — guarantees payout idempotency.
   3. Failure isolation rule: Failed execution attempts (`status: "FAILED"`) record ₹0 payout; only terminal successful stages write contribution records.
 - **Runtime Verification Status:** ⚠️ **UNVERIFIED (PENDING IMPLEMENTATION).**
-  - Database-enforced duplicate prevention remains a theoretical design until Prisma schema migrations run and test cases `TC-P6-02` and `N-09` are executed against SQLite in Phase P6.
+  - Database-enforced duplicate prevention remains a theoretical design until Prisma schema migrations run and test cases `TC-P6-02` and `N-09` are executed against Neon PostgreSQL in Phase P6.
 
 **Verdict:** ✅ **SPEC_PASS (Mathematical identity verified; runtime deduplication pending implementation).**
 

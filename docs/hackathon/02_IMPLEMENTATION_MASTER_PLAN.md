@@ -124,8 +124,8 @@ flowchart TB
     end
 
     subgraph Data["Persistence"]
-        E1[("Prisma + SQLite\nprisma/dev.db")]
-        E2["Seed / reset\nseeded demo rows only"]
+        E1[("Prisma 7 + Neon PostgreSQL\nserverless pool")]
+        E2["Seed / reset\nseeded demo rows in Neon"]
     end
 
     A1 --> B1
@@ -150,11 +150,11 @@ flowchart TB
 
 ### 4.2 Runtime shape
 
-- **One app.** Next.js serves the UI and the API. No second service and no queue.
-- **In-process orchestrator.** Execution runs inside a route handler, persisting each stage before and after it runs. The browser polls every 500 ms.
-- **Resume from persistence.** A reload or dev-server restart reads the last persisted stage and continues or renders a terminal state.
-- **Deterministic adapters.** Stage functions are pure TypeScript over seeded fixtures. No API key and no network are required.
-- **Single-writer demo.** SQLite is sufficient for one demo user and one run. WAL mode is enabled if needed.
+- **Serverless web & API.** Next.js App Router deployed on Vercel Serverless. Stateless route handlers.
+- **Durable asynchronous execution.** Upstash QStash (`@upstash/qstash`) orchestrates durable step execution, retries and webhook dispatch (`/api/webhooks/qstash/...`), eliminating background process / local daemon dependencies.
+- **Resume from persistence.** Stage state is written to Neon PostgreSQL before and after every transition. A page refresh or reconnect continues cleanly from database state.
+- **Deterministic adapters.** Hybrid architecture: Evidence Reader calls multimodal models with instant fallback to `evidencePacket_WH204` fixture; Reconciliation and Verifier are deterministic.
+- **Neon connection pooling.** Database operations run through `@neondatabase/serverless` connection pool via `DATABASE_URL`, with `DIRECT_URL` for Prisma migrations.
 
 ### 4.3 Repository shape (to be created at P0)
 
@@ -251,8 +251,8 @@ sequenceDiagram
     UI->>API: POST /auditions
     API->>Compiler: run wh204-suite-v1 on A/B/C
     Compiler-->>API: measured results + assertions
-    API->>Compiler: hard-constraint selection
-    Compiler-->>API: C selected; A/B reasons persisted
+    API->>Compiler: hard-constraint dynamic selection
+    Compiler-->>API: winning candidate selected; rejection reasons persisted
     Buyer->>UI: Approve ₹10,000 work order
     UI->>API: POST /work-orders/:id/approve
     API->>Ledger: snapshot allocations
@@ -281,9 +281,9 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | **P0** | H0–H1 | 60m | Architecture freeze and running foundation | App boots, contracts compile, `/api/health` 200, `p0-foundation` tag |
 | **P1** | H1–H4 | 180m | Premium shell, personas, schema and seeded overviews | Both personas see seeded overviews with labelled data |
 | **P2** | H4–H7 | 180m | Marketplace, builder profile, registry, job creation | Northstar browses versions and opens WH-204 with a compiled contract |
-| **P3** | H7–H10 | 180m | Compiler and auditions | Auditions run dynamically across 10 fixtures; comparison matrix renders scores; A, B or C can qualify |
-| **P4** | H10–H13 | 180m | Selection, work order, execution and recovery | Dynamic selection persisted; work order approved; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
-| **P5** | H13–H16 | 180m | Independent verification, receipt, review and demo reset | Ten checks pass; tamper-evident receipt hash exists; inventory commit blocked 42 → 42; demo reset verified |
+| **P3** | H7–H10 | 180m | Compiler and auditions | Auditions complete across 10 fixtures for Candidates A, B, and C; results persisted; comparison matrix displays audition scores and breakdown (selection in P4) |
+| **P4** | H10–H13 | 180m | Dynamic selection, work order, execution and recovery | Dynamic ranking computed; winning candidate persisted (A, B, or C eligible); work order approved; fail-closed limits & 42->42 invariant locked; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
+| **P5** | H13–H16 | 180m | Independent verification, receipt, review and demo reset | Ten checks pass; tamper-evident receipt hash exists; inventory commit remains blocked 42 → 42 independently verified; demo reset verified in Neon |
 | **P6** | H16–H18 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
 | **P7** | H18–H21 | 180m | Premium UX completion, negative regression and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); negative regression suite passes |
 | **P8** | H21–H23 | 120m | Hardening, rehearsal and release lock | Three clean rehearsals; `v1.0-demo`; signed runbook; offline fallback verified |
@@ -296,12 +296,12 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | P0 | 55 | 55 | 55 | 60 | 5m slack per dev; contract freeze is the gate. |
 | P1 | 160 | 145 | 140 | 180 | 20–40m slack; seeded overviews complete. |
 | P2 | 160 | 160 | 150 | 180 | 20–30m slack; contract compiler and marketplace active. |
-| P3 | 160 (185) | 155 | 160 | 180 | 20–25m buffer per dev. Auditions run on persisted evaluations; selection persisted in P4. |
-| P4 | 160 | 175 | 180 | 180 | Controlled execution, failure injection, and recovery replacement. |
-| P5 | 150 (170) | 165 | 155 | 180 | 15–30m buffer. Verifier, tamper-evident receipt, and demo reset. |
+| P3 | 160 (185) | 155 | 160 | 180 | 20–25m buffer per dev. Auditions run across 10 fixtures; comparison matrix rendered; selection in P4. |
+| P4 | 160 | 175 | 175 | 180 | 5m buffer per dev. Dynamic ranking, fail-closed limits & 42->42 invariant locked, recovery runtime. |
+| P5 | 150 (170) | 165 | 130 | 180 | 15–50m buffer. Independent verifier, state diff assertion, tamper-evident receipt, and demo reset. |
 | P6 | 105 (125) | 110 | 105 | 120 | 10–15m core buffer. `P6-A-005` is optional; economics reconcile to ₹10,000. |
-| P7 | 100 (120) | 85 | 120 | 180 | 60–95m buffer. Zero frontend mocks; full negative regression suite. |
-| P8 | 95 | 90 | 75 (100) | 120 | 25–45m buffer for 3 full rehearsals and release lock. |
+| P7 | 100 (120) | 85 | 130 | 180 | 50–95m buffer. Zero frontend mocks; full negative regression suite. |
+| P8 | 95 | 90 | 95 (120) | 120 | 25m buffer per dev for 3 full rehearsals and release lock. |
 | P9 | 0 | 0 | 0 | 60 | 60m unallocated contingency buffer (180 person-minutes reserve) for demo freeze. |
 
 **Capacity rebalancing summary:** Core planned workload is reduced to **3,425 person-minutes** across all three developers (Team A: 1,145m core / 1,230m total; Team B: 1,140m core / 1,140m total; Team C: 1,140m core / 1,165m total). This creates **895 minutes (~15 person-hours)** of team integration buffer. Team A is fully rebalanced from its previous 1,430m load, eliminating the previous capacity deficit. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.

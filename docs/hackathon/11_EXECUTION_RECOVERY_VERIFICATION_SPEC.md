@@ -26,7 +26,7 @@ Execution cannot start until the buyer approves a versioned work order.
 | Field | WH-204 value |
 |---|---:|
 | Buyer total | ₹10,000 (`1,000,000` paise) |
-| Evidence Reader | ₹1,500 (`200,000`) |
+| Evidence Reader | ₹2,000 (`200,000` paise) |
 | Reconciliation | ₹2,500 (`250,000`) |
 | Exception reporting | ₹1,000 (`100,000`) |
 | Builder subtotal | ₹5,500 (`550,000`) |
@@ -465,7 +465,7 @@ The receipt snapshots:
 #### Explicit limitations of SHA-256 receipt hashing:
 1. **Payload integrity only:** SHA-256 guarantees that the serialized receipt payload has not been modified after generation.
 2. **Observation vs physical ground truth:** The hash confirms that the recorded observations (e.g. 10 scanned units, PO 12 units) match what the pipeline processed; it cannot verify whether upstream physical real-world data was mis-scanned or falsified before ingestion.
-3. **Storage anchor boundary:** In a hackathon SQLite setup, hashes are verified in-process; true cryptographic non-repudiation requires external anchoring or distributed consensus (deferred post-hackathon).
+3. **Storage anchor boundary:** In a hackathon Neon PostgreSQL setup, hashes are verified server-side via SHA-256; true cryptographic non-repudiation requires external anchoring or distributed consensus (deferred post-hackathon).
 
 ### 9.3 Receipt status
 
@@ -496,7 +496,7 @@ The receipt snapshots:
 | Settlement | `(jobId, workOrderId)` unique | One eligibility row |
 | Review | `job:{id}:review:{decision}` | Idempotent acknowledgement |
 
-Concurrency posture: one demo user, one execution, short transactions. If SQLite contention appears, enable WAL and serialize writes; do not add a queue.
+Concurrency posture: one demo user, one execution, short serverless transactions managed via Neon PostgreSQL connection pooling. Asynchronous stage orchestration is driven dually by QStash durable step webhooks and polling API routes; retry idempotency is enforced by unique database constraints.
 
 ---
 

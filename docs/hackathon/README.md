@@ -157,7 +157,7 @@ A phase is complete only when its gate passes, its prototype is usable and its t
 | Auditions | `Measured on wh204-suite-v1` | Dynamic selection computed from persisted runs; Candidate A, B or C can win |
 | Reputation | `Derived from demo evidence` | Derived from audition/execution stats, not public ratings |
 | Verification | `Independent deterministic verifier` | Platform-owned oracle, not an agent claim |
-| No-mock gate (P7) | `Live Next.js API & SQLite persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
+| No-mock gate (P7) | `Live Next.js API & Neon PostgreSQL persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
 
 **Never claim:** real payment, live inventory mutation, production auth, public demand, certified compliance, guaranteed earnings, or that hardcoded logic is an autonomous third-party AI.
 
@@ -206,7 +206,7 @@ If two documents disagree, the more specific frozen document wins for implementa
 ## 10. What success looks like
 
 - A judge sees a premium product, not a prototype.
-- Three candidates are auditioned; A/B are rejected for recorded reasons; C is selected.
+- Three candidates are auditioned on a 10-fixture suite; the winning candidate (A, B, or C) is dynamically selected from persisted audition scores with recorded rejection reasons.
 - v1.0.0 visibly fails; v1.1.0 visibly replaces it.
 - Ten independent checks pass; the receipt hash is stable.
 - Inventory stays blocked; no false claim of a commit.

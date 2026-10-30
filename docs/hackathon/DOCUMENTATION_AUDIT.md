@@ -216,7 +216,7 @@ The package consistently states implementation has not started. No task is marke
 
 **Intentional deviations from the blueprint** (documented as conflicts/decisions):
 
-- SQLite instead of PostgreSQL (`D-002`).
+- Serverless Neon PostgreSQL (Prisma 7 + `@prisma/adapter-neon`) and QStash background execution (`D-002`, `D-005`).
 - Deterministic adapters instead of model calls (`D-003`).
 - Policy/inventory/verifier are platform-owned, not marketplace agents (`D-009`).
 - Hidden baseline instead of a fifth visible specialist (`D-010`).
@@ -320,7 +320,7 @@ No affirmative claim of a real payment, live warehouse integration, certified se
 | F-03 | Receipt immutability claims overreached | Medium | **Resolved:** Replaced with tamper-evident, hash-verified receipt terminology; documented SHA-256 limitations (payload integrity vs physical truth vs non-repudiation). Decision `D-021`. |
 | F-04 | Stack and contracts are proposed, not implemented | High (honesty) | Marked `PROPOSED — FREEZE AT P0` throughout; inventory confirms no code exists. |
 | F-05 | Blueprint names a different file (`ProofHire_Final_Solution_Blueprint.md`) | Low | `01` records C-01 and `D-008`: `BLUEPRINT.md` is canonical; no duplicate. |
-| F-06 | Blueprint suggests Postgres; repo has no Postgres | Medium | `D-002`: SQLite for demo, Postgres-compatible target. |
+| F-06 | Blueprint suggests Postgres; serverless deployment required | Medium | `D-002`: Neon PostgreSQL + Prisma 7 (`@prisma/adapter-neon`) for serverless deployment with QStash async execution. |
 | F-07 | Blueprint's builder cast differs from the single-builder demo | Medium | `01` C-03/C-04 and `D-009`/`D-011`: one builder, four versions, platform functions. |
 | F-08 | Deferred features could leak into navigation | Medium | `09` route list and `D-019` prohibit them; tracker marks `P5-A-005`/`P7-B-004` dropped. |
 | F-09 | Task estimates include optional work | Low | Counts separate 3,535 total from 3,425 core (110m optional scope); cut order defined. |
