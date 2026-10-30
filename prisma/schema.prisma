@@ -24,6 +24,46 @@ model SystemHealth {
 // 1. IDENTITY & ACCOUNTS
 // ==========================================
 
+model User {
+  id            String               @id @default(cuid())
+  email         String               @unique
+  name          String?
+  role          String               @default("USER") // "USER" | "ENTERPRISE" | "CREATOR"
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  accounts      Account[]
+  jobs          Job[]
+  wallet        Wallet?
+  payouts       CreatorPayout[]
+  pipelines     EnterprisePipeline[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String   @default("oauth")
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
 model UserAccount {
   userId       String   @id @default(cuid())
   email        String   @unique
@@ -57,93 +97,135 @@ model Buyer {
 }
 
 model Builder {
-  builderId    String   @id
-  displayName  String
-  studioName   String
-  bio          String
-  isSeeded     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  builderId            String   @id
+  displayName          String
+  studioName           String
+  bio                  String
+  isSeeded             Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  userAccounts        UserAccount[]
-  agents              Agent[]
-  packageArtifacts    AgentPackageArtifact[]
+  userAccounts         UserAccount[]
+  agents               Agent[]
+  packageArtifacts     AgentPackageArtifact[]
   workOrderAllocations WorkOrderAllocation[]
-  contributionRecords ContributionRecord[]
-  settlementRecords   SettlementRecord[]
+  contributionRecords  ContributionRecord[]
+  settlementRecords    SettlementRecord[]
 
   @@map("builders")
 }
 
 // ==========================================
-// 2. CATALOG, PACKAGES & MANIFESTS
+// 2. CATALOG, AGENTS & BENCHMARKS
 // ==========================================
 
 model Agent {
-  agentId         String   @id
-  builderId       String
-  name            String
-  summary         String
-  registryVisible Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                 String           @id @default(cuid())
+  agentId            String           @unique @default(cuid())
+  slug               String           @unique
+  title              String
+  name               String
+  description        String
+  summary            String
+  category           String
+  authorName         String           @default("Forgent")
+  builderId          String?
+  priceCents         Int              @default(0)
+  pricePaise         Int              @default(0)
+  inputSchema        Json?
+  outputSchema       Json?
+  verificationStatus String           @default("VERIFIED")
+  ratings            Float            @default(4.9)
+  tasksCompleted     Int              @default(0)
+  registryVisible    Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
-  builder         Builder  @relation(fields: [builderId], references: [builderId], onDelete: Cascade)
-  versions        AgentVersion[]
+  builder            Builder?         @relation(fields: [builderId], references: [builderId], onDelete: SetNull)
+  versions           AgentVersion[]
+  benchmarks         AgentBenchmark[]
+  jobs               Job[]
 
   @@map("agents")
 }
 
 model AgentVersion {
-  versionId            String   @id
-  agentId              String
-  version              String
-  status               String   @default("ACTIVE") // "ACTIVE" | "PAUSED" | "RETIRED" | "PENDING_APPROVAL"
-  executionEligible    Boolean  @default(true)
-  inputSchemaId        String
-  outputSchemaId       String
-  permissionsJson      Json     // Array of permission strings
-  pricingModel         String   @default("FIXED_PER_RUN")
-  pricePaise           Int      // Integer paise
-  estimatedLatencyMs   Int
-  limitationsJson      Json?    // Array of limitation strings
-  fallbackVersionIdsJson Json?  // Array of version ID strings
-  runtimeAdapter       String?  // File/module reference or null
-  runtimeMode          String   @default("DETERMINISTIC_RULES") // "MODEL_BACKED" | "DETERMINISTIC_RULES"
-  registryVisible      Boolean  @default(true)
-  isSeeded             Boolean  @default(false)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  versionId              String                    @id
+  agentId                String
+  version                String
+  status                 String                    @default("ACTIVE")
+  executionEligible      Boolean                   @default(true)
+  inputSchemaId          String                    @default("default_in")
+  outputSchemaId         String                    @default("default_out")
+  permissionsJson        Json                      @default("[]")
+  pricingModel           String                    @default("FIXED_PER_RUN")
+  pricePaise             Int                       @default(0)
+  estimatedLatencyMs     Int                       @default(500)
+  limitationsJson        Json?
+  fallbackVersionIdsJson Json?
+  runtimeAdapter         String?
+  runtimeMode            String                    @default("DETERMINISTIC_RULES")
+  registryVisible        Boolean                   @default(true)
+  isSeeded               Boolean                   @default(false)
+  slug                   String?
+  title                  String?
+  description            String?
+  category               String?
+  authorName             String?
+  priceCents             Int?                      @default(0)
+  inputSchema            Json?
+  outputSchema           Json?
+  verificationStatus     String?                   @default("VERIFIED")
+  ratings                Float?                    @default(4.9)
+  tasksCompleted         Int?                      @default(0)
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
 
-  agent                Agent    @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
-  capabilities         AgentVersionCapability[]
-  artifacts            AgentPackageArtifact[]
-  manifestSnapshots    AgentManifestSnapshot[]
-  candidateStages      CandidateStage[]
-  workOrderAllocations WorkOrderAllocation[]
-  stageRuns            StageRun[]
-  recoveryFailedEvents RecoveryEvent[] @relation("FailedAgentVersion")
-  recoveryReplacementEvents RecoveryEvent[] @relation("ReplacementAgentVersion")
-  contributionRecords  ContributionRecord[]
-  stats                AgentVersionStats?
+  agent                  Agent                     @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+  capabilities           AgentVersionCapability[]
+  artifacts              AgentPackageArtifact[]
+  manifestSnapshots      AgentManifestSnapshot[]
+  candidateStages        CandidateStage[]
+  workOrderAllocations   WorkOrderAllocation[]
+  stageRuns              StageRun[]
+  recoveryFailedEvents   RecoveryEvent[]           @relation("FailedAgentVersion")
+  recoveryReplacementEvents RecoveryEvent[]       @relation("ReplacementAgentVersion")
+  contributionRecords    ContributionRecord[]
+  stats                  AgentVersionStats?
 
   @@unique([agentId, version])
   @@index([agentId, status])
   @@map("agent_versions")
 }
 
+model AgentBenchmark {
+  id             String   @id @default(cuid())
+  agentId        String
+  testSuites     Json
+  accuracyScore  Float    @default(0.98)
+  latencyMs      Int      @default(650)
+  lastVerifiedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  agent          Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@map("agent_benchmarks")
+}
+
 model AgentPackageArtifact {
-  artifactId           String   @id @default(cuid())
+  artifactId           String       @id @default(cuid())
   versionId            String
   builderId            String
   filename             String
   fileSize             Int
   sha256Digest         String
   storagePath          String
-  storageBackend       String   @default("LOCAL_FS") // "LOCAL_FS" | "S3"
-  validationStatus     String   @default("PENDING_APPROVAL")
+  storageBackend       String       @default("LOCAL_FS")
+  validationStatus     String       @default("PENDING_APPROVAL")
   validationErrorsJson Json?
-  createdAt            DateTime @default(now())
+  createdAt            DateTime     @default(now())
 
   version              AgentVersion @relation(fields: [versionId], references: [versionId], onDelete: Cascade)
   builder              Builder      @relation(fields: [builderId], references: [builderId], onDelete: Cascade)
@@ -152,11 +234,11 @@ model AgentPackageArtifact {
 }
 
 model Capability {
-  key             String   @id
-  label           String
-  description     String
-  isPlatformOwned Boolean  @default(false)
-  createdAt       DateTime @default(now())
+  key                 String                   @id
+  label               String
+  description         String
+  isPlatformOwned     Boolean                  @default(false)
+  createdAt           DateTime                 @default(now())
 
   versionCapabilities AgentVersionCapability[]
 
@@ -176,10 +258,10 @@ model AgentVersionCapability {
 }
 
 model AgentManifestSnapshot {
-  snapshotId   String   @id @default(cuid())
+  snapshotId   String       @id @default(cuid())
   versionId    String
   manifestJson Json
-  createdAt    DateTime @default(now())
+  createdAt    DateTime     @default(now())
 
   version      AgentVersion @relation(fields: [versionId], references: [versionId], onDelete: Cascade)
 
@@ -187,38 +269,79 @@ model AgentManifestSnapshot {
 }
 
 // ==========================================
-// 3. JOB & SPECIFICATION
+// 3. JOB, EXECUTION & DELIVERABLES
 // ==========================================
 
 model Job {
-  jobId        String   @id
-  buyerId      String
-  title        String
-  outcome      String
-  inputsJson   Json
-  budgetPaise  Int      // Integer paise
-  deadline     DateTime
-  riskLevel    String   @default("LOW")
-  status       String   @default("CONTRACT_READY") // "DRAFT" | "CONTRACT_READY" | "COMPILING" | etc.
-  isSeeded     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                     String                   @id @default(cuid())
+  jobId                  String                   @unique @default(cuid())
+  userId                 String?
+  agentId                String?
+  buyerId                String?
+  title                  String
+  outcome                String?
+  inputsJson             Json?
+  budgetPaise            Int                      @default(0)
+  budgetCents            Int                      @default(0)
+  deadline               DateTime?
+  riskLevel              String                   @default("LOW")
+  status                 String                   @default("SUBMITTED") // "SUBMITTED" | "ESCROW_LOCKED" | "RUNNING" | "COMPLETED" | "FAILED"
+  isSeeded               Boolean                  @default(false)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
 
-  buyer                Buyer                  @relation(fields: [buyerId], references: [buyerId], onDelete: Cascade)
-  acceptanceContracts  AcceptanceContract[]
-  workflowCandidates   WorkflowCandidate[]
-  evaluationRuns       EvaluationRun[]
-  workOrders           WorkOrder[]
-  executionRuns        ExecutionRun[]
-  acceptanceResults    AcceptanceResult[]
-  evidenceReceipts     EvidenceReceipt[]
-  contributionRecords  ContributionRecord[]
-  settlementRecords    SettlementRecord[]
+  user                   User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  agent                  Agent?                   @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  buyer                  Buyer?                   @relation(fields: [buyerId], references: [buyerId], onDelete: Cascade)
+  events                 JobEvent[]
+  deliverable            Deliverable?
+  acceptanceContracts    AcceptanceContract[]
+  workflowCandidates     WorkflowCandidate[]
+  evaluationRuns         EvaluationRun[]
+  workOrders             WorkOrder[]
+  executionRuns          ExecutionRun[]
+  acceptanceResults      AcceptanceResult[]
+  evidenceReceipts       EvidenceReceipt[]
+  contributionRecords    ContributionRecord[]
+  settlementRecords      SettlementRecord[]
   inventoryLedgerEntries InventoryLedgerEntry[]
-  idempotencyRecords   IdempotencyRecord[]
+  idempotencyRecords     IdempotencyRecord[]
 
+  @@index([status])
+  @@index([userId])
   @@index([buyerId, status])
   @@map("jobs")
+}
+
+model JobEvent {
+  id        String   @id @default(cuid())
+  jobId     String
+  status    String   // "SUBMITTED" | "ESCROW_LOCKED" | "RUNNING" | "COMPLETED" | "FAILED"
+  message   String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, createdAt])
+  @@map("job_events")
+}
+
+model Deliverable {
+  id              String   @id @default(cuid())
+  jobId           String   @unique
+  summaryMarkdown String
+  structuredJson  Json
+  sha256Receipt   String
+  modelUsed       String
+  tokensUsed      Int      @default(0)
+  latencyMs       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  job             Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("deliverables")
 }
 
 model AcceptanceContract {
@@ -228,7 +351,7 @@ model AcceptanceContract {
   objective                String
   expectedOutcomeJson      Json
   requiredCapabilitiesJson Json
-  checksJson               Json     // Array of 10 compiled acceptance checks
+  checksJson               Json
   approvalRulesJson        Json
   limitsJson               Json
   evidenceRequiredJson     Json
@@ -247,44 +370,44 @@ model AcceptanceContract {
 // ==========================================
 
 model WorkflowCandidate {
-  candidateId            String   @id
-  jobId                  String
-  strategy               String   // "SINGLE_AGENT_BASELINE" | "FIXED_SPECIALIST_TEAM" | "COMPILER_ASSEMBLED_TEAM"
-  label                  String
-  graphJson              Json     // Acyclic workflow graph topology
+  candidateId             String            @id
+  jobId                   String
+  strategy                String
+  label                   String
+  graphJson               Json
   estimatedTotalCostPaise Int
-  estimatedLatencyMs     Int
-  status                 String   @default("GENERATED")
-  rejectionReasonsJson   Json?
-  isMarketplaceVisible   Boolean  @default(true)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  estimatedLatencyMs      Int
+  status                  String            @default("GENERATED")
+  rejectionReasonsJson    Json?
+  isMarketplaceVisible    Boolean           @default(true)
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
 
-  job                    Job      @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
-  candidateStages        CandidateStage[]
-  evaluationRuns         EvaluationRun[]
-  workOrders             WorkOrder[]
+  job                     Job               @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  candidateStages         CandidateStage[]
+  evaluationRuns          EvaluationRun[]
+  workOrders              WorkOrder[]
 
   @@unique([jobId, strategy])
   @@map("workflow_candidates")
 }
 
 model CandidateStage {
-  candidateStageId       String   @id @default(cuid())
+  candidateStageId       String            @id @default(cuid())
   candidateId            String
   nodeId                 String
   order                  Int
   capability             String
-  kind                   String   // "AGENT" | "DETERMINISTIC_FUNCTION" | "HUMAN_APPROVAL"
+  kind                   String
   agentVersionId         String?
   implementationId       String
-  dependsOnJson          Json     // Array of node IDs
+  dependsOnJson          Json
   inputSchemaId          String
   outputSchemaId         String
   permissionsJson        Json
   fallbackVersionIdsJson Json?
   estimatedCostPaise     Int
-  createdAt              DateTime @default(now())
+  createdAt              DateTime          @default(now())
 
   candidate              WorkflowCandidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   agentVersion           AgentVersion?     @relation(fields: [agentVersionId], references: [versionId], onDelete: SetNull)
@@ -294,121 +417,121 @@ model CandidateStage {
 }
 
 model EvaluationRun {
-  evaluationRunId   String   @id
-  jobId             String
-  candidateId       String
-  suiteVersion      String
-  seed              String
-  status            String   // "RUNNING" | "COMPLETED" | "FAILED"
-  totalAssertions   Int      @default(0)
-  passedAssertions  Int      @default(0)
-  criticalFailures  Int      @default(0)
-  recoveryPassed    Boolean  @default(false)
-  totalCostPaise    Int      @default(0)
-  totalLatencyMs    Int      @default(0)
-  qualified         Boolean  @default(false)
-  runNumber         Int      @default(1)
-  startedAt         DateTime @default(now())
-  completedAt       DateTime?
-  createdAt         DateTime @default(now())
+  evaluationRunId  String                    @id
+  jobId            String
+  candidateId      String
+  suiteVersion     String
+  seed             String
+  status           String
+  totalAssertions  Int                       @default(0)
+  passedAssertions Int                       @default(0)
+  criticalFailures Int                       @default(0)
+  recoveryPassed   Boolean                   @default(false)
+  totalCostPaise   Int                       @default(0)
+  totalLatencyMs   Int                       @default(0)
+  qualified        Boolean                   @default(false)
+  runNumber        Int                       @default(1)
+  startedAt        DateTime                  @default(now())
+  completedAt      DateTime?
+  createdAt        DateTime                  @default(now())
 
-  job               Job      @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
-  candidate         WorkflowCandidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
-  fixtureResults    EvaluationFixtureResult[]
-  assertions        EvaluationAssertion[]
+  job              Job                       @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  candidate        WorkflowCandidate         @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
+  fixtureResults   EvaluationFixtureResult[]
+  assertions       EvaluationAssertion[]
 
   @@unique([jobId, candidateId, suiteVersion, runNumber])
   @@map("evaluation_runs")
 }
 
 model EvaluationFixtureResult {
-  fixtureResultId   String   @id @default(cuid())
-  evaluationRunId   String
-  fixtureId         String
-  fixtureName       String
-  heldOut           Boolean  @default(false)
-  status            String   // "PASSED" | "FAILED"
-  criticalFailures  Int      @default(0)
-  majorFailures     Int      @default(0)
-  costPaise         Int      @default(0)
-  latencyMs         Int      @default(0)
-  outputJson        Json?
-  createdAt         DateTime @default(now())
+  fixtureResultId  String                @id @default(cuid())
+  evaluationRunId  String
+  fixtureId        String
+  fixtureName      String
+  heldOut          Boolean               @default(false)
+  status           String
+  criticalFailures Int                   @default(0)
+  majorFailures    Int                   @default(0)
+  costPaise        Int                   @default(0)
+  latencyMs        Int                   @default(0)
+  outputJson       Json?
+  createdAt        DateTime              @default(now())
 
-  evaluationRun     EvaluationRun @relation(fields: [evaluationRunId], references: [evaluationRunId], onDelete: Cascade)
-  assertions        EvaluationAssertion[]
+  evaluationRun    EvaluationRun         @relation(fields: [evaluationRunId], references: [evaluationRunId], onDelete: Cascade)
+  assertions       EvaluationAssertion[]
 
   @@unique([evaluationRunId, fixtureId])
   @@map("evaluation_fixture_results")
 }
 
 model EvaluationAssertion {
-  assertionId       String   @id @default(cuid())
-  evaluationRunId   String
-  fixtureResultId   String?
-  fixtureId         String
-  code              String
-  severity          String   // "CRITICAL" | "MAJOR" | "MINOR"
-  passed            Boolean
-  expectedJson      Json?
-  actualJson        Json?
-  evidenceRef       String?
-  message           String?
-  createdAt         DateTime @default(now())
+  assertionId     String                   @id @default(cuid())
+  evaluationRunId String
+  fixtureResultId String?
+  fixtureId       String
+  code            String
+  severity        String
+  passed          Boolean
+  expectedJson    Json?
+  actualJson      Json?
+  evidenceRef     String?
+  message         String?
+  createdAt       DateTime                 @default(now())
 
-  evaluationRun     EvaluationRun @relation(fields: [evaluationRunId], references: [evaluationRunId], onDelete: Cascade)
-  fixtureResult     EvaluationFixtureResult? @relation(fields: [fixtureResultId], references: [fixtureResultId], onDelete: Cascade)
+  evaluationRun   EvaluationRun            @relation(fields: [evaluationRunId], references: [evaluationRunId], onDelete: Cascade)
+  fixtureResult   EvaluationFixtureResult? @relation(fields: [fixtureResultId], references: [fixtureResultId], onDelete: Cascade)
 
   @@map("evaluation_assertions")
 }
 
 // ==========================================
-// 5. COMMERCIAL
+// 5. COMMERCIAL & WORK ORDERS
 // ==========================================
 
 model WorkOrder {
-  workOrderId              String   @id
-  jobId                    String
-  candidateId              String
-  version                  Int      @default(1)
-  status                   String   // "DRAFT" | "APPROVED" | "CANCELLED"
-  buyerTotalPaise          Int
-  builderSubtotalPaise     Int
-  platformFeePaise         Int
-  executionReservePaise    Int
-  humanReviewReservePaise  Int
-  termsJson                Json
-  approvedBy               String?
-  approvedAt               DateTime?
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  workOrderId             String                @id
+  jobId                   String
+  candidateId             String
+  version                 Int                   @default(1)
+  status                  String
+  buyerTotalPaise         Int
+  builderSubtotalPaise    Int
+  platformFeePaise        Int
+  executionReservePaise   Int
+  humanReviewReservePaise Int
+  termsJson               Json
+  approvedBy              String?
+  approvedAt              DateTime?
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
 
-  job                      Job      @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
-  candidate                WorkflowCandidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
-  allocations              WorkOrderAllocation[]
-  executionRuns            ExecutionRun[]
-  evidenceReceipts         EvidenceReceipt[]
-  settlementRecords        SettlementRecord[]
+  job                     Job                   @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  candidate               WorkflowCandidate     @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
+  allocations             WorkOrderAllocation[]
+  executionRuns           ExecutionRun[]
+  evidenceReceipts        EvidenceReceipt[]
+  settlementRecords       SettlementRecord[]
 
   @@unique([jobId, version])
   @@map("work_orders")
 }
 
 model WorkOrderAllocation {
-  allocationId    String   @id @default(cuid())
-  workOrderId     String
-  payeeType       String   // "BUILDER" | "PLATFORM" | "RESERVE"
-  builderId       String?
-  agentVersionId  String?
-  stageKey        String
-  label           String
-  amountPaise     Int
-  status          String   @default("ALLOCATED")
-  createdAt       DateTime @default(now())
+  allocationId   String        @id @default(cuid())
+  workOrderId    String
+  payeeType      String
+  builderId      String?
+  agentVersionId String?
+  stageKey       String
+  label          String
+  amountPaise    Int
+  status         String        @default("ALLOCATED")
+  createdAt      DateTime      @default(now())
 
-  workOrder       WorkOrder     @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
-  builder         Builder?      @relation(fields: [builderId], references: [builderId], onDelete: SetNull)
-  agentVersion    AgentVersion? @relation(fields: [agentVersionId], references: [versionId], onDelete: SetNull)
+  workOrder      WorkOrder     @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
+  builder        Builder?      @relation(fields: [builderId], references: [builderId], onDelete: SetNull)
+  agentVersion   AgentVersion? @relation(fields: [agentVersionId], references: [versionId], onDelete: SetNull)
 
   @@map("work_order_allocations")
 }
@@ -418,26 +541,26 @@ model WorkOrderAllocation {
 // ==========================================
 
 model ExecutionRun {
-  executionId      String   @id
-  jobId            String
-  workOrderId      String
-  status           String   @default("RUNNING") // "RUNNING" | "COMPLETED" | "FAILED" | "RECOVERED"
-  scenario         String   @default("CONTROLLED_FAILURE_INJECTION")
-  startedAt        DateTime @default(now())
-  completedAt      DateTime?
-  totalCostPaise   Int      @default(0)
-  recoveryCount    Int      @default(0)
-  currentStageId   String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  executionId         String                @id
+  jobId               String
+  workOrderId         String
+  status              String                @default("RUNNING")
+  scenario            String                @default("CONTROLLED_FAILURE_INJECTION")
+  startedAt           DateTime              @default(now())
+  completedAt         DateTime?
+  totalCostPaise      Int                   @default(0)
+  recoveryCount       Int                   @default(0)
+  currentStageId      String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 
-  job              Job      @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
-  workOrder        WorkOrder @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
-  stageRuns        StageRun[]
-  executionEvents  ExecutionEvent[]
-  recoveryEvents   RecoveryEvent[]
-  acceptanceResults AcceptanceResult[]
-  evidenceReceipts EvidenceReceipt[]
+  job                 Job                   @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  workOrder           WorkOrder             @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
+  stageRuns           StageRun[]
+  executionEvents     ExecutionEvent[]
+  recoveryEvents      RecoveryEvent[]
+  acceptanceResults   AcceptanceResult[]
+  evidenceReceipts    EvidenceReceipt[]
   contributionRecords ContributionRecord[]
 
   @@index([jobId, status])
@@ -445,15 +568,15 @@ model ExecutionRun {
 }
 
 model StageRun {
-  stageRunId          String   @id @default(cuid())
+  stageRunId          String        @id @default(cuid())
   executionId         String
   nodeId              String
   stageKey            String
-  attempt             Int      @default(1)
+  attempt             Int           @default(1)
   supersedesStageRunId String?
   agentVersionId      String?
   implementationId    String
-  status              String   // "RUNNING" | "COMPLETED" | "FAILED" | "REPLACED"
+  status              String
   inputRef            String?
   outputRef           String?
   outputJson          Json?
@@ -461,11 +584,11 @@ model StageRun {
   errorCode           String?
   errorMessage        String?
   traceRef            String?
-  costPaise           Int      @default(0)
-  latencyMs           Int      @default(0)
-  startedAt           DateTime @default(now())
+  costPaise           Int           @default(0)
+  latencyMs           Int           @default(0)
+  startedAt           DateTime      @default(now())
   completedAt         DateTime?
-  createdAt           DateTime @default(now())
+  createdAt           DateTime      @default(now())
 
   execution           ExecutionRun  @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
   agentVersion        AgentVersion? @relation(fields: [agentVersionId], references: [versionId], onDelete: SetNull)
@@ -476,19 +599,19 @@ model StageRun {
 }
 
 model ExecutionEvent {
-  eventId        String   @id @default(cuid())
+  eventId        String       @id @default(cuid())
   executionId    String
   jobId          String
   sequence       Int
   type           String
   stageId        String?
-  actorType      String   // "AGENT" | "PLATFORM" | "VERIFIER"
+  actorType      String
   actorId        String?
   payloadJson    Json
   idempotencyKey String?
   hashPrev       String?
   hash           String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime     @default(now())
 
   execution      ExecutionRun @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
 
@@ -499,21 +622,21 @@ model ExecutionEvent {
 }
 
 model RecoveryEvent {
-  recoveryEventId           String   @id @default(cuid())
+  recoveryEventId           String       @id @default(cuid())
   executionId               String
   stageId                   String
   failedAgentVersionId      String
   failureCode               String
-  strategy                  String   // "REPLACEMENT_VERSION" | "RETRY"
-  status                    String   // "COMPLETED" | "FAILED"
+  strategy                  String
+  status                    String
   replacementAgentVersionId String
-  attempt                   Int      @default(1)
+  attempt                   Int          @default(1)
   compatibilityJson         Json
   invalidatedStageIdsJson   Json?
   rerunStageIdsJson         Json?
   reason                    String
-  costPaise                 Int      @default(0)
-  createdAt                 DateTime @default(now())
+  costPaise                 Int          @default(0)
+  createdAt                 DateTime     @default(now())
 
   execution                 ExecutionRun @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
   failedAgentVersion        AgentVersion @relation("FailedAgentVersion", fields: [failedAgentVersionId], references: [versionId], onDelete: Cascade)
@@ -523,79 +646,128 @@ model RecoveryEvent {
 }
 
 model AcceptanceResult {
-  acceptanceResultId   String   @id
+  acceptanceResultId   String            @id
   jobId                String
-  executionId          String   @unique
+  executionId          String            @unique
   contractId           String
   contractVersion      Int
-  status               String   // "VERIFIED_PENDING_REVIEW" | "VERIFIED_PASSED" | "FAILED"
-  passedCount          Int      @default(0)
-  failedCount          Int      @default(0)
-  criticalFailureCount Int      @default(0)
-  verifierVersion      String   @default("1.0.0")
-  verifiedAt           DateTime @default(now())
-  createdAt            DateTime @default(now())
+  status               String
+  passedCount          Int               @default(0)
+  failedCount          Int               @default(0)
+  criticalFailureCount Int               @default(0)
+  verifierVersion      String            @default("1.0.0")
+  verifiedAt           DateTime          @default(now())
+  createdAt            DateTime          @default(now())
 
-  job                  Job      @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
-  execution            ExecutionRun @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
+  job                  Job               @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  execution            ExecutionRun      @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
   checks               AcceptanceCheck[]
 
   @@map("acceptance_results")
 }
 
 model AcceptanceCheck {
-  checkId             String   @id @default(cuid())
-  acceptanceResultId  String
-  code                String
-  label               String
-  critical            Boolean  @default(true)
-  status              String   // "PASSED" | "FAILED"
-  expectedJson        Json?
-  actualJson          Json?
-  evidenceRef         String?
-  message             String?
-  createdAt           DateTime @default(now())
+  checkId            String           @id @default(cuid())
+  acceptanceResultId String
+  code               String
+  label              String
+  critical           Boolean          @default(true)
+  status             String
+  expectedJson       Json?
+  actualJson         Json?
+  evidenceRef        String?
+  message            String?
+  createdAt          DateTime         @default(now())
 
-  acceptanceResult    AcceptanceResult @relation(fields: [acceptanceResultId], references: [acceptanceResultId], onDelete: Cascade)
+  acceptanceResult   AcceptanceResult @relation(fields: [acceptanceResultId], references: [acceptanceResultId], onDelete: Cascade)
 
   @@unique([acceptanceResultId, code])
   @@map("acceptance_checks")
 }
 
 model EvidenceReceipt {
-  receiptId     String   @id
+  receiptId     String       @id
   jobId         String
-  executionId   String   @unique
+  executionId   String       @unique
   workOrderId   String
-  status        String   // "ISSUED" | "VERIFIED"
-  bodyJson      Json     // Canonical receipt content
-  integrityHash String   // Cryptographic SHA-256 hash
-  hashScope     String   @default("CANONICAL_JSON_SHA256")
-  createdAt     DateTime @default(now())
+  status        String
+  bodyJson      Json
+  integrityHash String
+  hashScope     String       @default("CANONICAL_JSON_SHA256")
+  createdAt     DateTime     @default(now())
 
-  job           Job       @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
+  job           Job          @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
   execution     ExecutionRun @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
-  workOrder     WorkOrder @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
+  workOrder     WorkOrder    @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
 
   @@map("evidence_receipts")
 }
 
 // ==========================================
-// 7. SETTLEMENT & REPUTATION
+// 7. WALLET, LEDGER & CREATOR PAYOUTS
 // ==========================================
 
+model Wallet {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  balanceCents Int           @default(0)
+  balancePaise Int           @default(0)
+  escrowCents  Int           @default(0)
+  escrowPaise  Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions LedgerEntry[]
+
+  @@map("wallets")
+}
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  walletId    String
+  amountCents Int      @default(0)
+  amountPaise Int      @default(0)
+  type        String   // "CREDIT" | "DEBIT" | "ESCROW_LOCK" | "ESCROW_RELEASE"
+  description String?
+  referenceId String?
+  createdAt   DateTime @default(now())
+
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, createdAt])
+  @@map("ledger_entries")
+}
+
+model CreatorPayout {
+  id          String   @id @default(cuid())
+  userId      String
+  amountCents Int
+  amountPaise Int
+  method      String   // "UPI" | "BANK" | "STRIPE"
+  status      String   @default("PAID")
+  referenceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("creator_payouts")
+}
+
 model ContributionRecord {
-  contributionId String   @id
+  contributionId String       @id
   executionId    String
   jobId          String
   stageId        String
   builderId      String
   agentVersionId String
   amountPaise    Int
-  status         String   // "SIMULATED_ELIGIBLE" | "PAID" | "REJECTED"
+  status         String
   reason         String
   evidenceRef    String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime     @default(now())
 
   job            Job          @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
   execution      ExecutionRun @relation(fields: [executionId], references: [executionId], onDelete: Cascade)
@@ -608,18 +780,18 @@ model ContributionRecord {
 }
 
 model SettlementRecord {
-  settlementId       String   @id
+  settlementId       String    @id
   jobId              String
   workOrderId        String
   builderId          String
   builderAmountPaise Int
   platformFeePaise   Int
-  status             String   // "SETTLED" | "PENDING"
+  status             String
   provider           String?
-  simulationLabel    String   @default("SIMULATED_DEMO_ESCROW")
-  eligibleAt         DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  simulationLabel    String    @default("SIMULATED_DEMO_ESCROW")
+  eligibleAt         DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   job                Job       @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
   workOrder          WorkOrder @relation(fields: [workOrderId], references: [workOrderId], onDelete: Cascade)
@@ -630,34 +802,50 @@ model SettlementRecord {
 }
 
 model AgentVersionStats {
-  agentVersionId       String   @id
-  auditionRuns         Int      @default(0)
-  auditionPasses       Int      @default(0)
-  executions           Int      @default(0)
-  stageSuccesses       Int      @default(0)
-  stageFailures        Int      @default(0)
-  recoveriesProvided   Int      @default(0)
-  acceptedContributions Int     @default(0)
-  avgLatencyMs         Int      @default(0)
-  reliabilityBps       Int      @default(10000) // 10000 = 100.00%
-  lastEvidenceAt       DateTime?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  agentVersionId        String       @id
+  auditionRuns          Int          @default(0)
+  auditionPasses        Int          @default(0)
+  executions            Int          @default(0)
+  stageSuccesses        Int          @default(0)
+  stageFailures         Int          @default(0)
+  recoveriesProvided    Int          @default(0)
+  acceptedContributions Int          @default(0)
+  avgLatencyMs          Int          @default(0)
+  reliabilityBps        Int          @default(10000)
+  lastEvidenceAt        DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
 
-  agentVersion         AgentVersion @relation(fields: [agentVersionId], references: [versionId], onDelete: Cascade)
+  agentVersion          AgentVersion @relation(fields: [agentVersionId], references: [versionId], onDelete: Cascade)
 
   @@map("agent_version_stats")
 }
 
 // ==========================================
-// 8. INVARIANT & IDEMPOTENCY
+// 8. ENTERPRISE PIPELINES & INVARIANTS
 // ==========================================
+
+model EnterprisePipeline {
+  id               String    @id @default(cuid())
+  userId           String?
+  name             String
+  stepsJson        Json
+  testFlightStatus String    @default("PENDING") // "PENDING" | "PASSED" | "FAILED"
+  certifiedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user             User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("enterprise_pipelines")
+}
 
 model InventoryLedgerEntry {
   entryId            String   @id @default(cuid())
   ledgerId           String
   sku                String
-  committedOnHand    Int      @default(42) // Initial demo invariant: 42
+  committedOnHand    Int      @default(42)
   pendingReceipt     Int      @default(0)
   unresolvedVariance Int      @default(0)
   commitStatus       String   @default("BLOCKED_PENDING_APPROVAL")
@@ -673,17 +861,17 @@ model InventoryLedgerEntry {
 }
 
 model IdempotencyRecord {
-  idempotencyId String    @id @default(cuid())
+  idempotencyId String   @id @default(cuid())
   scope         String
   key           String
   requestHash   String
-  status        String    // "PROCESSING" | "RESOLVED" | "REJECTED"
+  status        String
   responseJson  Json?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime @default(now())
   expiresAt     DateTime
   jobId         String?
 
-  job           Job?      @relation(fields: [jobId], references: [jobId], onDelete: SetNull)
+  job           Job?     @relation(fields: [jobId], references: [jobId], onDelete: SetNull)
 
   @@unique([scope, key])
   @@map("idempotency_records")
