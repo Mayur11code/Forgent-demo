@@ -281,26 +281,28 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | **P0** | H0–H1 | 60m | Architecture freeze and running foundation | App boots, contracts compile, `/api/health` 200, `p0-foundation` tag |
 | **P1** | H1–H4 | 180m | Premium shell, personas, schema and seeded overviews | Both personas see seeded overviews with labelled data |
 | **P2** | H4–H7 | 180m | Marketplace, builder profile, registry, job creation | Northstar browses versions and opens WH-204 with a compiled contract |
-| **P3** | H7–H11 | 240m | Compiler, auditions and dynamic selection | Auditions run dynamically across 10 fixtures; selection computed from runs; A, B or C can qualify; illustrative 10/10 and ₹10,000 |
-| **P4** | H11–H15 | 240m | Work order, execution, failure and recovery | v1.0.0 fails; v1.1.0 replaces it; downstream completes |
-| **P5** | H15–H18 | 180m | Independent verification, receipt and review | Ten checks pass; tamper-evident receipt hash exists; inventory commit blocked 42 → 42 |
-| **P6** | H18–H20 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
-| **P7** | H20–H22 | 120m | Premium UX completion and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); seeded profiles and simulated settlement labelled |
-| **P8** | H22–H24 | 120m | Regression, hardening, rehearsal and lock | Three clean rehearsals; `v1.0-demo`; signed runbook |
+| **P3** | H7–H10 | 180m | Compiler and auditions | Auditions run dynamically across 10 fixtures; comparison matrix renders scores; A, B or C can qualify |
+| **P4** | H10–H13 | 180m | Selection, work order, execution and recovery | Dynamic selection persisted; work order approved; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
+| **P5** | H13–H16 | 180m | Independent verification, receipt, review and demo reset | Ten checks pass; tamper-evident receipt hash exists; inventory commit blocked 42 → 42; demo reset verified |
+| **P6** | H16–H18 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
+| **P7** | H18–H21 | 180m | Premium UX completion, negative regression and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); negative regression suite passes |
+| **P8** | H21–H23 | 120m | Hardening, rehearsal and release lock | Three clean rehearsals; `v1.0-demo`; signed runbook; offline fallback verified |
+| **P9** | H23–H24 | 60m | Unallocated contingency and demo freeze | Presentation deck aligned, AV setup verified, unallocated contingency reserve (0 scheduled tasks) |
 
 ### Phase-level capacity and rebalanced effort
 
 | Phase | A minutes | B minutes | C minutes | Window | Buffer & Rule |
 |---|---:|---:|---:|---:|---|
-| P0 | 55 | 55 | 55 | 60 | 5m slack; contract freeze is the gate. |
+| P0 | 55 | 55 | 55 | 60 | 5m slack per dev; contract freeze is the gate. |
 | P1 | 160 | 145 | 140 | 180 | 20–40m slack; seeded overviews complete. |
 | P2 | 160 | 160 | 150 | 180 | 20–30m slack; contract compiler and marketplace active. |
-| P3 | 190 (215) | 195 | 200 | 240 | 25–50m buffer. Dynamic selection runs on persisted evaluations. Cut `P3-A-006` if behind. |
-| P4 | 160 | 170 | 180 | 240 | 60–80m buffer for recovery and adapter debugging. |
-| P5 | 120 (140) | 130 | 150 | 180 | 30–60m buffer. Receipt export `P5-A-004` is optional scope. |
+| P3 | 160 (185) | 155 | 160 | 180 | 20–25m buffer per dev. Auditions run on persisted evaluations; selection persisted in P4. |
+| P4 | 160 | 175 | 180 | 180 | Controlled execution, failure injection, and recovery replacement. |
+| P5 | 150 (170) | 165 | 155 | 180 | 15–30m buffer. Verifier, tamper-evident receipt, and demo reset. |
 | P6 | 105 (125) | 110 | 105 | 120 | 10–15m core buffer. `P6-A-005` is optional; economics reconcile to ₹10,000. |
-| P7 | 100 (120) | 85 | 85 | 120 | 20–35m buffer. Zero frontend mocks; `P7-A-004` motion polish is optional. |
-| P8 | 95 | 90 | 75 (100) | 120 | 20–45m buffer for rehearsals and regression. |
+| P7 | 100 (120) | 85 | 120 | 180 | 60–95m buffer. Zero frontend mocks; full negative regression suite. |
+| P8 | 95 | 90 | 75 (100) | 120 | 25–45m buffer for 3 full rehearsals and release lock. |
+| P9 | 0 | 0 | 0 | 60 | 60m unallocated contingency buffer (180 person-minutes reserve) for demo freeze. |
 
 **Capacity rebalancing summary:** Core planned workload is reduced to **3,425 person-minutes** across all three developers (Team A: 1,145m core / 1,230m total; Team B: 1,140m core / 1,140m total; Team C: 1,140m core / 1,165m total). This creates **895 minutes (~15 person-hours)** of team integration buffer. Team A is fully rebalanced from its previous 1,430m load, eliminating the previous capacity deficit. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.
 
@@ -376,12 +378,13 @@ A phase is complete only when **all four** are true:
 | P0 | `p0-foundation` | H1 | `npm run dev`, health 200, typecheck/lint, contract parse tests |
 | P1 | `p1-shell` | H4 | Persona switch, seeded overviews, schema/seed idempotency |
 | P2 | `p2-marketplace` | H7 | Catalog filters, agent versions, WH-204 contract preview |
-| P3 | `p3-compiler` | H11 | Three candidates, measured auditions, C selected with reasons |
-| P4 | `p4-recovery` | H15 | Approval, failure, v1.1.0 replacement, downstream completion |
-| P5 | `p5-trust` | H18 | Ten checks, receipt hash, review, blocked inventory |
-| P6 | `p6-economics` | H20 | ₹5,500 eligible, ₹2,500 fee, v1.0.0 ₹0, reserves reconcile |
-| P7 | `p7-polish` | H22 | Live route parity, three resets, visual freeze |
-| P8 | `v1.0-demo` | H24 | Three rehearsals, backup, signed runbook |
+| P3 | `p3-compiler` | H10 | Three candidates, measured auditions across 10 fixtures |
+| P4 | `p4-recovery` | H13 | Approval, failure, v1.1.0 replacement, downstream completion |
+| P5 | `p5-trust` | H16 | Ten checks, receipt hash, review, blocked inventory, demo reset |
+| P6 | `p6-economics` | H18 | ₹5,500 eligible, ₹2,500 fee, v1.0.0 ₹0, reserves reconcile |
+| P7 | `p7-polish` | H21 | Live route parity, negative regression suite, visual freeze |
+| P8 | `v1.0-demo` | H23 | Three rehearsals, backup, signed runbook, offline fallback |
+| P9 | `p9-lock` | H24 | Unallocated contingency reserve, AV check, final release freeze |
 
 If a gate slips, **cut optional scope before extending the phase**. P8 cannot be compressed: rehearsal time is part of the product.
 

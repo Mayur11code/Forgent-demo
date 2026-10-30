@@ -121,12 +121,13 @@ Per phase: P0 9 · P1 10 · P2 13 · P3 15 · P4 12 · P5 13 · P6 13 · P7 11 �
 | P0 | H0–H1 | Foundation and contract freeze | `p0-foundation` |
 | P1 | H1–H4 | Shell, personas, schema, seed | `p1-shell` |
 | P2 | H4–H7 | Marketplace and job creation | `p2-marketplace` |
-| P3 | H7–H11 | Compiler, auditions, selection | `p3-compiler` |
-| P4 | H11–H15 | Work order, execution, recovery | `p4-recovery` |
-| P5 | H15–H18 | Verification, receipt, review | `p5-trust` |
-| P6 | H18–H20 | Contributions and economics | `p6-economics` |
-| P7 | H20–H22 | Live integration and polish | `p7-polish` |
-| P8 | H22–H24 | Regression and rehearsal | `v1.0-demo` |
+| P3 | H7–H10 | Compiler and auditions | `p3-compiler` |
+| P4 | H10–H13 | Selection, work order, execution, recovery | `p4-recovery` |
+| P5 | H13–H16 | Verification, receipt, review, demo reset | `p5-trust` |
+| P6 | H16–H18 | Contributions, economics, ledger | `p6-economics` |
+| P7 | H18–H21 | Live integration, negative regression suite, polish | `p7-polish` |
+| P8 | H21–H23 | Hardening, 3x full rehearsals, release lock | `v1.0-demo` |
+| P9 | H23–H24 | Unallocated contingency buffer and demo freeze | `p9-lock` |
 
 A phase is complete only when its gate passes, its prototype is usable and its tag exists.
 

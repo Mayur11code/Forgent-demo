@@ -2,7 +2,7 @@
 
 **Status:** `PROPOSED — FREEZE AT P0`  
 **Window:** 24 elapsed hours, H0–H24  
-**Phase count:** 9 (P0–P8)  
+**Phase count:** 10 (P0–P9)  
 **Rule:** a phase ends only when its gate is demonstrated, its prototype is usable and its checkpoint tag exists.
 
 Each phase below records the same 18 fields so a stand-up, checkpoint or handoff can be answered from one place. Task IDs are canonical in [TASK_TRACKER.md](TASK_TRACKER.md); this document explains the phase logic, not the per-task status.
@@ -16,14 +16,15 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | P0 | H0–H1 | 60 | Foundation and contract freeze | `p0-foundation` | App boots; contracts compile; health 200 |
 | P1 | H1–H4 | 180 | Shell, personas, schema, seed | `p1-shell` | Both personas see seeded overviews |
 | P2 | H4–H7 | 180 | Marketplace and job creation | `p2-marketplace` | Catalog works; WH-204 opens with a compiled contract |
-| P3 | H7–H11 | 240 | Compiler, auditions, selection | `p3-compiler` | Auditions run across 10 fixtures; selection computed dynamically; A, B or C can qualify |
-| P4 | H11–H15 | 240 | Work order, execution, recovery | `p4-recovery` | v1.0.0 fails; v1.1.0 replaces it; downstream completes |
-| P5 | H15–H18 | 180 | Verification, receipt, review | `p5-trust` | Ten checks pass; tamper-evident hash exists; commit blocked 42 → 42 |
-| P6 | H18–H20 | 120 | Contributions and economics | `p6-economics` | ₹5,500 eligible; v1.0.0 ₹0; fee/reserves reconcile |
-| P7 | H20–H22 | 120 | Live integration and polish | `p7-polish` | No frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); seeded data/simulated settlement labelled |
-| P8 | H22–H24 | 120 | Regression and rehearsal | `v1.0-demo` | Three clean rehearsals; runbook signed |
+| P3 | H7–H10 | 180 | Compiler and auditions | `p3-compiler` | Auditions run dynamically across 10 fixtures; comparison matrix renders scores; A, B or C can qualify |
+| P4 | H10–H13 | 180 | Selection, work order, execution, recovery | `p4-recovery` | Dynamic selection persisted; work order approved; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
+| P5 | H13–H16 | 180 | Verification, receipt, review, demo reset | `p5-trust` | Ten checks pass; tamper-evident hash exists; commit blocked 42 → 42; demo reset operational |
+| P6 | H16–H18 | 120 | Contributions and economics | `p6-economics` | ₹5,500 eligible; v1.0.0 ₹0; fee/reserves reconcile |
+| P7 | H18–H21 | 180 | Live integration, negative regression, polish | `p7-polish` | No frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); full negative regression suite passes |
+| P8 | H21–H23 | 120 | Hardening, rehearsal and release lock | `v1.0-demo` | Three clean rehearsals; runbook signed; offline fallback verified |
+| P9 | H23–H24 | 60 | Unallocated contingency and demo freeze | `p9-lock` | Presentation deck aligned, AV setup verified, unallocated contingency reserve |
 
-**Total:** 1,440 minutes. **Tasks:** 108 total, 106 actionable, 5 optional, 2 deferred. Core workload: 3,425 person-minutes (895m integration buffer).
+**Total:** 1,440 minutes. **Tasks:** 108 total, 106 actionable, 5 optional, 2 deferred. Core workload: 3,425 person-minutes (895m integration buffer across the 24 hours).
 
 ---
 
@@ -107,7 +108,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Show the intelligence engine honestly: decompose the job, match capabilities, generate three bounded candidates, audition them on the same suite, and select on hard constraints. |
-| **2. Window** | H7–H11, 240 minutes. |
+| **2. Window** | H7–H10, 180 minutes. |
 | **3. Entry criteria** | P2 gate passed; WH-204 `CONTRACT_READY`; matcher and contract compiler available; manifests and fixtures validated. |
 | **4. Exit gate** | Compile persists three candidates; thirty fixture results are measured; dynamic selection ranks candidates from persisted runs; any candidate can qualify; in the baseline run Candidate C qualifies and is selected with persisted reasons; the baseline never appears as a marketplace listing. |
 | **5. Phase owner** | C (compiler/auditions/selection), B (persistence/APIs), A (graph/comparison/compiler UX). |
@@ -132,7 +133,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Turn the selected workflow into an approved commercial run and prove controlled failure, bounded recovery and downstream correctness. |
-| **2. Window** | H11–H15, 240 minutes. |
+| **2. Window** | H10–H13, 180 minutes. |
 | **3. Entry criteria** | P3 gate passed; C selected; allocations and runtime policy frozen; execution schema ready. |
 | **4. Exit gate** | Buyer approves a ₹10,000 work order; six stages run in order; v1.0.0 fails at reconciliation with `AGENT_SCHEMA_INVALID`; compatibility checks pass for v1.1.0; downstream stages rerun; the run reaches the approval gate with 10/2; a no-fallback scenario stops safely. |
 | **5. Phase owner** | B (work order/execution/recovery persistence), C (runtime/failure/recovery/limits), A (approval/monitor/recovery UI). |
@@ -157,7 +158,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Establish trust: recompute the outcome independently, explain ten checks, hash the evidence, and keep the consequential inventory action blocked. |
-| **2. Window** | H15–H18, 180 minutes. |
+| **2. Window** | H13–H16, 180 minutes. |
 | **3. Entry criteria** | P4 gate passed; execution at the approval gate; generated outputs and evidence available; receipt/economics shapes frozen. |
 | **4. Exit gate** | Verifier passes all ten checks for WH-204; a false agent success fails; state diff shows 42→42 on-hand invariant, pending 10, variance 2; tamper-evident receipt hash is generated; buyer review acknowledges without committing inventory; direct commit is blocked and audited. |
 | **5. Phase owner** | C (verifier/state diff/gate/negatives), B (acceptance persistence/receipt/review), A (verification/receipt/review UI). |
@@ -182,7 +183,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Close the economic loop: pay only accepted stage contributions, show the platform fee and reserves, keep the replaced version at zero, and update version-specific reputation. |
-| **2. Window** | H18–H20, 120 minutes. |
+| **2. Window** | H16–H18, 120 minutes. |
 | **3. Entry criteria** | P5 gate passed; acceptance result verified; receipt body available; work-order allocations and recovery events persisted. |
 | **4. Exit gate** | Evidence Reader ₹1,500; v1.1.0 ₹2,500; v1.0.0 ₹0; Exception Reporter ₹1,000; builder total ₹5,500; platform fee ₹2,500; reserves ₹1,200/₹800; status `ELIGIBLE_SIMULATED`; buyer total ₹10,000; reputation isolated by version. |
 | **5. Phase owner** | C (attribution/economics rules), B (contributions/settlement/aggregation), A (transactions/earnings/reputation UI). |
@@ -207,7 +208,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Remove every mock, harden the API surface, run the full chain on live data and freeze the visual system. |
-| **2. Window** | H20–H22, 120 minutes. |
+| **2. Window** | H18–H21, 180 minutes. |
 | **3. Entry criteria** | P6 gate passed; all engines and screens exist; reset implemented; demo flags documented. |
 | **4. Exit gate** | Every demo route runs with `NEXT_PUBLIC_USE_MOCKS=false` (zero UI/mock layer; all calls hit live Next.js route handlers with SQLite database persistence); buyer and builder journeys complete; no dead link or fake action; seeded profiles and simulated settlement remain clearly labelled; three resets produce identical state; contract tests pass. |
 | **5. Phase owner** | A (live integration/polish/responsive), B (API hardening/reset/performance), C (live chain regression/demo mode/latency). |
@@ -232,7 +233,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Field | Detail |
 |---|---|
 | **1. Objective** | Prove the demo is repeatable under pressure, lock the build and hand the team a signed runbook. |
-| **2. Window** | H22–H24, 120 minutes. |
+| **2. Window** | H21–H23, 120 minutes. |
 | **3. Entry criteria** | P7 gate passed; live build; backup; no known P0 blocker; runbook draft exists. |
 | **4. Exit gate** | Buyer and builder regressions pass; API/database/reset regression passes; nine negative cases behave safely; three consecutive rehearsals reach the verified receipt and eligible simulation; `v1.0-demo` tag exists; runbook signed. |
 | **5. Phase owner** | Joint; A leads buyer/judge rehearsal, B leads API/reset/backup, C leads determinism/negative paths/technical chain. |
@@ -249,6 +250,31 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | **16. Scope cut** | Drop `P8-C-004`. Rehearsals and the tag are non-negotiable; if a defect is severe, cut a P1/P2 UI feature and record it. |
 | **17. Checkpoint tag** | `v1.0-demo`. |
 | **18. Handoff** | Signed runbook, seeded backup, tagged build and decision log to the demo team. |
+
+---
+
+## P9 — Unallocated contingency, final live rehearsal & demo freeze
+
+| Field | Detail |
+|---|---|
+| **1. Objective** | Provide a dedicated unallocated contingency buffer, verify presentation AV and laptop hardware, and perform final release freeze. |
+| **2. Window** | H23–H24, 60 minutes. |
+| **3. Entry criteria** | P8 gate passed; `v1.0-demo` tag committed; signed runbook in hand; zero open blockers. |
+| **4. Exit gate** | Presentation deck aligned; projector/screen mirroring tested; zero open blockers; final emergency buffer preserved. |
+| **5. Phase owner** | Joint A/B/C; full team demo rehearsal. |
+| **6. Tasks** | 0 scheduled development tasks (180 person-minutes emergency contingency reserve). |
+| **7. Critical path** | Standby buffer; live AV rehearsal. |
+| **8. Parallel tracks** | A: slide deck & UI walk-through. B: clean reset and backup verification. C: model connectivity & fallback verification. |
+| **9. Dependencies** | Complete P0–P8 implementation. |
+| **10. Deliverables** | Verified presentation hardware, clean live environment, zero-defect demo readiness. |
+| **11. Usable prototype** | Locked production release on `main` ready for judging. |
+| **12. Demo evidence** | Final successful live run on presentation machine. |
+| **13. QA focus** | Hardware stability, projector resolution, network failure isolation. |
+| **14. Contract/data touchpoints** | Seeded demo truth intact. |
+| **15. Risks** | Venue WiFi loss (mitigated by deterministic fallback and local SQLite). |
+| **16. Scope cut** | N/A (no scheduled tasks). |
+| **17. Checkpoint tag** | `p9-lock`. |
+| **18. Handoff** | Ready for judge demonstration. |
 
 ---
 
