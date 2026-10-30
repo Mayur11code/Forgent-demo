@@ -146,6 +146,88 @@ It manages:
 
 ---
 
+## 3.4 Core Architectural Concepts
+
+To maintain conceptual integrity across the marketplace, compiler, and verification engine, ProofHire strictly separates six distinct concepts:
+
+### A. Capability
+A declared unit of functionality that can be required by a business workflow.
+- **Examples:** Invoice extraction, purchase order interpretation, quantity reconciliation, exception reporting, repository analysis, code generation, test generation, test execution.
+- **Provider neutrality:** A capability can be provided by one agent, multiple cooperating agents, a deterministic platform function, an existing business system connector, or a human checkpoint.
+- **Rule:** *Do not treat every capability as an agent.* Capabilities represent *what* needs to be accomplished; agents are one way to implement them.
+
+### B. Agent Package
+The reusable, distributable software unit published by an independent developer. ProofHire treats an agent as a versioned, executable software package that provides one or more capabilities. A package contains:
+- Agent identity and developer ownership metadata.
+- Versioned executable implementation (the code that actually executes the task).
+- Manifest declaring capabilities, dependencies, and author claims.
+- Input and output schemas (strict JSON schemas validated at runtime).
+- Configuration schema and default parameters.
+- Required permissions, tools, and environmental access scopes.
+- Runtime requirements (environment variables, container constraints).
+- Evaluation suite and synthetic test cases.
+- Version and dependency metadata.
+- Pricing model (e.g. fixed paise per stage invocation, compute-adjusted).
+- **Rule:** *The manifest alone is not the agent implementation.* An agent is not merely a prompt or manifest; its executable implementation performs the work.
+
+### C. Agent Version
+An immutable, uniquely identifiable release of an agent package (e.g., `1.0.0`, `1.1.0`).
+- Performance, audit, and evaluation evidence belongs strictly to a specific version.
+- Executions must record the exact version used so evaluation, recovery, provenance, and contribution attribution remain reproducible.
+
+### D. Agent Instance
+A configured, contextualized instance of a specific agent version bound to a particular business job or workflow step. It combines the reusable package implementation with:
+- Business-specific configuration parameters.
+- Allowed tools and connectors mediated by the ProofHire Tool Gateway.
+- Approved permission scopes (read-only vs. read-write).
+- Relevant business context (e.g. warehouse SKU taxonomy, invoice rules).
+- Runtime constraints (timeouts, cost limits, concurrency bounds).
+
+### E. Compiled Workflow
+A versioned, acyclic execution graph composed of:
+- Configured agent instances.
+- Deterministic platform functions (e.g., math calculations, rule assertions).
+- Business connector operations.
+- Conditional branches, failure handling, and recovery steps.
+- Human approval checkpoints for consequential side effects.
+- **Rule:** *A workflow is not an agent package.* The Team Compiler assembles workflows; agents do not automatically construct the final workflow themselves.
+
+### F. Execution
+An actual execution run of a compiled workflow against authorized business input data.
+- The runtime persists the exact workflow version, agent versions, instance configuration, tool permissions, stage execution traces, retries, verification results, and tamper-evident evidence receipts.
+
+---
+
+## 3.5 Two Agent Categories: Execution Agents and Creation Agents
+
+ProofHire distinguishes between two fundamental categories of agent packages:
+
+### Type 1: Execution Agent
+An agent with an existing executable implementation that performs a declared operational task directly on input data.
+- **Pattern:** Document/Data In $\rightarrow$ Existing Code Execution $\rightarrow$ Structured Output Out.
+- **Example:** An Invoice Reader receives an invoice PDF or JSON, executes its extraction algorithm/model prompt, validates the output against its declared schema, and returns structured line items.
+- **Property:** It delivers its capability without generating new application source code.
+- **Role in MVP:** All worker agents in the Northstar receiving demonstration (`Evidence Reader`, `Reconciliation Specialist`, `Exception Reporter`) are Execution Agents.
+
+### Type 2: Creation Agent
+An agent capable of analyzing, producing, or modifying software artifacts to deliver requested functionality.
+- **Pattern:** Requirements & Repository In $\rightarrow$ Workspace Analysis & Code Modification $\rightarrow$ Test Verification $\rightarrow$ Reviewed Code Artifact Out.
+- **Examples:** Repository Analysis Agent, Software Engineering Agent, Test Generation Agent, Debugging/Repair Agent.
+- **Workflow:**
+  1. Connects to an authorized repository via restricted sandbox.
+  2. Inspects architecture, existing tests, and dependencies.
+  3. Generates or modifies code in a controlled workspace.
+  4. Generates or updates automated tests.
+  5. Executes test suites and static analysis tools.
+  6. Reports failures and attempts bounded repair.
+  7. Produces a reviewed code-change artifact or pull request for human sign-off.
+- **Crucial Boundary:** *Generated business code is an output artifact; it does not automatically become a new marketplace agent package.* Publishing generated functionality as a reusable marketplace agent requires a separate, explicit packaging, schema validation, synthetic evaluation, and publishing process.
+- **Product Roadmap:** Creation agents are part of ProofHire's longer-term engineering roadmap; they are intentionally excluded from the 24-hour Northstar receiving MVP.
+
+---
+
+---
+
 # 4. Who Benefits and Why They Participate
 
 ## 4.1 Business buyers
@@ -363,12 +445,30 @@ Examples:
 
 Each candidate must satisfy dependency and interface rules before it is auditioned.
 
-## Stage 6 — Team audition and selection
+## Stage 6 — Team audition and dynamic selection
 
-ProofHire tests candidate workflows against comparable buyer-relevant test cases.
+The Team Compiler tests candidate workflows against comparable buyer-relevant synthetic test cases.
+
+### The 9-Step Compiler Pipeline
+The business submits an outcome request and constraints. The compiler:
+1. **Decomposes** the requested business outcome into required capabilities.
+2. **Queries** the versioned Agent/Capability Registry for candidate implementations.
+3. **Identifies** suitable agent packages, deterministic platform functions, and business connectors.
+4. **Generates** candidate workflow graphs (single-agent, hybrid, or multi-agent; multi-agent is not mandatory).
+5. **Configures** candidate agent instances with job-specific parameters and tool permission scopes.
+6. **Checks** schemas, dependencies, permissions, compatibility, budget, and execution limits.
+7. **Auditions** candidates on comparable synthetic fixtures (`wh204-suite-v1`).
+8. **Rejects** candidates that fail critical acceptance constraints (e.g. quantity mismatch, schema corruption).
+9. **Selects** a qualifying workflow dynamically based on observed accuracy, cost, latency, recovery, and human intervention.
+
+### Evaluation Differences by Agent Category
+Evaluation criteria must reflect the agent package category:
+- **Execution Agents:** Capability correctness, input/output schema compliance, data extraction accuracy, operational reliability, compute cost, latency, and tool permission compliance.
+- **Creation Agents:** Generated code correctness, automated test pass rate, preservation of existing application behavior (no regressions), static analysis and security vulnerability checks, authorized scope compliance, and clean, reviewable output artifacts (diffs / pull requests).
+- **Workflow-Level Evaluations:** End-to-end integration across nodes, bounded failure recovery, final acceptance contract verification, and side-effect safety (e.g. inventory ledger non-mutation).
+- **Synthetic Test Boundaries:** Synthetic audition tests provide empirical evidence against defined test cases; they do not guarantee perfection across all real-world edge cases.
 
 Audition cases should include:
-
 - Normal inputs.
 - Missing and malformed data.
 - Duplicate records.
@@ -382,11 +482,10 @@ Audition cases should include:
 The evaluator uses deterministic assertions wherever possible. LLM-based qualitative assessment can supplement checks but should not be the sole source of truth for critical acceptance conditions.
 
 **Selection rule:**
-
 1. Reject any candidate that fails a critical safety or quality requirement.
 2. Reject candidates that violate permissions, interface contracts, budget or deadline constraints.
 3. Compare the remaining candidates on observed quality, total cost, latency, recovery behavior and human intervention.
-4. Select the least costly workflow that meets the buyer's required thresholds and risk constraints.
+4. Dynamically select the least costly qualifying workflow that meets the buyer's required thresholds and risk constraints (Candidate A, B, or C can qualify based on audition measurements).
 5. If none qualifies, report the capability gap and offer alternatives.
 
 A higher composite score must never compensate for a critical safety violation.
@@ -761,53 +860,58 @@ Do not represent seeded profiles, simulated money or controlled benchmark condit
 
 ---
 
-# 10. Hackathon MVP Scope
+# 10. Scope Boundaries: Hackathon MVP vs. Future Platform Capabilities
 
-## Must build
+To prevent scope creep and maintain strict development focus, ProofHire explicitly separates its 24-hour hackathon MVP from its near-term evolution and long-term platform capabilities.
 
+## 10.1 Hackathon MVP Scope (24-Hour Deliverable)
+
+### Must build
 1. **Buyer job form:** outcome, inputs, budget, deadline, acceptance criteria and allowed actions.
 2. **Acceptance contract preview:** structured checks and ambiguity warnings.
-3. **Builder/agent registry:** three to five versioned candidates with capabilities, schemas, permissions and cost information.
-4. **Capability matcher:** match required stages to eligible candidate agents.
-5. **Workflow candidate generator:** create a small set of valid single-agent and multi-agent workflows.
-6. **Audition runner:** execute the same fixtures against each candidate.
-7. **Workflow selector:** reject candidates failing hard requirements and choose the least costly qualifying workflow.
-8. **Execution engine:** run the selected workflow and record stage state.
-9. **Failure/replacement path:** inject one controlled failure and substitute a compatible agent.
-10. **Independent verifier:** deterministic acceptance checks against final output/state.
-11. **Contribution and economics ledger:** calculate builder allocations, platform fees, cost and settlement eligibility.
-12. **Evidence receipt:** selected agents, versions, checks, state diff, costs, errors and outcome.
-13. **Polished end-to-end demo:** receiving and inventory reconciliation.
+3. **Builder/agent registry:** versioned Execution Agent packages with capabilities, schemas, permissions and pricing.
+4. **Capability matcher:** match required stages to eligible candidate agents, deterministic functions, and human checkpoints.
+5. **Workflow candidate generator:** create a bounded set of valid single-agent, hybrid, and multi-agent workflows.
+6. **Audition runner:** execute 10 synthetic fixtures (`wh204-suite-v1`) against each candidate.
+7. **Workflow selector:** reject candidates failing hard constraints and dynamically select the qualifying workflow.
+8. **Execution engine:** run the selected workflow via QStash durable step webhooks and record stage state.
+9. **Failure/replacement path:** inject one controlled failure (`AGENT_SCHEMA_INVALID`) and substitute a compatible agent (`v1.1.0`).
+10. **Independent verifier:** deterministic acceptance checks against final output/state, independently checking the 42→42 inventory invariant.
+11. **Contribution and economics ledger:** calculate builder allocations (₹5,500), platform fees (₹2,500), and reserves (₹1,200/₹800).
+12. **Evidence receipt:** tamper-evident SHA-256 hash over selected agents, versions, checks, state diff, costs, errors and outcome.
+13. **Polished end-to-end demo:** receiving and inventory reconciliation (Northstar Warehouse WH-204).
 
-## Should build if time permits
-
+### Should build if time permits
 - Buyer and builder dashboard views.
-- Agent version comparison.
-- Capability-gap request.
-- Human-review queue.
-- Receipt export/download.
-- More adversarial test cases.
-- A small visual benchmark comparison.
+- Agent version comparison timeline.
+- Capability-gap request form.
+- Human-review queue interface.
+- Receipt JSON/Markdown export.
+- Adversarial negative test suite (`N-01` through `N-10`).
+- Visual compiler candidate graph.
 
-## Simulate honestly
+### Simulate honestly (with clear badges)
+- Public developer onboarding at scale (use seeded Jordan Lee / Demo Agent Studio).
+- Real payment settlement and escrow (`ELIGIBLE_SIMULATED`, `provider: null`).
+- Real production warehouse inventory update (42 → 42 simulated ledger invariant; commit blocked).
+- External model API dependency (hybrid adapter with deterministic fallback on timeout).
 
-- Public developer onboarding at scale.
-- Real payment settlement and escrow.
-- Large external agent marketplace.
-- Enterprise identity integrations.
-- Real production inventory update.
-- Long-term reputation and predictive reliability.
+## 10.2 Future Product Capabilities (Near-Term & Long-Term Roadmap)
 
-## Defer
+The following capabilities are central to ProofHire's commercial vision but are **strictly deferred** beyond the 24-hour MVP:
 
-- Crypto wallets and smart contracts.
-- Universal A2A/MCP discovery.
-- Arbitrary public code execution.
-- Custom microVM infrastructure.
-- General-purpose autonomous agents for every domain.
-- Universal integrations with dozens of business systems.
-- Complex bidding systems.
-- Custom distributed ledger.
+### Near-term product evolution
+- **Public developer onboarding & validation:** Self-serve developer portal with automated static analysis and dynamic security scanning of submitted packages.
+- **Agent package upload & sandboxed runtime:** Uploading arbitrary packages running inside isolated microVM / gVisor sandboxes with strict memory/CPU limits and egress firewalls.
+- **Builder-hosted agent endpoints:** Protocol for developers to host their own secure webhook endpoints conforming to the ProofHire Agent Protocol.
+- **Production business connectors:** Read/write connectors for major ERP, CRM, and WMS platforms (NetSuite, SAP, Salesforce) mediated by the ProofHire Tool Gateway.
+- **Credential vault & rotation:** Secure KMS-backed enterprise credential storage with per-execution scoped tokens and automatic secret rotation.
+
+### Long-term platform capabilities
+- **Customer-hosted agent packages:** Allowing enterprise customers to execute agents entirely within their private cloud VPC or on-premises infrastructure.
+- **Creation Agents (Software Engineering Workflows):** Agents that inspect authorized codebases, generate/modify application code, generate unit/integration tests, and open verified pull requests in GitHub/GitLab.
+- **Decentralized receipt anchoring:** Anchoring tamper-evident receipt hashes to public timestamping authorities or distributed ledgers for external cryptographic non-repudiation.
+- **Dynamic cross-version reputation & insurance:** Actuarial reliability underwriting based on long-term execution histories.
 
 ---
 
@@ -824,10 +928,12 @@ flowchart TD
     Compiler --> Candidates[Candidate Workflow Graphs]
     Candidates --> Audition[Audition Runner]
     Fixtures[Task Fixtures & Ground Truth] --> Audition
-    Audition --> Selector[Constraint-Based Selector]
+    Audition --> Selector[Constraint-Based Dynamic Selector]
     Selector --> Offer[Workflow Quote & Work Order]
-    Offer --> Approval[Buyer Approval]
+    Offer --> Approval[Buyer Approval Gate]
     Approval --> Runtime[Controlled Workflow Runtime]
+    Runtime --> Gateway[ProofHire Tool Gateway]
+    Gateway --> Systems[Business Connectors & Tools]
     Runtime --> Recovery[Failure Diagnosis & Bounded Replacement]
     Recovery --> Runtime
     Runtime --> Verifier[Independent Acceptance Verifier]
@@ -845,100 +951,179 @@ flowchart TD
 - **Buyer/job service:** job lifecycle, budgets, deadlines and risk.
 - **Contract service:** acceptance criteria, schemas, permissions and approvals.
 - **Builder service:** builder profiles, terms, payout destination metadata and ownership.
-- **Agent registry:** capability manifests, versions, adapters and evaluation history.
+- **Agent registry:** capability manifests, package versions, adapters and evaluation history.
 - **Compiler:** capability decomposition, candidate composition and compatibility.
 - **Audition service:** test fixtures, candidate execution and deterministic grading.
-- **Selector:** hard-constraint filtering and cost/quality/risk ranking.
+- **Selector:** hard-constraint filtering and cost/quality/risk dynamic ranking.
 - **Marketplace/work-order service:** quotes, buyer approvals, contract and commercial terms.
 - **Workflow runtime:** scheduling, stage state, timeouts, retries and idempotency.
+- **Tool Gateway:** operation-level authorization, credential protection, and audit logging.
 - **Recovery service:** diagnosis, compatible replacement and human escalation.
 - **Verifier:** final checks, policy gates and acceptance decision.
 - **Economics service:** contribution attribution, platform fee and settlement eligibility.
 - **Evidence service:** execution traces, state diffs, costs, versions and receipt export.
 
-## 11.3 Suggested prototype stack
+## 11.3 Agreed Serverless Stack
 
-Use the team's existing strengths and avoid introducing unnecessary infrastructure.
+The ProofHire architecture utilizes a modern, serverless stack designed for high reliability and zero local filesystem dependencies:
 
-- **Frontend:** Next.js, React and TypeScript.
-- **Backend:** Next.js server routes/actions or a small dedicated service.
-- **Database:** PostgreSQL with Prisma.
-- **Agent adapters:** typed TypeScript interfaces wrapping callable model-backed agents or deterministic functions.
-- **Validation:** Zod or equivalent runtime schema validation.
-- **Execution:** a controlled, bounded worker/orchestrator; do not execute arbitrary public code.
-- **Audit:** append-only execution event records with integrity hashes where useful.
-- **Demo integrations:** local fixtures and a simulated inventory ledger.
+- **Frontend & App Framework:** Next.js 15 App Router, React 19, strict TypeScript.
+- **Database & ORM:** Neon PostgreSQL with Prisma 7, utilizing `@prisma/adapter-neon` and `@neondatabase/serverless`. Configured with pooled connection string (`DATABASE_URL`, with `?sslmode=require`) for runtime queries and direct connection (`DIRECT_URL`) for migrations.
+- **Background Orchestration:** Upstash QStash (`@upstash/qstash`) for durable asynchronous execution step progression, dispatching signed webhook events to `/api/webhooks/qstash/execution-step`.
+- **Validation:** Zod for runtime schema validation across API envelopes, agent manifests, contracts, and stage I/O.
+- **Hosting & Compute:** Vercel serverless deployment.
+- **Integrity & Trust:** In-process SHA-256 canonical receipt hashing (`RECEIPT_BODY_V1`).
+- **Agent Adapters:** Typed TypeScript interfaces wrapping callable hybrid model-backed capabilities (Gemini/OpenAI) with deterministic local fallback logic.
 
-The prototype does not need a universal agent runtime. A consistent adapter contract is sufficient.
+## 11.4 Where Executable Agent Code Resides
 
-## 11.4 Example agent adapter contract
+The product architecture supports three distinct deployment models for executable agent code:
+
+1. **Platform-Hosted Packages:** ProofHire hosts and operates the execution runtime.
+2. **Builder-Hosted Packages:** Developers maintain their own hosted agent endpoints, invoked by ProofHire over authenticated webhooks.
+3. **Customer-Hosted Packages:** Agents execute within a business-controlled private cloud (VPC) or on-premises environment.
+
+**Hackathon MVP Implementation:**
+The 24-hour MVP exclusively uses **curated, platform-hosted callable adapters**. Implementation code resides directly within the ProofHire codebase (`src/server/agents/**`). The registry stores package metadata, capability declarations, and references to these executable implementations.
+
+> [!IMPORTANT]
+> The hackathon MVP does **not** allow developers to upload and execute arbitrary third-party code. Supporting arbitrary public executable uploads is a major future capability requiring isolated container/microVM runtimes (e.g. gVisor, Firecracker), strict CPU/memory limits, egress network firewalls, secret isolation, and automated package lifecycle management.
+
+## 11.5 Business-System Integration Architecture
+
+ProofHire strictly separates two integration scenarios:
+
+### Scenario A: Use Existing Business Data and Systems (Operational Workflows)
+When an Execution Agent requires access to business records (e.g., invoices, purchase orders, inventory counts, customer records):
+
+$$\text{Business System} \longrightarrow \text{Business Connector} \longrightarrow \mathbf{ProofHire\ Tool\ Gateway} \longrightarrow \text{Workflow Runtime} \longrightarrow \text{Agent Instance}$$
+
+The **ProofHire Tool Gateway** mediates all external access:
+- **Business-authorized integrations:** Connections are explicitly authorized by the business buyer.
+- **Narrow tool scopes:** Agents receive least-privilege tool definitions rather than broad API keys.
+- **Credential protection:** Agents *never* receive raw database credentials, production connection strings, or unrestricted API tokens.
+- **Input/output validation:** The Tool Gateway enforces strict schema validation on all inputs to and outputs from business tools.
+- **Operation-level authorization:** Every individual call is checked against the work order's approved permission scope.
+- **Read vs. write separation:** Read actions execute within approved limits; write operations (especially consequential state changes like inventory commitments or payment releases) require explicit human approval checkpoints.
+- **Audit logging:** Every invocation, payload hash, and latency measurement is appended to the execution trace.
+
+### Scenario B: Modify an Existing Business Codebase (Creation Agent Workflows)
+When a future Creation Agent is contracted to modify or add functionality to an existing business application:
+
+$$\text{Authorized Repository} \longrightarrow \text{Restricted Workspace} \longrightarrow \text{Repo Analysis} \longrightarrow \text{Code Gen} \longrightarrow \text{Test Execution} \longrightarrow \text{Verification} \longrightarrow \text{Pull Request} \longrightarrow \text{Human Review}$$
+
+- **Restricted Workspace Sandbox:** The agent clones the authorized branch into an ephemeral, isolated workspace with no access to production infrastructure or secrets.
+- **Repository Analysis:** Understands existing architecture, conventions, and test harnesses.
+- **Code & Test Generation:** Generates proposed modifications and accompanying test suites.
+- **Automated Verification:** Executes existing and new tests, static analysis, and security scanners.
+- **Controlled Deliverable:** The workflow produces a clean **Pull Request / Code-Change Artifact** for human review. It *never* directly mutates production or deploys code without human authorization.
+- **Distinction:** This is entirely different from a data-processing workflow and is **not** part of the Northstar receiving demo.
+
+## 11.6 Example Agent Package, Version, and Adapter Contract
 
 ```ts
-type AgentManifest = {
-  agentId: string;
+import { z } from "zod";
+
+// Capability Key Enum
+export type CapabilityKey =
+  | "document_evidence_extraction"
+  | "quantity_reconciliation"
+  | "policy_validation"
+  | "exception_reporting"
+  | "inventory_proposal"
+  | "human_approval"
+  | "repository_analysis"
+  | "code_generation"
+  | "test_generation"
+  | "test_execution";
+
+// Reusable Agent Package metadata
+export interface AgentPackage {
+  packageId: string;
   builderId: string;
-  version: string;
-  capabilities: string[];
+  name: string;
+  description: string;
+  category: "EXECUTION" | "CREATION";
+  deploymentModel: "PLATFORM_HOSTED" | "BUILDER_HOSTED" | "CUSTOMER_HOSTED";
+  capabilities: CapabilityKey[];
+  isSeeded: boolean;
+  createdAt: string;
+}
+
+// Immutable Agent Version
+export interface AgentVersion {
+  versionId: string;
+  packageId: string;
+  version: string; // e.g. "1.0.0"
+  status: "DRAFT" | "ACTIVE" | "DEPRECATED";
   inputSchemaId: string;
   outputSchemaId: string;
-  permissions: string[];
-  estimatedCost: number;
+  configSchemaJson?: Record<string, unknown>;
+  requiredPermissions: string[];
+  pricePaise: number;
   estimatedLatencyMs: number;
-};
+  fallbackVersionIds: string[];
+  runtimeAdapter: string;
+  runtimeMode: "HYBRID" | "DETERMINISTIC_RULES" | "FALLBACK";
+}
 
-type AgentExecutionResult<T> = {
-  status: "success" | "failed";
+// Contextualized Agent Instance Configuration
+export interface AgentInstanceConfig {
+  instanceId: string;
+  jobId: string;
+  versionId: string;
+  stageKey: CapabilityKey;
+  businessConfig: Record<string, unknown>;
+  allowedTools: string[];
+  permissionScope: "READ_ONLY" | "READ_WRITE_STAGED";
+  timeoutMs: number;
+  maxCostPaise: number;
+}
+
+// Execution Result Contract
+export interface AgentExecutionResult<T> {
+  status: "SUCCESS" | "FAILED";
   output?: T;
+  rawOutput?: unknown;
   errorCode?: string;
-  cost: number;
+  errorMessage?: string;
+  costPaise: number;
   latencyMs: number;
-  traceId: string;
-};
+  traceRef: string;
+}
 
-interface AgentAdapter<TInput, TOutput> {
-  manifest: AgentManifest;
+// Typed Agent Adapter Interface
+export interface AgentAdapter<TInput, TOutput> {
+  package: AgentPackage;
+  version: AgentVersion;
 
   execute(
     input: TInput,
-    context: {
-      jobId: string;
-      stageId: string;
-      attempt: number;
-      permissionScope: string[];
-    }
+    instanceConfig: AgentInstanceConfig
   ): Promise<AgentExecutionResult<TOutput>>;
 
-  validate(output: unknown): output is TOutput;
-
-  healthCheck(): Promise<boolean>;
+  validateInput(input: unknown): input is TInput;
+  validateOutput(output: unknown): output is TOutput;
+  healthCheck(): Promise<{ ok: boolean; message?: string }>;
 }
 ```
 
-A candidate can be a model-backed agent, a deterministic service, or a hybrid. All must honor the same interface and execution boundaries.
+## 11.7 Important Conceptual Data Entities vs. Hackathon Persistence
 
-## 11.5 Important data entities
+To prevent over-engineering while establishing clean domain abstractions, ProofHire separates conceptual entities from concrete hackathon tables:
 
-| Entity | Purpose |
-|---|---|
-| `Buyer` | Organization or buyer identity |
-| `Builder` | Independent developer/provider |
-| `Job` | Desired business outcome and constraints |
-| `AcceptanceContract` | Versioned requirements, checks and approvals |
-| `Agent` | Stable identity and owner |
-| `AgentVersion` | Capabilities, schemas, adapter and terms for a version |
-| `Capability` | A required or supplied skill/function |
-| `WorkflowCandidate` | Proposed graph and selected agent versions |
-| `EvaluationRun` | Audition inputs, conditions, results and cost |
-| `WorkOrder` | Approved commercial terms and payout allocation |
-| `ExecutionRun` | Actual job execution |
-| `StageRun` | Stage-level input/output/status/error/agent version |
-| `RecoveryEvent` | Retry, repair, replacement or escalation |
-| `AcceptanceResult` | Independent final checks |
-| `ContributionRecord` | Contracted builder contribution and eligibility |
-| `SettlementRecord` | Payment provider reference and settlement state |
-| `EvidenceReceipt` | Final auditable outcome and integrity metadata |
-
-These are design entities; do not build all production-grade lifecycle handling in the hackathon.
+| Entity | Conceptual Role | Hackathon MVP Persistence | Future Scope |
+|---|---|---|---|
+| `AgentPackage` | Reusable software package | Folded into `Agent` table | Full package publishing & artifact storage |
+| `AgentVersion` | Immutable version release | Persisted in `AgentVersion` table | Multi-region binary distribution |
+| `Capability` | Declared functional requirement | Persisted in `Capability` table | Dynamic semantic capability ontology |
+| `AgentInstance` | Configured version for a job | Materialized in `CandidateStage` & `StageRun` | Dynamic container instance lifecycle |
+| `CompiledWorkflow` | Acyclic execution plan | Persisted as `WorkflowCandidate` | Cross-organization workflow templates |
+| `ToolPermission` | Operation-level security scope | Enforced via Tool Gateway in runtime code | Granular RBAC / OAuth2 token vault |
+| `BusinessIntegration`| External system connection | Simulated local fixtures (`scan`, `po`, `inv`) | Production ERP/WMS OAuth connectors |
+| `Execution` | Commercial job execution | Persisted in `ExecutionRun` table | Distributed multi-tenant execution queue |
+| `EvidenceReceipt` | Tamper-evident verified record | Persisted in `EvidenceReceipt` table | Decentralized public anchor |
+| `ContributionRecord`| Builder stage compensation | Persisted in `ContributionRecord` table | Real bank / Stripe escrow transfer |
 
 ---
 

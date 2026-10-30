@@ -35,6 +35,30 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | Economics | Buyer ₹10,000; builder ₹5,500; platform fee ₹2,500; reserves ₹1,200/₹800 |
 | Payout | v1.0.0 ₹0; v1.1.0 ₹2,500; `ELIGIBLE_SIMULATED`; no real money moves |
 
+### Canonical Agent Architecture at a Glance
+
+ProofHire establishes strict separation across six core concepts:
+1. **Capability:** A declared unit of functionality (e.g. invoice extraction, quantity reconciliation, repository analysis). Provided by single agents, cooperating agents, deterministic platform functions, business connectors, or human checkpoints. *Not every capability is an agent.*
+2. **Agent Package:** The reusable software package published by a developer. Contains identity, versioned executable implementation, capability manifest, schemas, permissions, synthetic evaluation suites, and pricing. *The manifest alone is not the agent implementation.*
+3. **Agent Version:** An immutable, identifiable release (e.g. `1.0.0`, `1.1.0`) ensuring reproducible execution, evaluation, and attribution.
+4. **Agent Instance:** A configured instance of an agent version for a specific job, combining the package implementation with business context, configuration, runtime limits, and allowed tools mediated by the Tool Gateway.
+5. **Compiled Workflow:** A versioned execution graph assembled by the Team Compiler (composed of configured instances, deterministic code, connectors, and human gates).
+6. **Execution:** An auditable run against authorized inputs, persisting exact versions, configurations, tool permissions, stage traces, and tamper-evident evidence receipts.
+
+**Two Agent Categories:**
+- **Execution Agents:** Existing executable implementations performing declared tasks directly (e.g., Northstar's `Evidence Reader`, `Reconciliation Specialist`, `Exception Reporter`). This is the sole agent category in the hackathon MVP.
+- **Creation Agents:** Future agents capable of analyzing authorized repositories, generating/modifying code in restricted workspaces, running tests, and opening reviewed Pull Requests. *Generated code is an output artifact, not automatically a new marketplace package.* Deferred to future platform roadmap.
+
+**Deployment Models:**
+- **Platform-Hosted:** ProofHire operates runtime (sole model in hackathon MVP; curated callable adapters).
+- **Builder-Hosted:** Developers host authenticated webhook endpoints (future).
+- **Customer-Hosted:** Agents execute within customer VPC / on-premises (future).
+- *Arbitrary public code execution is strictly prohibited in the hackathon MVP.*
+
+**Business Integration & Tool Gateway:**
+- **Scenario A (Operational Data):** Business System $\rightarrow$ Business Connector $\rightarrow$ **ProofHire Tool Gateway** $\rightarrow$ Workflow Runtime $\rightarrow$ Agent Instance. Tool Gateway enforces narrow scopes, credential protection, operation-level authorization, read vs write separation, and human approval for consequential actions.
+- **Scenario B (Codebase Modification):** Authorized Repo $\rightarrow$ Restricted Workspace Sandbox $\rightarrow$ Repo Analysis $\rightarrow$ Code Generation $\rightarrow$ Test Verification $\rightarrow$ Pull Request $\rightarrow$ Business Review (Future).
+
 ---
 
 ## 2. Reading paths
@@ -59,7 +83,8 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 
 1. [`01 — Repository Audit`](01_REPOSITORY_AUDIT.md)
 2. [`DOCUMENTATION_AUDIT.md`](DOCUMENTATION_AUDIT.md)
-3. [`16 — Decisions/Changelog`](16_DECISIONS_AND_CHANGELOG.md)
+3. [`PRE_IMPLEMENTATION_READINESS.md`](PRE_IMPLEMENTATION_READINESS.md)
+4. [`16 — Decisions/Changelog`](16_DECISIONS_AND_CHANGELOG.md)
 
 ---
 
@@ -86,6 +111,7 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | — | [Task Tracker](TASK_TRACKER.md) | Canonical 108-task execution state |
 | — | [Task Tracker CSV](TASK_TRACKER.csv) | Machine-readable export of the same tasks |
 | — | [Documentation Audit](DOCUMENTATION_AUDIT.md) | Coverage and consistency verification |
+| — | [Pre-Implementation Readiness](PRE_IMPLEMENTATION_READINESS.md) | Phase capacity audit, dependency verification, model fallback, no-mock gate, ₹10k economics, reset tests |
 
 ---
 
@@ -106,7 +132,7 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | Core (non-optional) minutes | 3,425 |
 | Total team integration buffer | 895 minutes (~21% buffer) |
 
-Per phase: P0 9 · P1 10 · P2 13 · P3 15 · P4 12 · P5 13 · P6 13 · P7 11 · P8 12.
+Per phase: P0 9 · P1 10 · P2 13 · P3 12 · P4 13 · P5 14 · P6 13 · P7 12 · P8 12.
 
 **Capacity rebalancing:** Core planned workload is reduced to 3,425 person-minutes, leaving 895 minutes (~15 person-hours) of team buffer. Team A has been fully rebalanced to 1,145 core minutes (leaving ~295 minutes of capacity buffer). All workstreams operate strictly within their phase windows in P0–P8.
 
@@ -119,12 +145,13 @@ Per phase: P0 9 · P1 10 · P2 13 · P3 15 · P4 12 · P5 13 · P6 13 · P7 11 �
 | P0 | H0–H1 | Foundation and contract freeze | `p0-foundation` |
 | P1 | H1–H4 | Shell, personas, schema, seed | `p1-shell` |
 | P2 | H4–H7 | Marketplace and job creation | `p2-marketplace` |
-| P3 | H7–H11 | Compiler, auditions, selection | `p3-compiler` |
-| P4 | H11–H15 | Work order, execution, recovery | `p4-recovery` |
-| P5 | H15–H18 | Verification, receipt, review | `p5-trust` |
-| P6 | H18–H20 | Contributions and economics | `p6-economics` |
-| P7 | H20–H22 | Live integration and polish | `p7-polish` |
-| P8 | H22–H24 | Regression and rehearsal | `v1.0-demo` |
+| P3 | H7–H10 | Compiler and auditions | `p3-compiler` |
+| P4 | H10–H13 | Selection, work order, execution, recovery | `p4-recovery` |
+| P5 | H13–H16 | Verification, receipt, review, demo reset | `p5-trust` |
+| P6 | H16–H18 | Contributions, economics, ledger | `p6-economics` |
+| P7 | H18–H21 | Live integration, negative regression suite, polish | `p7-polish` |
+| P8 | H21–H23 | Hardening, 3x full rehearsals, release lock | `v1.0-demo` |
+| P9 | H23–H24 | Unallocated contingency buffer and demo freeze | `p9-lock` |
 
 A phase is complete only when its gate passes, its prototype is usable and its tag exists.
 
@@ -154,9 +181,21 @@ A phase is complete only when its gate passes, its prototype is usable and its t
 | Auditions | `Measured on wh204-suite-v1` | Dynamic selection computed from persisted runs; Candidate A, B or C can win |
 | Reputation | `Derived from demo evidence` | Derived from audition/execution stats, not public ratings |
 | Verification | `Independent deterministic verifier` | Platform-owned oracle, not an agent claim |
-| No-mock gate (P7) | `Live Next.js API & SQLite persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
+| No-mock gate (P7) | `Live Next.js API & Neon PostgreSQL persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
 
 **Never claim:** real payment, live inventory mutation, production auth, public demand, certified compliance, guaranteed earnings, or that hardcoded logic is an autonomous third-party AI.
+
+### 7.1 Explicit Scope Boundaries: MVP vs. Future Platform
+
+| Area | 24-Hour Hackathon MVP | Near-Term Evolution | Long-Term Platform |
+|---|---|---|---|
+| **Agent Packages** | Curated Execution Agents (`src/server/agents/**`) | Public developer uploads & sandbox check | Creation Agents (Software Engineering) |
+| **Hosting Model** | Platform-hosted callable adapters | Builder-hosted webhook endpoints | Customer-hosted (VPC / on-premise) |
+| **Tool Integration** | Local simulated fixtures | Tool Gateway + OAuth business connectors | Enterprise KMS credential vault & rotation |
+| **Code Modification** | Strictly prohibited (read/process only) | Bounded scripts in restricted sandboxes | Autonomous repo analysis, tests, PRs |
+| **Inventory State** | Simulated ledger (42 → 42 invariant) | ERP sandbox staging | Production 2-phase commit with ERP |
+| **Settlement** | Mathematical paise simulation | Stripe Connect / Escrow sandbox | Multi-currency real bank settlement |
+| **Arbitrary Code** | Prohibited (no third-party runtime) | Isolated container sandbox | MicroVM (Firecracker/gVisor) fleet |
 
 ---
 
@@ -203,7 +242,7 @@ If two documents disagree, the more specific frozen document wins for implementa
 ## 10. What success looks like
 
 - A judge sees a premium product, not a prototype.
-- Three candidates are auditioned; A/B are rejected for recorded reasons; C is selected.
+- Three candidates are auditioned on a 10-fixture suite; the winning candidate (A, B, or C) is dynamically selected from persisted audition scores with recorded rejection reasons.
 - v1.0.0 visibly fails; v1.1.0 visibly replaces it.
 - Ten independent checks pass; the receipt hash is stable.
 - Inventory stays blocked; no false claim of a commit.

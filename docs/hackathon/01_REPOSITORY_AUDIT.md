@@ -14,7 +14,7 @@
 |---|---|---|
 | `README.md` | Present | 14 bytes: `# Forgent-demo`. No run instructions, stack or product description. |
 | `BLUEPRINT.md` | Present, untracked | 1,606 lines. The canonical ProofHire product and hackathon blueprint. |
-| `.gitignore` | Present | Generic Node/Vite/Next ignore list. Includes `.next`, `node_modules`, `.env*`, `dist`, coverage, `.turbo`, `.vite`. It does **not** currently ignore Prisma SQLite files such as `prisma/dev.db` or `backups/`. |
+| `.gitignore` | Present | Generic Node/Vite/Next ignore list. Includes `.next`, `node_modules`, `.env*`, `dist`, coverage, `.turbo`, `.vite`. For the serverless stack (Neon PostgreSQL + Prisma 7), ensure `.env.local`, `.env*.local`, generated Prisma engine binaries, and database dump artifacts are ignored. |
 | `.git/` | Present | Single commit on `main`. |
 
 Nothing else exists. There is **no** `package.json`, lockfile, `src/`, `app/`, `prisma/`, tests, CI workflow, `.env.example`, Dockerfile or deployed configuration.
@@ -91,27 +91,30 @@ There is therefore **no pre-existing technology stack to preserve**. The stack i
 | Workflow graph | `@xyflow/react` (React Flow) | Purpose-built node/edge graph with pan, zoom, fit-view and custom node states. |
 | Charts | Recharts | Small, record-driven spend/earnings/reputation visuals. |
 | Validation | Zod | Shared runtime schemas for API payloads, manifests, contracts and fixtures. |
-| ORM / DB | Prisma + SQLite for the hackathon; PostgreSQL-compatible schema target | Zero external DB operations and deterministic local reset. SQLite is a demo decision, not a production claim. |
+| ORM / DB | Prisma 7 + Neon PostgreSQL with `@prisma/adapter-neon` serverless adapter | Production-ready serverless database with connection pooling and branching; aligns with the blueprint PostgreSQL requirement. |
 | Tests | Vitest for unit/integration; Playwright optional for one happy-path UI smoke | Compiler, verifier and economics require deterministic tests. |
-| Execution | In-process Node orchestrator behind Next.js route handlers, with persisted stage/event records and client polling | Reliable on a demo laptop; no queue/worker infrastructure. |
+| Execution | Serverless Next.js App Router route handlers with Upstash QStash (`@upstash/qstash`) for durable asynchronous stage execution, retries and step progression | Stateless, durable serverless execution without long-running Node daemon or local queue dependencies; Vercel-ready. |
 | Auth | Demo persona cookie and server-side role guard | Enough to demonstrate buyer vs builder permissions; **not** real authentication. |
 | Payments | None. Simulated eligibility only | The blueprint prohibits claiming real settlement without a provider. |
 | Inventory | Simulated local ledger | 42 → 42 on-hand invariant; commit blocked until human approval. |
 | LLM / Adapters | Hybrid adapter architecture: Evidence Reader is model-backed (Gemini/OpenAI via API key) with deterministic fallback; Reconciliation and Verifier are deterministic rules. | Provides authentic AI execution while guaranteeing zero-failure offline demo resilience. |
 
-### Why SQLite instead of PostgreSQL
+### Serverless Architecture: Neon PostgreSQL, Prisma 7 and QStash
 
-The blueprint suggests PostgreSQL + Prisma. The repository has no database infrastructure, no Docker configuration and no provisioned Postgres instance. For a 24-hour judged demo, SQLite removes an external failure mode and makes reset/backup trivial.
+The blueprint mandates a robust, outcome-driven marketplace with PostgreSQL persistence. The agreed serverless architecture combines:
 
-Constraints of this choice:
+- **Neon PostgreSQL:** Cloud serverless PostgreSQL with instant branching, connection pooling, and zero local database daemon overhead.
+- **Prisma 7 with Serverless Adapter:** `@prisma/adapter-neon` and `@neondatabase/serverless` using WebSocket/HTTP connection pooling via `DATABASE_URL`, with `DIRECT_URL` for direct schema migrations.
+- **Upstash QStash:** Durable message and webhook orchestration (`@upstash/qstash`) for asynchronous stage execution, retries, and failure recovery without local background worker processes.
+- **Vercel Serverless Deployment:** Next.js App Router deployed as stateless serverless functions.
+- **Runtime Validation:** Zod schemas enforcing strict boundaries on all API routes, database models, and agent manifests.
 
-- Store enums as strings validated by Zod (SQLite does not support Prisma enums).
-- Store JSON as text and parse through typed helpers (avoid connector-specific JSON behaviour).
-- Use integer paise for money, never floats.
-- Keep the Prisma schema free of Postgres-only features so a later migration is mechanical.
-- Accept single-writer demo concurrency; do not claim production multi-tenant scale.
+Key conventions:
+- Use native PostgreSQL types (`Json` / `jsonb`, native enums or checked strings).
+- Use integer paise for money, never floats (`amountPaise Int`).
+- Keep database mutations idempotent using unique constraints (e.g. `@@unique([executionId, stageId])`).
 
-This is recorded as `D-002` and requires P0 approval.
+This is recorded as `D-002` and frozen at P0.
 
 ---
 
@@ -164,22 +167,29 @@ npm run db:reset
 ### Environment variables to define
 
 ```dotenv
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://neondb_owner:YOUR_PASSWORD@ep-sample-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://neondb_owner:YOUR_PASSWORD@ep-sample.us-east-2.aws.neon.tech/neondb?sslmode=require"
+QSTASH_URL="https://qstash.upstash.io/v2"
+QSTASH_TOKEN="ey..."
+QSTASH_CURRENT_SIGNING_KEY="sig_..."
+QSTASH_NEXT_SIGNING_KEY="sig_..."
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_USE_MOCKS="true"
 NEXT_PUBLIC_DEMO_MODE="true"
 DEMO_SEED="wh204-v1"
 DEMO_FAILURE_SCENARIO="WH204_DEFAULT_FAILURE"
 DEMO_STAGE_DELAY_MS="900"
+GEMINI_API_KEY=""
 ```
 
-No secret, real payment key, warehouse credential or model API key is required for the critical path. That is deliberate.
+No real payment key or warehouse physical credential is required for the critical path.
 
-### Ports and local assumptions
+### Ports and runtime assumptions
 
-- Next.js dev server on `http://localhost:3000`.
-- SQLite file inside `prisma/` and ignored by Git.
+- Next.js App Router on `http://localhost:3000` (Vercel Serverless deployment).
+- Neon PostgreSQL cloud database with pooling via `DATABASE_URL` and direct migration via `DIRECT_URL`.
+- Durable async task execution orchestrated via Upstash QStash webhooks.
 - Single local browser, desktop/laptop viewport 1280–1440 primary.
-- No external network required after `npm install`.
 
 ---
 
@@ -188,7 +198,7 @@ No secret, real payment key, warehouse credential or model API key is required f
 | # | Conflict / gap | Resolution recorded |
 |---|---|---|
 | C-01 | The brief names `ProofHire_Final_Solution_Blueprint.md`; the repository file is `BLUEPRINT.md`. | Treat `BLUEPRINT.md` as canonical; do not duplicate. Decision `D-008`. |
-| C-02 | Blueprint suggests PostgreSQL; no Postgres infrastructure exists. | SQLite + Prisma for the demo, Postgres-compatible schema. Decision `D-002`. |
+| C-02 | Blueprint suggests PostgreSQL; no local Postgres daemon exists. | Neon Serverless PostgreSQL with Prisma 7 (`@prisma/adapter-neon`). Zero local daemon setup needed; aligns with blueprint PostgreSQL mandate. Decision `D-002`. |
 | C-03 | Blueprint's receiving example lists five candidate specialists including a Policy Checker and a separate Fallback Reconciler; the task specifies one freelancer with four versions (Evidence Reader, Reconciliation v1.0.0/v1.1.0, Exception Reporter). | Policy validation becomes a deterministic ProofHire capability; v1.1.0 is the compatible fallback. No fake fifth builder. Decision `D-009`, `D-010`, `D-011`. |
 | C-04 | Blueprint often speaks of Builders A–E; the task seeds a single freelancer, Jordan Lee. | All builder allocations aggregate to Jordan / Demo Agent Studio; per-agent contributions remain visible. |
 | C-05 | Blueprint marks buyer/builder dashboards as "should build if time permits"; the task requires them as part of the demo. | Dashboards and economics views are P0, not optional. |
@@ -208,7 +218,7 @@ No existing user work is overwritten. The only pre-existing files are preserved.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | No scaffold exists; P0 is on the critical path | A slow setup consumes marketplace/compiler time | One owner (B) initialises the project first; A/C work from the frozen contract document in parallel. |
-| SQLite write concurrency | Polling + event writes can contend | Single demo user, short transactions, WAL mode if needed, no parallel execution runs. |
+| Neon serverless connection limits | High concurrency can exceed connection pool | Use `@neondatabase/serverless` connection pooler via `DATABASE_URL` with short transactions. |
 | In-process async runtime | Next.js hot reload or a crash can interrupt a run | Persist stage state before/after each stage; UI resumes from persisted state; demo reset is one click. |
 | Windows paths and line endings | Scripts may break on `/` assumptions | Use Node `path` APIs; enforce LF in Git attributes; document PowerShell commands. |
 | Untracked blueprint | Teammates/checkpoints may miss the source | Commit `BLUEPRINT.md` before implementation. |

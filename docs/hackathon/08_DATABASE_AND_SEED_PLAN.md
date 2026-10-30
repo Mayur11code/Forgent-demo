@@ -2,8 +2,8 @@
 
 **Status:** `PROPOSED — FREEZE AT P0`  
 **Owner:** Team B  
-**Engine:** Prisma + SQLite for the hackathon; PostgreSQL-compatible schema target  
-**Database file:** `prisma/dev.db` (ignored by Git)
+**Engine:** Neon PostgreSQL + Prisma 7 (using `@prisma/adapter-neon` and `@neondatabase/serverless`) for serverless runtime  
+**Datasource:** Neon pooled connection via `DATABASE_URL` (with `?sslmode=require`) and direct connection via `DIRECT_URL` for migrations
 
 ---
 
@@ -11,11 +11,50 @@
 
 1. **Deterministic seed IDs.** Every seeded record has a stable string ID so the UI, tests and demo script can deep-link without lookup tables.
 2. **Money in paise.** All amounts are integers. No floating-point money anywhere.
-3. **Enums as strings.** SQLite cannot use Prisma enums; every status field is a `String` validated by the shared Zod enum at the service boundary.
-4. **JSON as text.** SQLite JSON behaviour is connector-sensitive; store serialized JSON in `String` fields and parse through typed helpers. Use `Json` only if the chosen Prisma/SQLite version proves it stable in P0.
+3. **Enums as strings.** Store enum fields as `String` / `VARCHAR` validated by shared Zod schemas at the application boundary for zero-downtime evolution.
+4. **Native JSON via Json / jsonb.** Store structured payloads using Prisma `Json` native PostgreSQL `jsonb` fields and parse through typed Zod helpers at runtime.
 5. **Evidence is append-only.** Execution events, failed stage attempts, contributions, acceptance results and receipts are never overwritten.
 6. **One execution per reset.** The demo has one job and one run; idempotency prevents duplicate effects.
-7. **Demo reset is explicit.** No silent deletion of unknown rows; the reset only removes records owned by seeded demo entities.
+7. **Demo reset is explicit.** No silent deletion of unknown rows; the reset performs clean FK-safe deletion of records owned by seeded demo entities in Neon PostgreSQL.
+
+---
+
+## 1.1 Conceptual Entity Model vs. Hackathon MVP Persistence
+
+To maintain architectural purity without bloating the 24-hour hackathon scope, ProofHire explicitly maps its conceptual domain entities across three layers:
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        CONCEPTUAL ENTITY ARCHITECTURE MAPPING                          │
+├─────────────────────────┬───────────────────────────────┬──────────────────────────────┤
+│ Conceptual Entity       │ Hackathon MVP Persistence     │ Structural Role & Rationale  │
+├─────────────────────────┼───────────────────────────────┼──────────────────────────────┤
+│ AgentPackage            │ Table: `Agent`                │ Package identity & author.   │
+│ AgentVersion            │ Table: `AgentVersion`         │ Immutable release & adapter. │
+│ Capability              │ Table: `Capability`           │ Neutral functional skills.   │
+│ AgentCapability         │ Table: `AgentVersionCap...`   │ Declared skill mapping.      │
+│ AgentInstance           │ Table: `CandidateStage`       │ Configured instance for job. │
+│ AgentConfiguration      │ Embedded JSON on `StageRun`   │ Runtime business context.    │
+│ EvaluationSuite         │ Table: `EvaluationRun` (suite)│ 10-fixture suite metadata.   │
+│ EvaluationRun           │ Table: `EvaluationRun`        │ Persisted audition runs.     │
+│ CompiledWorkflow        │ Table: `WorkflowCandidate`    │ Acyclic workflow graph.      │
+│ WorkflowNode / Edge     │ Embedded in `graphJson`       │ Visual & execution topology. │
+│ Execution               │ Table: `ExecutionRun`         │ Commercial execution run.    │
+│ ExecutionStage          │ Table: `StageRun`             │ Stage attempt trace & cost.  │
+│ ToolPermission          │ Runtime Tool Gateway policy   │ Mediated least-privilege.    │
+│ BusinessIntegration     │ Local test fixtures           │ Simulated ERP/scan fixtures. │
+│ EvidenceReceipt         │ Table: `EvidenceReceipt`      │ SHA-256 tamper-evident hash. │
+│ ContributionRecord      │ Table: `ContributionRecord`   │ Stage-level builder earning. │
+│ SettlementRecord        │ Table: `SettlementRecord`     │ Simulated payout eligibility.│
+├─────────────────────────┴───────────────────────────────┴──────────────────────────────┤
+│ FUTURE ARCHITECTURE (DEFERRED): BuilderHostedEndpoint, CustomerHostedRunner,            │
+│ CodeRepositoryConnection, PullRequestArtifact, CredentialVaultRecord.                  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Required Hackathon Persistence:** The 20 Prisma tables defined below provide all state needed for the complete buyer-to-freelancer demo loop.
+- **Logical / Runtime Abstractions:** Abstractions like `AgentInstance`, `ToolPermission`, and `WorkflowEdge` are enforced in TypeScript runtime code and serialized into parent rows rather than requiring redundant relational tables.
+- **Future Infrastructure:** Enterprise connectors, external repository sandboxes, and customer-hosted runner tables are deferred.
 
 ---
 
@@ -275,17 +314,32 @@ Mandatory uniqueness in the database, not only in application code:
 
 ---
 
-## 8. Migration and seed commands (to create at P0)
+## 8. Database client, migration and seed commands (to create at P0)
+
+```ts
+// src/server/db.ts - Prisma 7 Neon Serverless Adapter Singleton
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "@prisma/client";
+import ws from "ws";
+
+neonConfig.webSocketConstructor = ws;
+const connectionString = process.env.DATABASE_URL!;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaNeon(pool);
+
+export const db = new PrismaClient({ adapter });
+```
 
 ```powershell
 npm run db:generate     # prisma generate
-npm run db:push         # demo schema without migration history
-npm run db:seed         # deterministic seed
-npm run db:reset        # delete demo records and reseed
-npm run db:studio       # inspect rows
+npm run db:push         # prisma db push against DIRECT_URL
+npm run db:seed         # deterministic seed via Neon connection pool
+npm run db:reset        # clean FK-safe truncate and reseed in Neon PostgreSQL
+npm run db:studio       # inspect rows via Neon connection
 ```
 
-For a judged demo, use `db:push` + `db:seed`; for reproducibility, also keep one migration folder created at P1. The reset script is the operational source, not manual SQL.
+For serverless deployment on Vercel, `db:push` applies the schema against `DIRECT_URL` during CI/build, and `db:seed` populates initial records via `DATABASE_URL`. The reset script (`POST /api/demo/reset`) is the operational source, not manual SQL.
 
 ---
 

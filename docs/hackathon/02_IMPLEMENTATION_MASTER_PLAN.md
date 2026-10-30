@@ -26,6 +26,27 @@ The plan is deliberately narrower than the long-term product and deliberately wi
 5. **Everything simulated is labelled.** Payments are simulated eligibility, not settlement. Inventory is a local ledger, not a warehouse integration. Demo profiles are seeded.
 6. **The UI is a product, not a wireframe.** Premium dark B2B operations console with no dead routes and no fake deferred actions.
 
+### 1.3 Canonical Agent Architecture Principles
+
+To ensure structural consistency across all three engines, ProofHire strictly defines the following architectural abstractions:
+
+1. **Capability:** A declared unit of business functionality (e.g. `document_evidence_extraction`, `quantity_reconciliation`, `repository_analysis`). Capabilities define *what* is needed; they can be supplied by single agents, cooperating agents, deterministic platform functions, business connectors, or human checkpoints. *Not every capability is an agent.*
+2. **Agent Package:** The reusable, versioned software package authored and published by an independent developer. Conceptually contains developer identity, versioned executable implementation, capability manifest, schemas, permissions, synthetic evaluation suites, and pricing. *The manifest alone is not the implementation.*
+3. **Agent Version:** An immutable, uniquely identified release of an agent package (e.g., `1.0.0`, `1.1.0`), ensuring that execution history, evaluations, recovery events, and contribution attribution remain reproducible.
+4. **Agent Instance:** A configured instance of an agent version bound to a specific job step, combining the reusable package code with business context, configuration, runtime limits, and allowed tools mediated by the ProofHire Tool Gateway.
+5. **Compiled Workflow:** A versioned, acyclic execution graph composed of configured agent instances, deterministic functions, business connectors, failure recovery paths, and human approval checkpoints. The Team Compiler assembles workflows; agents do not assemble the final workflow themselves.
+6. **Execution:** An auditable run of the compiled workflow against authorized business inputs, persisting exact versions, configurations, tool permissions, stage traces, and tamper-evident evidence receipts.
+
+**Two Distinct Agent Categories:**
+- **Execution Agents (Type 1):** Possess an existing executable implementation that performs an operational task directly on input data (e.g. extracting invoice fields, reconciling quantities). They deliver their capability without writing new application code. All worker agents in the Northstar hackathon MVP are Execution Agents.
+- **Creation Agents (Type 2):** Capable of inspecting authorized repositories, generating/modifying code in an isolated workspace, generating tests, running static checks, and producing a reviewed Pull Request. *Generated business code is an output artifact, not automatically a new marketplace package.* Creation agents belong to ProofHire's long-term product roadmap and are excluded from the current MVP.
+
+**Deployment Models:**
+- **Platform-Hosted (MVP):** ProofHire operates the execution runtime via curated, platform-hosted callable adapters (`src/server/agents/**`).
+- **Builder-Hosted (Future):** Developers maintain external webhook endpoints conforming to ProofHire's agent protocol.
+- **Customer-Hosted (Future):** Agents execute within customer VPC / on-premises environments.
+- *Arbitrary untrusted public code execution is strictly prohibited in the hackathon MVP.*
+
 ---
 
 ## 2. Scope
@@ -124,8 +145,8 @@ flowchart TB
     end
 
     subgraph Data["Persistence"]
-        E1[("Prisma + SQLite\nprisma/dev.db")]
-        E2["Seed / reset\nseeded demo rows only"]
+        E1[("Prisma 7 + Neon PostgreSQL\nserverless pool")]
+        E2["Seed / reset\nseeded demo rows in Neon"]
     end
 
     A1 --> B1
@@ -150,11 +171,16 @@ flowchart TB
 
 ### 4.2 Runtime shape
 
-- **One app.** Next.js serves the UI and the API. No second service and no queue.
-- **In-process orchestrator.** Execution runs inside a route handler, persisting each stage before and after it runs. The browser polls every 500 ms.
-- **Resume from persistence.** A reload or dev-server restart reads the last persisted stage and continues or renders a terminal state.
-- **Deterministic adapters.** Stage functions are pure TypeScript over seeded fixtures. No API key and no network are required.
-- **Single-writer demo.** SQLite is sufficient for one demo user and one run. WAL mode is enabled if needed.
+- **Serverless web & API.** Next.js App Router deployed on Vercel Serverless. Stateless route handlers.
+- **Durable asynchronous execution.** Upstash QStash (`@upstash/qstash`) orchestrates durable step execution, retries and webhook dispatch (`/api/webhooks/qstash/...`), eliminating background process / local daemon dependencies.
+- **Resume from persistence.** Stage state is written to Neon PostgreSQL before and after every transition. A page refresh or reconnect continues cleanly from database state.
+- **Deterministic adapters.** Hybrid architecture: Evidence Reader calls multimodal models with instant fallback to `evidencePacket_WH204` fixture; Reconciliation and Verifier are deterministic.
+- **Neon connection pooling.** Database operations run through `@neondatabase/serverless` connection pool via `DATABASE_URL`, with `DIRECT_URL` for Prisma migrations.
+- **ProofHire Tool Gateway.** Mediates all interactions between agent instances and business systems. Enforces least-privilege tool scopes, operation-level authorization, input/output validation, audit logging, and strict read versus write separation (with human approval required for consequential operations like inventory commit). Agents never receive raw database credentials.
+- **The 9-Step Compiler Pipeline.** 1) Decompose outcome into capabilities $\rightarrow$ 2) Query registry $\rightarrow$ 3) Identify packages, platform code & connectors $\rightarrow$ 4) Generate candidate graphs $\rightarrow$ 5) Configure candidate instances $\rightarrow$ 6) Check schemas, dependencies & budgets $\rightarrow$ 7) Audition on synthetic suite $\rightarrow$ 8) Reject hard constraint failures $\rightarrow$ 9) Dynamically select the qualifying workflow. Multi-agent execution is never mandatory.
+- **Business Integration Models:**
+  - *Scenario A (Operational Data — MVP):* Business System $\rightarrow$ Business Connector $\rightarrow$ Tool Gateway $\rightarrow$ Workflow Runtime $\rightarrow$ Agent Instance (read-only PO, Invoice, Scan; inventory commit blocked).
+  - *Scenario B (Codebase Modification — Future Roadmap):* Authorized Repo $\rightarrow$ Restricted Workspace Sandbox $\rightarrow$ Repo Analysis $\rightarrow$ Code Generation $\rightarrow$ Test Verification $\rightarrow$ Pull Request $\rightarrow$ Business Review (not part of Northstar demo).
 
 ### 4.3 Repository shape (to be created at P0)
 
@@ -251,8 +277,8 @@ sequenceDiagram
     UI->>API: POST /auditions
     API->>Compiler: run wh204-suite-v1 on A/B/C
     Compiler-->>API: measured results + assertions
-    API->>Compiler: hard-constraint selection
-    Compiler-->>API: C selected; A/B reasons persisted
+    API->>Compiler: hard-constraint dynamic selection
+    Compiler-->>API: winning candidate selected; rejection reasons persisted
     Buyer->>UI: Approve ₹10,000 work order
     UI->>API: POST /work-orders/:id/approve
     API->>Ledger: snapshot allocations
@@ -281,26 +307,28 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | **P0** | H0–H1 | 60m | Architecture freeze and running foundation | App boots, contracts compile, `/api/health` 200, `p0-foundation` tag |
 | **P1** | H1–H4 | 180m | Premium shell, personas, schema and seeded overviews | Both personas see seeded overviews with labelled data |
 | **P2** | H4–H7 | 180m | Marketplace, builder profile, registry, job creation | Northstar browses versions and opens WH-204 with a compiled contract |
-| **P3** | H7–H11 | 240m | Compiler, auditions and dynamic selection | Auditions run dynamically across 10 fixtures; selection computed from runs; A, B or C can qualify; illustrative 10/10 and ₹10,000 |
-| **P4** | H11–H15 | 240m | Work order, execution, failure and recovery | v1.0.0 fails; v1.1.0 replaces it; downstream completes |
-| **P5** | H15–H18 | 180m | Independent verification, receipt and review | Ten checks pass; tamper-evident receipt hash exists; inventory commit blocked 42 → 42 |
-| **P6** | H18–H20 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
-| **P7** | H20–H22 | 120m | Premium UX completion and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); seeded profiles and simulated settlement labelled |
-| **P8** | H22–H24 | 120m | Regression, hardening, rehearsal and lock | Three clean rehearsals; `v1.0-demo`; signed runbook |
+| **P3** | H7–H10 | 180m | Compiler and auditions | Auditions complete across 10 fixtures for Candidates A, B, and C; results persisted; comparison matrix displays audition scores and breakdown (selection in P4) |
+| **P4** | H10–H13 | 180m | Dynamic selection, work order, execution and recovery | Dynamic ranking computed; winning candidate persisted (A, B, or C eligible); work order approved; fail-closed limits & 42->42 invariant locked; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
+| **P5** | H13–H16 | 180m | Independent verification, receipt, review and demo reset | Ten checks pass; tamper-evident receipt hash exists; inventory commit remains blocked 42 → 42 independently verified; demo reset verified in Neon |
+| **P6** | H16–H18 | 120m | Contributions, economics and reputation | v1.1.0 ₹2,500, v1.0.0 ₹0, builder ₹5,500, platform fee ₹2,500, reserves ₹2,000, simulated eligibility |
+| **P7** | H18–H21 | 180m | Premium UX completion, negative regression and live integration | Whole journey runs live with no frontend/API mocks (NEXT_PUBLIC_USE_MOCKS=false); negative regression suite passes |
+| **P8** | H21–H23 | 120m | Hardening, rehearsal and release lock | Three clean rehearsals; `v1.0-demo`; signed runbook; offline fallback verified |
+| **P9** | H23–H24 | 60m | Unallocated contingency and demo freeze | Presentation deck aligned, AV setup verified, unallocated contingency reserve (0 scheduled tasks) |
 
 ### Phase-level capacity and rebalanced effort
 
 | Phase | A minutes | B minutes | C minutes | Window | Buffer & Rule |
 |---|---:|---:|---:|---:|---|
-| P0 | 55 | 55 | 55 | 60 | 5m slack; contract freeze is the gate. |
+| P0 | 55 | 55 | 55 | 60 | 5m slack per dev; contract freeze is the gate. |
 | P1 | 160 | 145 | 140 | 180 | 20–40m slack; seeded overviews complete. |
 | P2 | 160 | 160 | 150 | 180 | 20–30m slack; contract compiler and marketplace active. |
-| P3 | 190 (215) | 195 | 200 | 240 | 25–50m buffer. Dynamic selection runs on persisted evaluations. Cut `P3-A-006` if behind. |
-| P4 | 160 | 170 | 180 | 240 | 60–80m buffer for recovery and adapter debugging. |
-| P5 | 120 (140) | 130 | 150 | 180 | 30–60m buffer. Receipt export `P5-A-004` is optional scope. |
+| P3 | 160 (185) | 155 | 160 | 180 | 20–25m buffer per dev. Auditions run across 10 fixtures; comparison matrix rendered; selection in P4. |
+| P4 | 160 | 175 | 175 | 180 | 5m buffer per dev. Dynamic ranking, fail-closed limits & 42->42 invariant locked, recovery runtime. |
+| P5 | 150 (170) | 165 | 130 | 180 | 15–50m buffer. Independent verifier, state diff assertion, tamper-evident receipt, and demo reset. |
 | P6 | 105 (125) | 110 | 105 | 120 | 10–15m core buffer. `P6-A-005` is optional; economics reconcile to ₹10,000. |
-| P7 | 100 (120) | 85 | 85 | 120 | 20–35m buffer. Zero frontend mocks; `P7-A-004` motion polish is optional. |
-| P8 | 95 | 90 | 75 (100) | 120 | 20–45m buffer for rehearsals and regression. |
+| P7 | 100 (120) | 85 | 130 | 180 | 50–95m buffer. Zero frontend mocks; full negative regression suite. |
+| P8 | 95 | 90 | 95 (120) | 120 | 25m buffer per dev for 3 full rehearsals and release lock. |
+| P9 | 0 | 0 | 0 | 60 | 60m unallocated contingency buffer (180 person-minutes reserve) for demo freeze. |
 
 **Capacity rebalancing summary:** Core planned workload is reduced to **3,425 person-minutes** across all three developers (Team A: 1,145m core / 1,230m total; Team B: 1,140m core / 1,140m total; Team C: 1,140m core / 1,165m total). This creates **895 minutes (~15 person-hours)** of team integration buffer. Team A is fully rebalanced from its previous 1,430m load, eliminating the previous capacity deficit. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.
 
@@ -376,12 +404,13 @@ A phase is complete only when **all four** are true:
 | P0 | `p0-foundation` | H1 | `npm run dev`, health 200, typecheck/lint, contract parse tests |
 | P1 | `p1-shell` | H4 | Persona switch, seeded overviews, schema/seed idempotency |
 | P2 | `p2-marketplace` | H7 | Catalog filters, agent versions, WH-204 contract preview |
-| P3 | `p3-compiler` | H11 | Three candidates, measured auditions, C selected with reasons |
-| P4 | `p4-recovery` | H15 | Approval, failure, v1.1.0 replacement, downstream completion |
-| P5 | `p5-trust` | H18 | Ten checks, receipt hash, review, blocked inventory |
-| P6 | `p6-economics` | H20 | ₹5,500 eligible, ₹2,500 fee, v1.0.0 ₹0, reserves reconcile |
-| P7 | `p7-polish` | H22 | Live route parity, three resets, visual freeze |
-| P8 | `v1.0-demo` | H24 | Three rehearsals, backup, signed runbook |
+| P3 | `p3-compiler` | H10 | Three candidates, measured auditions across 10 fixtures |
+| P4 | `p4-recovery` | H13 | Approval, failure, v1.1.0 replacement, downstream completion |
+| P5 | `p5-trust` | H16 | Ten checks, receipt hash, review, blocked inventory, demo reset |
+| P6 | `p6-economics` | H18 | ₹5,500 eligible, ₹2,500 fee, v1.0.0 ₹0, reserves reconcile |
+| P7 | `p7-polish` | H21 | Live route parity, negative regression suite, visual freeze |
+| P8 | `v1.0-demo` | H23 | Three rehearsals, backup, signed runbook, offline fallback |
+| P9 | `p9-lock` | H24 | Unallocated contingency reserve, AV check, final release freeze |
 
 If a gate slips, **cut optional scope before extending the phase**. P8 cannot be compressed: rehearsal time is part of the product.
 

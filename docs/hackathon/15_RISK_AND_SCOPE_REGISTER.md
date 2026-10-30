@@ -84,7 +84,7 @@
 | Likelihood / impact | L / 4 |
 | Owner | C |
 | Trigger | Model API timeout, quota exhaustion, network disconnect during live demo |
-| Mitigation | Hybrid adapter architecture: Evidence Reader calls LLM if `GEMINI_API_KEY`/`OPENAI_API_KEY` exists, falling back automatically to local deterministic extraction on timeout/error; Reconciliation and Verifier are deterministic rules; SQLite database |
+| Mitigation | Hybrid adapter architecture: Evidence Reader calls LLM if `GEMINI_API_KEY`/`OPENAI_API_KEY` exists, falling back automatically to local deterministic extraction on timeout/error; Reconciliation and Verifier are deterministic rules; hosted Neon PostgreSQL database |
 | Response | Automatic fallback engages with `executionMode: "DETERMINISTIC_FALLBACK"`; demo continues without interruption; offline rehearsal verified |
 | Residual | Low by architecture |
 
@@ -121,15 +121,15 @@
 | Response | Restore backup; fix delete order; verify exact counts before rehearsal |
 | Residual | Medium |
 
-### R-10 — SQLite contention or locking
+### R-10 — Serverless connection pool exhaustion or cold start latency
 
 | Field | Detail |
 |---|---|
 | Likelihood / impact | L / 3 |
 | Owner | B |
-| Trigger | Polling + event writes contend; `database is locked` |
-| Mitigation | Single demo user; short transactions; WAL; no parallel runs |
-| Response | Serialize writes; reduce poll frequency; restart; do not add a queue |
+| Trigger | Polling + QStash step webhooks open concurrent database connections exceeding pool limit |
+| Mitigation | Single demo execution; Neon connection pooling via `@prisma/adapter-neon` and `@neondatabase/serverless`; short transactions; tuned polling interval (700ms) |
+| Response | Adjust Neon connection pool size; throttle frontend polling; rely on QStash webhook retry semantics |
 | Residual | Low |
 
 ### R-11 — UI looks generic or unfinished
@@ -173,7 +173,7 @@
 | Owner | B |
 | Trigger | Scripts assume `/`; CRLF breaks generated files |
 | Mitigation | Node `path` APIs; LF via git attributes; PowerShell commands documented |
-| Response | Fix script; rerun reset/seed; do not hand-edit generated SQLite |
+| Response | Fix script; rerun reset/seed; do not hand-edit database state |
 | Residual | Low |
 
 ### R-15 — No real auth creates a role bypass
@@ -242,6 +242,17 @@
 | Response | Reassign by ownership matrix; cut optional scope; protect the trust/economics chain |
 | Residual | Low |
 
+### R-21 — Arbitrary third-party code execution vulnerability
+
+| Field | Detail |
+|---|---|
+| Likelihood / impact | L / 5 |
+| Owner | B / C |
+| Trigger | Attempting to execute unvetted developer code or arbitrary scripts within the production runtime |
+| Mitigation | Hackathon MVP strictly executes curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads are explicitly deferred to the future roadmap requiring microVM/container isolation (Firecracker/gVisor), resource quotas, egress network firewalls, and secret protection |
+| Response | Reject arbitrary package execution; enforce platform adapter allow-list |
+| Residual | Low by architecture |
+
 ---
 
 ## 3. Risk heat summary
@@ -275,16 +286,15 @@
 - Premium shell, demo labels, no dead routes.
 - Runbook and three rehearsals.
 
-### 4.2 Out of scope (not built)
+### 4.2 Out of scope (not built in 24-hour hackathon MVP)
 
-- Real auth/KYC, payments, escrow, payouts, tax/invoicing.
-- Real inventory/ERP integration.
-- Public onboarding or unrestricted bidding.
-- Arbitrary code execution or external model calls.
-- PDF export, cross-job audit browser, disputes, crypto.
-- Bounty submission flow.
-- Production scale, SLA, compliance claims.
-- Historical demand, fake ratings, fake provider.
+- **Creation Agents:** Autonomous agents that inspect authorized repositories, generate/modify code in workspaces, run tests, and open Pull Requests (documented as long-term roadmap; not in Northstar MVP).
+- **Arbitrary Third-Party Code Uploads:** Public package uploads running arbitrary runtime code. (MVP uses curated platform-hosted Execution Agent adapters).
+- **Builder-Hosted & Customer-Hosted Runtimes:** External developer webhooks and on-premises / VPC customer execution (deferred to future roadmap).
+- **Production Business Connectors & Credential Vault:** Live enterprise ERP/WMS/CRM integrations; the Tool Gateway in MVP uses simulated local fixtures.
+- **Financial & Identity Rails:** Real auth/KYC, live payment gateway, escrow, bank payouts, tax/invoicing.
+- **Enterprise Ledger:** Real production inventory/ERP mutation (42 → 42 simulated ledger invariant; commit blocked).
+- **Other Deferred Features:** PDF export, cross-job audit browser, disputes center, crypto settlement, bounty submission flow.
 
 ### 4.3 Optional (build only if green)
 
@@ -312,7 +322,7 @@ Deferred items have no UI affordance. They exist only in the backlog.
 |---|---|---|
 | A-01 | Three developers, three workstreams | Re-plan phases; cut optional and secondary screens |
 | A-02 | Node 22/npm 10 on the demo machine | Install/pin before P0; document |
-| A-03 | One local demo user and one run | Reduce concurrency, keep SQLite |
+| A-03 | One demo user and one run | Serverless pool handles demo workload |
 | A-04 | No external network needed after install | Offline acceptable |
 | A-05 | Desktop/laptop 1280–1440 primary | Tablet is a documented limitation |
 | A-06 | Seeded demand/supply is acceptable if labelled | Demo claim weakens; do not fake volume |

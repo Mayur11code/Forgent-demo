@@ -53,15 +53,19 @@ Every simulated value carries a label. No document or screen may claim a real pa
 
 ## 2. Marketplace supply
 
-### 2.1 Listing model
+### 2.1 Listing and Package Model
+
+In ProofHire, **developers publish reusable agent packages and immutable versions**, while **businesses purchase completed, verified business outcomes** delivered by compiled workflows (rather than buying isolated chatbot subscriptions or paying for raw compute tokens).
 
 | Entity | Meaning |
 |---|---|
-| Builder | Independent person/studio. Seeded: Jordan Lee / Demo Agent Studio. |
-| Agent | Stable identity for a capability product (e.g. Reconciliation Specialist). |
-| AgentVersion | Immutable published version with schemas, permissions, price, latency, limitations, fallback links. |
-| Capability | Atomically matchable skill. |
-| AgentVersionStats | Evidence-derived version reputation. |
+| Builder | Independent developer/studio publishing packages. Seeded: Jordan Lee / Demo Agent Studio. |
+| Agent Package | Reusable, distributable software product implementing declared capabilities. |
+| Agent | Stable commercial identity for a capability product (e.g. Reconciliation Specialist). |
+| AgentVersion | Immutable published package version with schemas, permissions, price, latency, limitations, fallback links. |
+| Capability | Atomically matchable functional requirement (what needs to be accomplished). |
+| AgentInstance | Configured version running in a specific workflow with job context and Tool Gateway permission scopes. |
+| AgentVersionStats | Evidence-derived version reputation calculated from persisted audition and execution runs. |
 
 ### 2.2 Version lifecycle
 

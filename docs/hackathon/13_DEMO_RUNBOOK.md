@@ -25,7 +25,7 @@ The three moments the judges must remember:
 
 - [ ] Node 22 and npm 10 available.
 - [ ] `npm install` already complete; no install during the demo.
-- [ ] `.env` has `DATABASE_URL="file:./dev.db"`, `NEXT_PUBLIC_USE_MOCKS="false"`, `NEXT_PUBLIC_DEMO_MODE="true"`, `DEMO_MODE="true"`, `DEMO_FAILURE_SCENARIO="WH204_DEFAULT_FAILURE"`, `DEMO_STAGE_DELAY_MS="700"`.
+- [ ] `.env` has valid `DATABASE_URL` (Neon pooled URL with `?sslmode=require`), `DIRECT_URL` (Neon direct migration URL), `QSTASH_URL` / `QSTASH_TOKEN` (or deterministic local test mode), `NEXT_PUBLIC_USE_MOCKS="false"`, `NEXT_PUBLIC_DEMO_MODE="true"`, `DEMO_MODE="true"`, `DEMO_FAILURE_SCENARIO="WH204_DEFAULT_FAILURE"`, `DEMO_STAGE_DELAY_MS="700"`.
 - [ ] `npm run db:push` and `npm run db:seed` have run.
 - [ ] `npm run dev` is running on `http://localhost:3000`.
 - [ ] `/api/health` returns 200 with `database=up`.
@@ -185,7 +185,7 @@ Acceptance: 10/10 checks pass · Tamper-evident receipt hash · VERIFIED_PENDING
 
 **Say:**
 
-> “Jordan sees the loop close. Evidence Reader ₹1,500. Reconciliation v1.0.0: ₹0, because it was replaced before an accepted output. v1.1.0: ₹2,500, because it produced the accepted output. Exception Reporter ₹1,000. Total eligible: ₹5,500 — simulated. ProofHire keeps a ₹2,500 fee. No money moves in this demo, but the attribution is real.”
+> “Jordan sees the loop close. Evidence Reader ₹2,000. Reconciliation v1.0.0: ₹0, because it was replaced before an accepted output. v1.1.0: ₹2,500, because it produced the accepted output. Exception Reporter ₹1,000. Total eligible: ₹5,500 — simulated. ProofHire keeps a ₹2,500 fee. No money moves in this demo, but the attribution is real.”
 
 **Point at:** v1.0.0 ₹0 reason, v1.1.0 ₹2,500, total ₹5,500, eligible-simulated label.
 
@@ -243,6 +243,8 @@ If running short:
 | “Can an agent commit inventory?” | “No. No agent has `commit:inventory`. A direct attempt is blocked and audited. A human must approve.” |
 | “Why three candidates?” | “To make the selection falsifiable: a baseline, a fixed team and a compiled team, all on the same suite and seed. A and B are rejected for recorded reasons.” |
 | “Is the baseline a Jordan Lee listing?” | “No. It is an evaluation-only baseline, hidden from the marketplace (`registryVisible=false`), so the comparison is fair.” |
+| “Can developers upload arbitrary executable code right now?” | “No. The hackathon MVP uses curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads require sandboxed microVM/container runtimes, resource quotas, and egress firewalls, which are scheduled for our near-term roadmap.” |
+| “Does ProofHire modify our business codebase?” | “No. The Northstar receiving scenario is an operational data-processing workflow mediated by our Tool Gateway. Creation Agents that analyze repos, write code, run tests, and open Pull Requests belong to our long-term software engineering roadmap, not this receiving demo.” |
 | “What is not real?” | “Auth, payments, inventory integration, public onboarding, historical demand and production scale. Everything simulated is labelled.” |
 | “What would you validate next?” | “Buyer willingness to pay, builder acquisition, verification cost per job, dispute rates and real recovery behaviour on messy evidence.” |
 
@@ -260,8 +262,8 @@ If running short:
 ### 6.2 If the database is corrupted
 
 1. Stop the server.
-2. Restore `backups/demo-seeded.db` to `prisma/dev.db`.
-3. Run `npm run db:seed` only if the restore path requires it.
+2. Run `npm run db:reset` (or invoke `POST /api/demo/reset`) to execute FK-safe truncate and deterministic seed restoration in Neon PostgreSQL.
+3. Restart `npm run dev`.
 4. Verify health and WH-204 `CONTRACT_READY`.
 5. Resume.
 

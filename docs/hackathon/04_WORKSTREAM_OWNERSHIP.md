@@ -60,7 +60,7 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 
 | Area | Owned paths |
 |---|---|
-| Database | `prisma/schema.prisma`, `prisma/migrations/**`, `prisma/seed.ts`, `prisma/dev.db` (ignored) |
+| Database | `prisma/schema.prisma`, `prisma/migrations/**`, `prisma/seed.ts`, Neon connection pooling and direct migration configuration |
 | DB access | `src/server/db.ts`, `src/server/repositories/**` |
 | API handlers | `src/app/api/**` |
 | Services | `src/server/services/**` (orchestration/persistence only; domain rules delegated to C) |
@@ -80,18 +80,25 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 | Area | Owned paths |
 |---|---|
 | Contracts | `src/lib/contracts/**` |
-| Agent layer | `src/server/agents/**` (hybrid adapter architecture: model-backed Evidence Reader with deterministic fallback, deterministic Reconciliation/Exception Reporter, manifests) |
-| Compiler | `src/server/compiler/**` (taxonomy, matcher, compatibility, contract compiler, candidates, auditions, assertions, selector, gaps) |
-| Runtime rules | `src/server/runtime/**` (orchestrator policy, failure injection, recovery, limits) |
+| Agent layer | `src/server/agents/**` (curated Execution Agent packages: model-backed Evidence Reader with deterministic fallback, deterministic Reconciliation/Exception Reporter, manifests, instance configurations, and Tool Gateway adapter interfaces) |
+| Compiler | `src/server/compiler/**` (9-step compiler, taxonomy, matcher, compatibility, contract compiler, candidates, auditions, assertions, selector, gaps) |
+| Runtime rules | `src/server/runtime/**` (orchestrator policy, Tool Gateway permission rules, failure injection, recovery, safe limits) |
 | Verification | `src/server/verification/**` (verifier, state diff, approval gate) |
 | Evidence | `src/server/evidence/**` (canonicalisation, receipt body) |
 | Economics rules | `src/server/economics/**` (attribution, contribution policy, settlement policy, reputation) |
-| Fixtures | `src/server/fixtures/**` (WH-204 truth, audition suite) |
+| Fixtures | `src/server/fixtures/**` (WH-204 truth, 10-fixture audition suite) |
 
-**Produces for others:** frozen types/Zod schemas, manifests, adapter interface, compiler APIs-in-process, runtime/recovery functions, verifier, receipt body, attribution rules, fixtures.
-**Consumes from others:** persistence interfaces and route wiring (B), UI needs and usability feedback (A).
+**Produces for others:** frozen types/Zod schemas, manifests, package/instance adapter interfaces, 9-step compiler APIs-in-process, Tool Gateway policy rules, runtime/recovery functions, verifier, receipt body, attribution rules, fixtures.
+**Consumes from others:** persistence interfaces, Tool Gateway transport wiring, and route handlers (B), UI needs and usability feedback (A).
 
 **C does not own:** page layout, CSS, Prisma schema, route envelope conventions, seed row creation, dashboard aggregation.
+
+> [!NOTE]
+> **Domain Clarifications for All Workstreams:**
+> 1. *Capabilities $\ne$ Agents:* Capabilities represent what needs to be done. Team C designs capabilities that can be satisfied by Execution Agents, deterministic platform code, connectors, or human approvals.
+> 2. *Execution vs. Creation Agents:* The hackathon MVP exclusively implements Execution Agents. Creation Agents (which analyze repos, generate code, and open PRs) are documented as future platform scope and are not implemented in the 24-hour MVP.
+> 3. *Tool Gateway Mediation:* Agents never receive raw database credentials. Team B builds transport, and Team C defines operation-level validation and read vs. write permission scopes.
+> 4. *No Arbitrary Code Uploads:* All MVP agents are curated platform-hosted packages. Arbitrary public executable uploads are deferred.
 
 ---
 

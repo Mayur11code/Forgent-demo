@@ -34,18 +34,18 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Consequences | Fast setup, one deploy, simple role guard and polling. Less independent scaling; acceptable for the demo. |
 | Revisit | Post-hackathon if services need separate deployment. |
 
-### D-002 — Prisma + SQLite for the demo
+### D-002 — Neon PostgreSQL + Prisma 7 for serverless runtime
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | B |
-| Context | Blueprint suggests PostgreSQL; no Postgres infrastructure exists. |
-| Decision | Use Prisma with SQLite (`prisma/dev.db`) for the hackathon; keep the schema PostgreSQL-compatible. |
-| Alternatives | Local Postgres via Docker; in-memory store; JSON files. |
-| Consequences | Zero external DB ops; deterministic reset; single-writer limits; enums/JSON handled as strings/text with Zod. |
-| Revisit | Migrate to Postgres for multi-user/production. |
+| Context | Blueprint specifies PostgreSQL; serverless architecture deployed on Vercel requires connection pooling and serverless-compatible database drivers. |
+| Decision | Use Prisma 7 with Neon PostgreSQL datasource via `@prisma/adapter-neon` and `@neondatabase/serverless`. Use pooled `DATABASE_URL` (with `?sslmode=require`) for runtime queries and `DIRECT_URL` for migrations/schema push. |
+| Alternatives | Local SQLite; Docker Postgres; Supabase. |
+| Consequences | Production-grade serverless PostgreSQL; connection resilience via pooling; native JSON/JSONB support; zero filesystem persistence reliance. |
+| Revisit | Post-hackathon if enterprise dedicated cluster is needed. |
 
 ### D-003 — Hybrid adapter architecture with deterministic fallback
 
@@ -73,44 +73,44 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Consequences | Fast persona switch; route/API role checks; **not** a security boundary. Never claim production auth. |
 | Revisit | Replace with real auth before any external user. |
 
-### D-005 — In-process execution with polling
+### D-005 — QStash durable async execution with polling API
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | B/C |
-| Context | Queues/websockets add infrastructure and failure modes. |
-| Decision | Run the orchestrator in-process behind a route handler; persist stage state; poll every 500 ms; resume from persistence. |
-| Alternatives | BullMQ/Redis; websockets/SSE; serverless workflow. |
-| Consequences | Simple demo; polling overhead; a dev-server restart is survivable. |
-| Revisit | Queue/worker model for production scale. |
+| Context | Serverless functions have execution timeouts; durable background execution and retries are required. |
+| Decision | Use Upstash QStash (`@upstash/qstash`) to dispatch durable execution step events to a signed webhook endpoint (`/api/webhooks/qstash/execution-step`). Frontend monitors stage progression via live polling (`/api/jobs/:jobId/execution`) with state persisted in Neon PostgreSQL. |
+| Alternatives | In-process daemon (fails in serverless); custom queue with Redis; BullMQ. |
+| Consequences | Fully durable asynchronous execution and retry handling compatible with Vercel serverless deployment; resilient against function timeouts. |
+| Revisit | Server-sent events (SSE) or websockets for lower latency post-hackathon. |
 
-### D-006 — JSON stored as text on SQLite
+### D-006 — Native JSON/JSONB via Prisma Json on PostgreSQL
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | B |
-| Context | SQLite JSON behaviour is connector-sensitive. |
-| Decision | Store JSON payloads in `String` fields; parse through typed helpers; validate with Zod. |
-| Alternatives | Prisma `Json`; separate document store. |
-| Consequences | Predictable across environments; manual serialization; no DB-level JSON queries in the demo. |
-| Revisit | Use native JSON/JSONB on Postgres. |
+| Context | Complex structured data (manifests, contracts, graphs, receipts) requires reliable indexing and serialization. |
+| Decision | Store JSON payloads as native PostgreSQL JSONB using Prisma `Json` type; parse and validate runtime payloads through shared Zod schemas. |
+| Alternatives | Plain string text storage; separate relational child tables. |
+| Consequences | High query performance; native PostgreSQL JSONB indexing and validation; full type safety via Zod. |
+| Revisit | Add database-level JSON schema constraints if needed post-hackathon. |
 
-### D-007 — Enums stored as strings
+### D-007 — String-backed enums with Zod runtime validation
 
 | Field | Detail |
 |---|---|
 | Date | 2026-10-30 |
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | B/C |
-| Context | SQLite does not support Prisma enums. |
-| Decision | Store enum values as strings; validate at service boundaries with shared Zod enums. |
-| Alternatives | Integer codes; check constraints only. |
-| Consequences | Portable, readable; validation must not be skipped. |
-| Revisit | Native enums on Postgres. |
+| Context | Database-level enums in PostgreSQL can complicate zero-downtime migrations when adding new statuses. |
+| Decision | Store enum fields as `String` / `VARCHAR` in Neon PostgreSQL and enforce strict validation at service boundaries and API envelopes via shared Zod enums. |
+| Alternatives | PostgreSQL native `enum` types; integer codes. |
+| Consequences | Frictionless schema evolution during fast hackathon iteration; runtime guarantees preserved via Zod. |
+| Revisit | Migrate to native PostgreSQL enum types post-hackathon after schema freezes. |
 
 ### D-008 — `BLUEPRINT.md` is canonical
 
@@ -289,7 +289,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Status | `PROPOSED — FREEZE AT P0` |
 | Owner | C |
 | Context | The receipt must provide tamper-evidence without claiming absolute distributed immutability. |
-| Decision | Generate a SHA-256 integrity hash over canonical `RECEIPT_BODY_V1` with recursively sorted keys, excluding `integrity`. Label the receipt as **tamper-evident and hash-verified**, rather than immutable. Explicitly document SHA-256 limitations (guarantees payload serialization integrity, does not prove physical truth of external inputs, relies on platform storage controls in local SQLite). Status remains `VERIFIED_PENDING_HUMAN_APPROVAL` for WH-204 while inventory approval is pending. |
+| Decision | Generate a SHA-256 integrity hash over canonical `RECEIPT_BODY_V1` with recursively sorted keys, excluding `integrity`. Label the receipt as **tamper-evident and hash-verified**, rather than immutable. Explicitly document SHA-256 limitations (guarantees payload serialization integrity, does not prove physical truth of external inputs, relies on platform storage controls in Neon PostgreSQL). Status remains `VERIFIED_PENDING_HUMAN_APPROVAL` for WH-204 while inventory approval is pending. |
 | Alternatives | Blockchain anchoring; digital signature without hash; unhashed record. |
 | Consequences | Accurate cryptographic claims; transparent boundaries; no overclaiming of physical truth. |
 | Revisit | Decentralized anchoring or public timestamping post-hackathon. |
@@ -371,6 +371,19 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Alternatives | Allow append-only multiple payouts and sum later; let UI suppress duplicate lines. |
 | Consequences | Bulletproof financial ledger invariant; auditable arithmetic; prevents accounting bugs. |
 | Revisit | Multi-attempt cost-plus pricing post-hackathon. |
+
+### D-028 — Canonical Agent Architecture, Taxonomy (Execution vs. Creation), and Tool Gateway Mediation
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Principal Architect |
+| Context | Terminology around agents, capabilities, packages, and code generation needed rigorous formalization to prevent scope creep and architectural confusion. |
+| Decision | Formalize the canonical architecture across ProofHire: 1) Strict separation of six concepts: Capability (declared functional requirement; capabilities $\ne$ agents), Agent Package (reusable software package; manifest $\ne$ implementation), Agent Version (immutable release), Agent Instance (configured package + context + tools), Compiled Workflow (versioned acyclic graph assembled by Team Compiler), and Execution (audited run with persistent evidence). 2) Two Agent Categories: Type 1 Execution Agents (existing code execution on inputs; sole type in Northstar MVP) vs Type 2 Creation Agents (repo inspection, code/test generation, PR review; output code artifact $\ne$ new marketplace package; deferred to platform roadmap). 3) Deployment models: Platform-hosted callable adapters in ProofHire runtime (`src/server/agents/**`) for MVP; Builder-hosted and Customer-hosted deferred. 4) Business Integration: Tool Gateway mediates all data access (narrow scopes, credential protection, operation authorization, audit logs, read vs write separation, human gates for consequential actions; no direct DB credentials to agents). |
+| Alternatives | Treat agents as plain prompt templates; allow arbitrary code execution in MVP; allow agents direct database access. |
+| Consequences | Clean separation of concerns; zero arbitrary execution vulnerability; clear scope boundary protecting 24-hour delivery; foundational design for future creation agents. |
+| Revisit | Creation agent pilot in Phase 2 roadmap. |
 
 ---
 

@@ -26,7 +26,7 @@ Execution cannot start until the buyer approves a versioned work order.
 | Field | WH-204 value |
 |---|---:|
 | Buyer total | ₹10,000 (`1,000,000` paise) |
-| Evidence Reader | ₹1,500 (`200,000`) |
+| Evidence Reader | ₹2,000 (`200,000` paise) |
 | Reconciliation | ₹2,500 (`250,000`) |
 | Exception reporting | ₹1,000 (`100,000`) |
 | Builder subtotal | ₹5,500 (`550,000`) |
@@ -59,14 +59,15 @@ Execution cannot start until the buyer approves a versioned work order.
 
 ### 3.1 Runtime shape
 
-- In-process orchestrator behind a Next.js route handler.
-- Topological stage execution in dependency order.
-- Each stage is persisted before and after execution.
-- One execution per reset; idempotent start.
-- Browser polls every 500 ms; stop at a terminal state.
-- A restart resumes from persisted stage state.
-- No arbitrary code execution; adapters are allow-listed functions.
-- No network or LLM dependency on the critical path.
+- **Serverless orchestrator & durable queue.** Next.js route handlers orchestrating step execution with Upstash QStash webhook progression (`/api/webhooks/qstash/execution-step`).
+- **ProofHire Tool Gateway mediation.** All tool operations and business data access are mediated by the Tool Gateway. Enforces least-privilege tool scopes, schema validation on inputs/outputs, operation-level authorization, audit logging, and strict read versus write separation. Agents never receive direct database credentials or unrestricted production access.
+- **Fail-closed execution limits & state invariant.** Timeout thresholds (max 3,000ms per stage), cost limits, and the 42→42 inventory invariant lock are enforced before runtime execution begins. Consequential actions (inventory commit) remain strictly locked at `BLOCKED_PENDING_APPROVAL`. Independent verification in P5 confirms the invariant held.
+- **Topological stage execution.** Stages execute strictly in dependency order.
+- **Durable persistence.** Each stage is persisted before and after execution in Neon PostgreSQL.
+- **One execution per reset.** Idempotent execution start prevents duplicate runs.
+- **Client visibility.** Frontend polls `/api/jobs/:jobId/execution` (default 700ms) with clean resumption from database state.
+- **No arbitrary code execution.** All candidate implementations are curated platform-hosted Execution Agent adapters or deterministic platform functions.
+- **No network/LLM dependency on critical path.** Evidence Reader uses hybrid model-backed capability with instant deterministic fallback; Reconciliation and Verifier are deterministic rules.
 
 ### 3.2 Stage sequence
 
@@ -465,7 +466,7 @@ The receipt snapshots:
 #### Explicit limitations of SHA-256 receipt hashing:
 1. **Payload integrity only:** SHA-256 guarantees that the serialized receipt payload has not been modified after generation.
 2. **Observation vs physical ground truth:** The hash confirms that the recorded observations (e.g. 10 scanned units, PO 12 units) match what the pipeline processed; it cannot verify whether upstream physical real-world data was mis-scanned or falsified before ingestion.
-3. **Storage anchor boundary:** In a hackathon SQLite setup, hashes are verified in-process; true cryptographic non-repudiation requires external anchoring or distributed consensus (deferred post-hackathon).
+3. **Storage anchor boundary:** In a hackathon Neon PostgreSQL setup, hashes are verified server-side via SHA-256; true cryptographic non-repudiation requires external anchoring or distributed consensus (deferred post-hackathon).
 
 ### 9.3 Receipt status
 
@@ -496,7 +497,7 @@ The receipt snapshots:
 | Settlement | `(jobId, workOrderId)` unique | One eligibility row |
 | Review | `job:{id}:review:{decision}` | Idempotent acknowledgement |
 
-Concurrency posture: one demo user, one execution, short transactions. If SQLite contention appears, enable WAL and serialize writes; do not add a queue.
+Concurrency posture: one demo user, one execution, short serverless transactions managed via Neon PostgreSQL connection pooling. Asynchronous stage orchestration is driven dually by QStash durable step webhooks and polling API routes; retry idempotency is enforced by unique database constraints.
 
 ---
 
