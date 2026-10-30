@@ -128,13 +128,13 @@ ProofHire establishes strict separation across six core concepts:
 | A tasks | 40 (1,145m core / 1,230m total) |
 | B tasks | 34 (1,140m core / 1,140m total) |
 | C tasks | 34 (1,140m core / 1,165m total) |
-| Total estimated minutes | 3,535 |
-| Core (non-optional) minutes | 3,425 |
-| Total team integration buffer | 895 minutes (~21% buffer) |
+| Total estimated minutes | 3,555 |
+| Core (non-optional) minutes | 3,445 |
+| Total team integration buffer | 875 minutes (~20.3% buffer) |
 
 Per phase: P0 9 · P1 10 · P2 13 · P3 12 · P4 13 · P5 14 · P6 13 · P7 12 · P8 12.
 
-**Capacity rebalancing:** Core planned workload is reduced to 3,425 person-minutes, leaving 895 minutes (~15 person-hours) of team buffer. Team A has been fully rebalanced to 1,145 core minutes (leaving ~295 minutes of capacity buffer). All workstreams operate strictly within their phase windows in P0–P8.
+**Capacity rebalancing:** Core planned workload is frozen at 3,445 person-minutes across 108 tasks, leaving 875 minutes (~14.6 person-hours) of team buffer (plus 180m in P9 unallocated contingency reserve). Team A: 1,155m, Team B: 1,145m, Team C: 1,145m. All workstreams operate strictly within their phase windows in P0–P8.
 
 ---
 
@@ -143,8 +143,8 @@ Per phase: P0 9 · P1 10 · P2 13 · P3 12 · P4 13 · P5 14 · P6 13 · P7 12 �
 | Phase | Elapsed | Theme | Tag |
 |---|---|---|---|
 | P0 | H0–H1 | Foundation and contract freeze | `p0-foundation` |
-| P1 | H1–H4 | Shell, personas, schema, seed | `p1-shell` |
-| P2 | H4–H7 | Marketplace and job creation | `p2-marketplace` |
+| P1 | H1–H4 | Shell, login, personas, schema, seed | `p1-shell` |
+| P2 | H4–H7 | Marketplace, package upload and job creation | `p2-marketplace` |
 | P3 | H7–H10 | Compiler and auditions | `p3-compiler` |
 | P4 | H10–H13 | Selection, work order, execution, recovery | `p4-recovery` |
 | P5 | H13–H16 | Verification, receipt, review, demo reset | `p5-trust` |

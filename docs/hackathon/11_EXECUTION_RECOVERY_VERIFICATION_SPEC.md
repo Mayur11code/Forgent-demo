@@ -66,7 +66,7 @@ Execution cannot start until the buyer approves a versioned work order.
 - **Durable persistence.** Each stage is persisted before and after execution in Neon PostgreSQL.
 - **One execution per reset.** Idempotent execution start prevents duplicate runs.
 - **Client visibility.** Frontend polls `/api/jobs/:jobId/execution` (default 700ms) with clean resumption from database state.
-- **No arbitrary code execution.** All candidate implementations are curated platform-hosted Execution Agent adapters or deterministic platform functions.
+- **Execution Safety Boundary & No Arbitrary Code Execution.** All workflow candidate implementations are strictly curated, platform-hosted Execution Agent adapters (`src/server/agents/**`) or deterministic platform functions. Uploaded developer ZIP packages remain safely stored and checksummed in `PENDING_APPROVAL` status without execution eligibility (`executionEligible: false`). No arbitrary untrusted code, dynamic `eval()`, or dynamic `import()` is ever invoked by the runtime orchestrator.
 - **No network/LLM dependency on critical path.** Evidence Reader uses hybrid model-backed capability with instant deterministic fallback; Reconciliation and Verifier are deterministic rules.
 
 ### 3.2 Stage sequence

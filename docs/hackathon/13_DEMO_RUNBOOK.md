@@ -66,9 +66,47 @@ Acceptance: 10/10 checks pass · Tamper-evident receipt hash · VERIFIED_PENDING
 
 ---
 
-## 3. The three-minute script
+## 3. The three-minute script — The Canonical 18-Step Journey
 
-### 0:00–0:20 — The physical problem
+The demo follows the authoritative 18-step end-to-end journey spanning builder onboarding, package submission, buyer job creation, dynamic compilation, safe execution, failure recovery, independent verification, and economic settlement:
+
+| Step | Action | Route | Persona |
+|---|---|---|---|
+| **1** | Open ProofHire login | `/login` | Public |
+| **2** | Sign in as Jordan Lee (Builder) | `/api/auth/login` | Jordan Lee |
+| **3** | View My Agents and version history | `/builder/agents` | Jordan Lee |
+| **4** | Open Publish Agent & upload package ZIP | `/builder/agents/publish` | Jordan Lee |
+| **5** | Validate, store, and inspect SHA-256 digest & `PENDING_APPROVAL` status | `/builder/agents/publish` | Jordan Lee |
+| **6** | Sign out via topbar | `/api/auth/logout` | Jordan Lee |
+| **7** | Sign in as Northstar Warehouse (Buyer) | `/api/auth/login` | Northstar Buyer |
+| **8** | Open receiving exception job WH-204 | `/buyer/jobs/wh-204` | Northstar Buyer |
+| **9** | Review compiled acceptance contract (10/2/42) | `/buyer/jobs/wh-204` | Northstar Buyer |
+| **10** | Compile & audition candidate workflows across 10 fixtures | `/buyer/jobs/wh-204/compiler` | Northstar Buyer |
+| **11** | Dynamically select qualifying workflow (A, B, or C) | `/buyer/jobs/wh-204/compiler` | Northstar Buyer |
+| **12** | Approve work order (fail-closed limits & 42->42 lock) | `/buyer/jobs/wh-204/work-order` | Northstar Buyer |
+| **13** | Execute workflow | `/buyer/jobs/wh-204/execution` | Northstar Buyer |
+| **14** | Demonstrate v1.0.0 failure & v1.1.0 recovery | `/buyer/jobs/wh-204/execution` | Northstar Buyer |
+| **15** | Run independent 10-check verification (10/10 PASS) | `/buyer/jobs/wh-204/verification` | Northstar Buyer |
+| **16** | Verify 42->42 inventory invariant & commit blocked | `/buyer/jobs/wh-204/verification` | Northstar Buyer |
+| **17** | Inspect evidence receipt and SHA-256 canonical hash | `/buyer/jobs/wh-204/receipt` | Northstar Buyer |
+| **18** | Review commercial loop: buyer spend ₹10,000, builder ₹5,500 | `/buyer/jobs/wh-204/economics` | Northstar Buyer |
+
+---
+
+### 0:00–0:30 — Builder onboarding & package submission pipeline (Steps 1–6)
+
+**Screen:** `/login` -> `/builder/agents/publish` -> `/builder/agents`
+
+**Action:**
+1. Click "Sign in as Jordan Lee (Builder)" 1-click quick-select.
+2. Open `/builder/agents/publish` and upload the example `reconciliation-agent.zip`.
+3. Highlight real-time extraction: parsed `manifest.json`, input/output schemas, SHA-256 digest, persistent storage abstraction, and the `PENDING_APPROVAL` status badge.
+4. **Emphasize execution safety:** "ProofHire stores and validates the package. For hackathon security, arbitrary untrusted code is never dynamically executed; live workflows execute only approved platform adapters."
+5. Click "Sign Out".
+
+---
+
+### 0:30–0:50 — The physical problem & buyer sign-in (Steps 7–8)
 
 **Screen:** Buyer overview, WH-204 card.
 
@@ -318,23 +356,24 @@ A screen recording may be used **only** if:
 
 ### Say
 
-- “Seeded demo supply.”
-- “Simulated eligibility.”
-- “Simulated inventory ledger.”
-- “Measured on `wh204-suite-v1`.”
-- “Independent deterministic verifier.”
+- “Seeded demo supply and Jordan Lee builder identity.”
+- “Builder package ZIP upload is validated, checksummed with SHA-256, and stored in pending-approval status.”
+- “For runtime execution safety, live workflows strictly execute approved platform-hosted adapters.”
+- “Simulated eligibility and commercial earnings.”
+- “Simulated inventory ledger with strict 42 -> 42 invariant lock.”
+- “Measured dynamically on `wh204-suite-v1`.”
+- “Independent deterministic verifier with tamper-evident SHA-256 receipt hash.”
 - “In this demo.”
 
 ### Do not say
 
-- “Real payments.”
-- “Live warehouse integration.”
-- “Production-ready.”
-- “Certified.”
-- “Thousands of agents.”
-- “Guaranteed earnings.”
-- “The AI decided.”
-- “Fully autonomous inventory.”
+- “Real payments or bank payouts.”
+- “Arbitrary uploaded developer code is executed dynamically in the live workflow.”
+- “Live warehouse or ERP integration.”
+- “Production-ready or enterprise certified.”
+- “Thousands of agents or guaranteed earnings.”
+- “The AI decided without human gates.”
+- “Fully autonomous inventory mutation.”
 
 If a judge asks a question whose honest answer is “we did not build that,” say so. The demo's credibility depends on the boundary being clear.
 

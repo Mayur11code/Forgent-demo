@@ -304,7 +304,7 @@ core_min = sum(int(t['EstimatedMinutes']) for t in tasks if t['Kind'] != 'OPTION
 opt_min = sum(int(t['EstimatedMinutes']) for t in tasks if t['Kind'] == 'OPTIONAL' and t['Status'] != 'DROPPED')
 print(f'Core: {core_min}m, Optional: {opt_min}m, Total: {core_min + opt_min}m, Buffer: {4320 - core_min}m')
 "
-# Result: Total tasks: 108 | Core: 3425m | Optional: 110m | Total: 3535m | Buffer: 895m (20.7%)
+# Result: Total tasks: 108 | Core: 3445m | Optional: 110m | Total: 3555m | Buffer: 875m (20.3%)
 
 # 2. Dependency ordering and future-phase dependency check
 $ python -c "

@@ -133,6 +133,15 @@ export type PermissionKey = (typeof PERMISSIONS)[number];
 
 export type EntityStatus = "ACTIVE" | "PAUSED" | "RETIRED";
 
+export type UserRole = "BUYER" | "BUILDER";
+
+export type PackageSubmissionStatus =
+  | "UPLOADED"
+  | "VALIDATED"
+  | "PENDING_APPROVAL"
+  | "APPROVED"
+  | "REJECTED";
+
 export type JobStatus =
   | "DRAFT"
   | "CONTRACT_READY"
@@ -228,6 +237,26 @@ export type ErrorCode =
 ## 5. Domain types
 
 ```ts
+export interface SessionPayload {
+  userId: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  iat: number;
+  exp: number;
+}
+
+export interface AgentPackageUploadResult {
+  packageId: string;
+  versionId: string;
+  manifest: AgentManifest;
+  sha256Digest: string;
+  storagePath: string;
+  status: PackageSubmissionStatus;
+  validationErrors: string[];
+  executionEligible: boolean; // strictly false in hackathon MVP for uploaded packages
+}
+
 export type Currency = "INR";
 
 export interface Money {
@@ -892,30 +921,35 @@ export interface AgentVersionStats {
 
 ## 10. API routes
 
-All routes are same-origin. The demo session is resolved from the `proofhire_persona` cookie on the server.
+All routes are same-origin. The authenticated demo session is resolved from the server-managed, signed, httpOnly `proofhire_session` cookie containing `{ userId, email, name, role }`. Next.js middleware and server-side route guards strictly enforce access control (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`).
 
-### Demo and identity
-
-| Method | Route | Purpose | Role |
-|---|---|---|---|
-| GET | `/api/health` | App/DB health | public |
-| GET | `/api/me` | Current persona + role | any |
-| GET | `/api/demo/personas` | Seeded persona options | public |
-| POST | `/api/demo/persona` | Switch demo persona | public/demo |
-| POST | `/api/demo/reset` | Reset and reseed demo | demo only |
-
-### Marketplace and builder
+### Authentication and identity
 
 | Method | Route | Purpose | Role |
 |---|---|---|---|
-| GET | `/api/dashboard/buyer` | Buyer aggregates | buyer |
-| GET | `/api/dashboard/freelancer` | Builder aggregates | builder |
-| GET | `/api/agents` | Catalog filters | any |
-| GET | `/api/agents/:agentId` | Agent + versions | any |
-| GET | `/api/agents/:agentId/versions/:versionId/evaluations` | Version evidence | any |
-| GET | `/api/builder/profile` | Builder profile | builder |
-| POST | `/api/builder/agents` | Create demo version | builder |
-| PATCH | `/api/builder/agents/:agentId/versions/:versionId` | Edit draft metadata | builder |
+| GET | `/api/health` | App/DB health probe | public |
+| POST | `/api/auth/login` | Authenticate credentials or 1-click demo select (`buyer@northstar.demo`, `jordan@demoagent.studio`); sets `proofhire_session` cookie | public |
+| POST | `/api/auth/logout` | Clear `proofhire_session` cookie and end session | authenticated |
+| GET | `/api/auth/me` | Current authenticated user account, name and role | authenticated |
+| GET | `/api/me` | Backward-compatibility alias for `/api/auth/me` | authenticated |
+| POST | `/api/demo/reset` | Reset and reseed demo database to canonical baseline | demo admin / any |
+
+### Marketplace, builder packages, and execution boundary
+
+| Method | Route | Purpose | Role |
+|---|---|---|---|
+| GET | `/api/dashboard/buyer` | Buyer overview aggregates | buyer |
+| GET | `/api/dashboard/freelancer` | Builder overview aggregates | builder |
+| GET | `/api/agents` | Marketplace catalog (approved/visible versions) | any |
+| GET | `/api/agents/:agentId` | Agent detail and approved version timeline | any |
+| GET | `/api/agents/:agentId/versions/:versionId/evaluations` | Version evaluation evidence | any |
+| GET | `/api/builder/profile` | Jordan Lee builder profile | builder |
+| POST | `/api/builder/packages/upload` | Upload agent ZIP package (<=5MB), validate structure/manifest/schemas, calculate SHA-256, store artifact, and persist immutable `PENDING_APPROVAL` version | builder |
+| GET | `/api/builder/packages` | List builder's uploaded agent packages with validation statuses and SHA-256 digests | builder |
+| GET | `/api/builder/packages/:packageId` | Inspect package details, schemas, manifest, and validation feedback | builder |
+
+> [!IMPORTANT]
+> **Execution Safety Boundary Invariant:** Uploading source code in a ZIP package stores and validates the package with status `PENDING_APPROVAL` (`executionEligible: false`). It does NOT make the uploaded code executable by the runtime orchestrator. The hackathon execution engine executes ONLY approved, platform-hosted adapters registered in `src/server/agents/**`. Attempting to compile or execute a workflow with an unapproved uploaded package fails closed with error code `UNAPPROVED_EXECUTION_BINDING`.
 
 ### Jobs, compiler, auditions
 

@@ -14,8 +14,8 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | Phase | Window | Minutes | Theme | Checkpoint | Gate in one line |
 |---|---|---:|---|---|---|
 | P0 | H0–H1 | 60 | Foundation and contract freeze | `p0-foundation` | App boots; contracts compile; health 200 |
-| P1 | H1–H4 | 180 | Shell, personas, schema, seed | `p1-shell` | Both personas see seeded overviews |
-| P2 | H4–H7 | 180 | Marketplace and job creation | `p2-marketplace` | Catalog works; WH-204 opens with a compiled contract |
+| P1 | H1–H4 | 180 | Shell, login, personas, schema, seed | `p1-shell` | Authenticated login works; session cookie and role authorization enforced; both personas see seeded overviews |
+| P2 | H4–H7 | 180 | Marketplace, package upload and job creation | `p2-marketplace` | Builder uploads package ZIP; validation and PENDING_APPROVAL status work; execution safety boundary enforced; catalog browses approved versions; WH-204 opens with compiled contract |
 | P3 | H7–H10 | 180 | Compiler and auditions | `p3-compiler` | Auditions run dynamically across 10 fixtures; comparison matrix renders scores; A, B or C can qualify |
 | P4 | H10–H13 | 180 | Selection, work order, execution, recovery | `p4-recovery` | Dynamic selection persisted; work order approved; v1.0.0 fails; v1.1.0 replaces it; downstream completes |
 | P5 | H13–H16 | 180 | Verification, receipt, review, demo reset | `p5-trust` | Ten checks pass; tamper-evident hash exists; commit blocked 42 → 42; demo reset operational |
@@ -24,7 +24,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | P8 | H21–H23 | 120 | Hardening, rehearsal and release lock | `v1.0-demo` | Three clean rehearsals; runbook signed; offline fallback verified |
 | P9 | H23–H24 | 60 | Unallocated contingency and demo freeze | `p9-lock` | Presentation deck aligned, AV setup verified, unallocated contingency reserve |
 
-**Total:** 1,440 minutes. **Tasks:** 108 total, 106 actionable, 5 optional, 2 deferred. Core workload: 3,425 person-minutes (895m integration buffer across the 24 hours).
+**Total:** 1,440 minutes. **Tasks:** 108 total, 106 actionable, 5 optional, 2 deferred. Core workload: 3,445 person-minutes (875m integration buffer across the 24 hours).
 
 ---
 
@@ -60,14 +60,14 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | **1. Objective** | Make the product feel like a premium B2B console and establish the seeded identities, schema and overview data every later screen depends on. |
 | **2. Window** | H1–H4, 180 minutes. |
 | **3. Entry criteria** | P0 gate passed; contracts frozen; app boots; `p0-foundation` tag exists. |
-| **4. Exit gate** | Both personas switch without a reload; buyer and builder overviews render seeded data from typed APIs/mocks; demo labels are visible; schema v1 applies; seed is idempotent. |
+| **4. Exit gate** | Authenticated login works for seeded buyer and builder; session cookie proofhire_session and role authorization enforced; both personas see seeded overviews; demo badge visible; Neon schema v1 applied; seed is idempotent. |
 | **5. Phase owner** | A (shell/overviews), B (schema/seed/APIs), C (manifests/adapters). |
 | **6. Tasks** | 10: `P1-A-001`, `P1-B-001`, `P1-C-001`, `P1-A-002`, `P1-B-002`, `P1-C-002`, `P1-C-003`, `P1-B-003`, `P1-A-003`, `P1-A-004`. |
 | **7. Critical path** | `P1-B-001` → `P1-B-002` → `P1-C-001` → `P1-C-002` / `P1-C-003`. |
 | **8. Parallel tracks** | A: primitives → shell → overviews + typed mocks. B: schema → seed → dashboard APIs. C: taxonomy/manifests → four deterministic adapters. |
 | **9. Dependencies** | P0 contracts; `P1-B-001` before seed/APIs; `P1-C-001` before adapters; A mocks depend on contracts only. |
-| **10. Deliverables** | UI primitives; app shell; persona switcher/banner; Prisma schema v1; deterministic seed; manifest registry; four adapters; `/api/me`, dashboard endpoints; typed client and mock fixtures. |
-| **11. Usable prototype** | A polished shell with a working persona switch and two overview dashboards showing Northstar's seeded job and Jordan's four versions. |
+| **10. Deliverables** | UI primitives; app shell with session badge and demo banner; `/login` screen with 1-click demo persona quick-select; Prisma schema v1 with `UserAccount`; deterministic seed; manifest registry; four adapters; `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`, dashboard endpoints; typed client and mock fixtures. |
+| **11. Usable prototype** | A polished shell with authenticated login (`/login`), session-cookie auth, role-guarded routes, and two overview dashboards showing Northstar's seeded job and Jordan's four versions. |
 | **12. Demo evidence** | Persona toggle; WH-204 seeded `CONTRACT_READY`; 42 on-hand; zero spend/earnings; adapter outputs 12/12/10 and 10/2. |
 | **13. QA focus** | Seed twice → identical counts; status colours and focus states; loading/empty/error states; no raw hex in page code; baseline absent from marketplace data. |
 | **14. Contract/data touchpoints** | All 24 Prisma models and uniques; seed IDs; `DemoMeta`; manifest fields; stage schema IDs. |
@@ -82,17 +82,17 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 
 | Field | Detail |
 |---|---|
-| **1. Objective** | Prove the marketplace side of the loop: an independent builder lists versioned capabilities and a buyer can inspect them and create a contract-backed job. |
+| **1. Objective** | Prove the marketplace side of the loop: an independent builder uploads and validates a versioned agent package (ZIP pipeline), stored with SHA-256 digest and PENDING_APPROVAL status under fail-closed execution safety (only approved platform adapters run in MVP), and a buyer inspects approved versions and creates a contract-backed job. |
 | **2. Window** | H4–H7, 180 minutes. |
 | **3. Entry criteria** | P1 gate passed; schema/seed stable; manifests validated; shell navigable. |
-| **4. Exit gate** | Buyer catalog filters and deep links work; agent detail shows every version and field; builder can register a draft version; WH-204 opens with a frozen ten-check contract; an invalid job is rejected. |
+| **4. Exit gate** | Builder publishes agent package via ZIP upload; validation, storage abstraction and PENDING_APPROVAL status work; execution safety boundary enforced; catalog browses approved versions; WH-204 opens with a frozen ten-check contract; invalid job is rejected. |
 | **5. Phase owner** | A (catalog/detail/wizard), B (registry/job APIs/profile), C (matcher/compiler/compatibility/gaps). |
 | **6. Tasks** | 13: `P2-B-001`, `P2-A-001`, `P2-C-001`, `P2-B-002`, `P2-C-002`, `P2-A-002`, `P2-C-003`, `P2-A-003`, `P2-B-003`, `P2-C-004`, `P2-A-004`, `P2-A-005`, `P2-B-004`. |
 | **7. Critical path** | `P2-B-001` → `P2-C-001` → `P2-B-002` → `P2-C-002` → `P2-C-003`. |
 | **8. Parallel tracks** | A: catalog → detail → wizard → jobs shell. B: registry read → job persistence → builder APIs → seed finalisation. C: matcher → contract compiler → compatibility → gap detection. |
 | **9. Dependencies** | P1 seed/manifests; contracts; `P2-C-003` feeds matcher; A works against typed mocks. |
-| **10. Deliverables** | `/api/agents*`; `/api/jobs*`; `/api/builder/*`; catalog; agent detail/version timeline; three-step wizard; jobs list/detail; registration form; complete seeded manifest/pricing/fallback links. |
-| **11. Usable prototype** | Northstar browses four visible versions, opens an agent timeline, creates a job and sees the compiled contract preview with ten checks and blocked inventory. |
+| **10. Deliverables** | `/api/agents*`; `/api/jobs*`; `POST /api/builder/packages/upload`; package storage abstraction; archive safety validator; execution safety boundary; catalog; agent detail/version timeline; three-step wizard; jobs list/detail; Publish Agent screen (`/builder/agents/publish`); My Agents listing (`/builder/agents`); complete seeded manifest/pricing/platform-adapter links. |
+| **11. Usable prototype** | Jordan uploads an agent package, validates it, and sees it persisted in PENDING_APPROVAL status with SHA-256 digest; Northstar browses four approved marketplace versions, opens an agent timeline, creates a job and sees the compiled contract preview with ten checks and blocked inventory. |
 | **12. Demo evidence** | Filtered catalog URL; v1.0.0/v1.1.0 side-by-side; WH-204 contract 10/2; one new job persisted atomically. |
 | **13. QA focus** | Role guards (buyer cannot register); duplicate version 409; paused versions excluded; contract preview matches compiler output; no invented manifest field. |
 | **14. Contract/data touchpoints** | `AgentSummary`, `AgentManifest`, `Job`, `AcceptanceContract`; agent+version uniqueness; job+contract transaction; pricing in paise. |

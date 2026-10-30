@@ -117,26 +117,26 @@ No buyer route appears in builder navigation and vice versa. Direct-route access
 
 | # | Route | Page | Phase / task | Role |
 |---|---|---|---|---|
-| 1 | `/` | Redirect to role home | P0-A-001 | any |
-| 2 | `/buyer/overview` | Buyer command centre | P1-A-003 | buyer |
-| 3 | `/buyer/jobs` | Jobs list | P2-A-004 | buyer |
-| 4 | `/buyer/jobs/new` | Three-step job wizard | P2-A-003 | buyer |
-| 5 | `/buyer/jobs/[jobId]` | Job detail / Contract tab | P2-A-004 | buyer |
-| 6 | `/buyer/jobs/[jobId]/compiler` | Compiler and candidates | P3-A-003 | buyer |
-| 7 | `/buyer/jobs/[jobId]/work-order` | Work-order approval | P4-A-001 | buyer |
-| 8 | `/buyer/jobs/[jobId]/execution` | Execution monitor | P4-A-002 | buyer |
-| 9 | `/buyer/jobs/[jobId]/verification` | Verification result | P5-A-001 | buyer |
-| 10 | `/buyer/jobs/[jobId]/receipt` | Evidence Center / receipt | P5-A-002 | buyer |
-| 11 | `/buyer/jobs/[jobId]/economics` | Job economics | P6-A-004 | buyer |
-| 12 | `/buyer/marketplace` | Marketplace catalog | P2-A-001 | buyer |
-| 13 | `/buyer/marketplace/agents/[agentId]` | Agent detail and versions | P2-A-002 | buyer |
-| 14 | `/buyer/transactions` | Spend and transactions | P6-A-001 | buyer |
-| 15 | `/builder/overview` | Builder command centre | P1-A-003 | builder |
-| 16 | `/builder/profile` | Builder profile | P2-A-005 | builder |
-| 17 | `/builder/agents` | My agents and versions | P2-A-005 | builder |
-| 18 | `/builder/agents/new` | Register agent version | P2-A-005 | builder |
-| 19 | `/builder/agents/[agentId]` | Agent/version detail, evaluations, reputation | P2-A-002 / P6-A-003 | builder |
-| 20 | `/builder/agents/[agentId]/edit` | Edit draft version | P2-A-005 | builder |
+| 1 | `/login` | Authenticated login & demo persona quick-select | P1-A-003 | public |
+| 2 | `/` | Redirect to `/login` or role overview | P0-A-001 | any |
+| 3 | `/buyer/overview` | Buyer command centre | P1-A-003 | buyer |
+| 4 | `/buyer/jobs` | Jobs list | P2-A-004 | buyer |
+| 5 | `/buyer/jobs/new` | Three-step job wizard | P2-A-003 | buyer |
+| 6 | `/buyer/jobs/[jobId]` | Job detail / Contract tab | P2-A-004 | buyer |
+| 7 | `/buyer/jobs/[jobId]/compiler` | Compiler and candidates | P3-A-003 | buyer |
+| 8 | `/buyer/jobs/[jobId]/work-order` | Work-order approval | P4-A-001 | buyer |
+| 9 | `/buyer/jobs/[jobId]/execution` | Execution monitor | P4-A-002 | buyer |
+| 10 | `/buyer/jobs/[jobId]/verification` | Verification result | P5-A-001 | buyer |
+| 11 | `/buyer/jobs/[jobId]/receipt` | Evidence Center / receipt | P5-A-002 | buyer |
+| 12 | `/buyer/jobs/[jobId]/economics` | Job economics | P6-A-004 | buyer |
+| 13 | `/buyer/marketplace` | Marketplace catalog | P2-A-001 | buyer |
+| 14 | `/buyer/marketplace/agents/[agentId]` | Agent detail and versions | P2-A-002 | buyer |
+| 15 | `/buyer/transactions` | Spend and transactions | P6-A-001 | buyer |
+| 16 | `/builder/overview` | Builder command centre | P1-A-003 | builder |
+| 17 | `/builder/profile` | Builder profile | P2-A-005 | builder |
+| 18 | `/builder/agents` | My Agents (version manager, SHA-256 digests, status) | P2-A-005 | builder |
+| 19 | `/builder/agents/publish` | Publish Agent (ZIP upload, validation & storage) | P2-A-005 | builder |
+| 20 | `/builder/agents/[agentId]` | Agent/version detail, evaluations, reputation | P2-A-002 / P6-A-003 | builder |
 | 21 | `/builder/contributions` | Stage-level contributions | P6-A-002 | builder |
 | 22 | `/builder/earnings` | Earnings and eligibility | P6-A-002 | builder |
 
@@ -282,16 +282,26 @@ Three columns, horizontally aligned, same row ordering. See §9.
 
 ### 6.3 My agents
 
-- Table/cards: agent, versions, capabilities, status, price, latest evidence.
+- Table/cards: agent, versions, capabilities, status (`PENDING_APPROVAL`, `APPROVED`), SHA-256 artifact digest, price, latest evidence.
 - Version timeline: v1.0.0 and v1.1.0 are distinct, with fallback link.
-- Registration CTA opens `/builder/agents/new`; published versions are immutable.
+- Displays uploaded package artifacts alongside seeded agents with clear provenance.
+- Primary CTA: "Publish Agent" opens `/builder/agents/publish`.
 
-### 6.4 Agent registration/edit
+### 6.4 Publish Agent (ZIP Package Submission Pipeline)
 
-- Manifest fields: name, version, capabilities, input/output schema IDs, permissions, price, latency, limitations, fallback.
-- Prominent warning: demo registration only; published versions immutable.
-- Validation: unique version, known capability, integer paise, no `commit:inventory` permission.
-- Successful creation lands on the agent detail with a draft/active badge and no fabricated evaluation score.
+- Screen: `/builder/agents/publish`.
+- Drag-and-drop ZIP upload zone: accepts `.zip` packages up to 5MB containing `manifest.json`, schemas, source, and fixtures.
+- Upload progress indicator and real-time backend validation feedback:
+  - Validates package structure and archive integrity.
+  - Rejects path traversal (`../`) and dangerous archives.
+  - Parses and previews `manifest.json` (agent name, version, declared capabilities, author).
+  - Validates input/output schema files against domain definitions.
+  - Calculates and displays SHA-256 artifact digest.
+  - Stores archive in persistent storage abstraction (`artifacts/packages/{packageId}/{versionId}.zip`).
+  - Creates immutable `AgentVersion` record in `PENDING_APPROVAL` status.
+- **Execution Safety Boundary Banner:**
+  - Displays persistent notice: "Package uploaded, checksummed, and validated. Execution binding requires platform approval. In this demo, live workflows execute only approved platform adapters."
+  - Zero dynamic code execution or arbitrary runtime imports.
 
 ### 6.5 Contributions
 

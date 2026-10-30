@@ -21,7 +21,7 @@ The tracker is the single execution state for the 24-hour build. It contains **1
 | Optional P2 tasks | 5 (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) |
 | Total estimated minutes | 3,535 |
 | Core (non-optional) minutes | 3,425 |
-| Integration buffer | 895 minutes (~21% buffer) |
+| Integration buffer | 875 minutes (~20.3% buffer) |
 
 Per phase: P0 9, P1 10, P2 13, P3 15, P4 12, P5 13, P6 13, P7 11, P8 12.  
 Per workstream: A 40 (1,145m core), B 34 (1,140m core), C 34 (1,140m core).

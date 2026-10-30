@@ -879,7 +879,10 @@ To prevent scope creep and maintain strict development focus, ProofHire explicit
 10. **Independent verifier:** deterministic acceptance checks against final output/state, independently checking the 42→42 inventory invariant.
 11. **Contribution and economics ledger:** calculate builder allocations (₹5,500), platform fees (₹2,500), and reserves (₹1,200/₹800).
 12. **Evidence receipt:** tamper-evident SHA-256 hash over selected agents, versions, checks, state diff, costs, errors and outcome.
-13. **Polished end-to-end demo:** receiving and inventory reconciliation (Northstar Warehouse WH-204).
+13. **Polished end-to-end demo:** receiving and inventory reconciliation (Northstar Warehouse WH-204) spanning the canonical 18-step journey.
+14. **Constrained demo authentication:** seeded demo accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`), authenticated login (`/login`), server-managed session cookies (`proofhire_session`), server-side role authorization (`BUYER` vs `BUILDER`), and route guards.
+15. **Constrained agent package submission pipeline:** developer ZIP archive upload (<=5MB), structure and schema validation, path-traversal rejection (`..`), persistent storage abstraction (`artifacts/packages/`), SHA-256 digest calculation, and immutable `AgentVersion` records with status `PENDING_APPROVAL`.
+16. **Critical execution safety boundary:** strict runtime isolation ensuring that only approved, platform-hosted adapters (`src/server/agents/**`) can be executed by the orchestrator. Uploaded packages remain safely stored and non-executable (`PENDING_APPROVAL`, `executionEligible: false`). Zero dynamic `eval()` or untrusted dynamic `import()`.
 
 ### Should build if time permits
 - Buyer and builder dashboard views.

@@ -354,7 +354,7 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Status | `ACCEPTED` |
 | Owner | Joint |
 | Context | Initial task estimates totalled 4,080 minutes, leaving Team A with only 10 minutes of buffer across 24 hours. |
-| Decision | Rebalance core planned workload to 3,425 person-minutes across the three developers (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). This leaves 895 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Move cosmetic polish and nonessential export wiring (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) to optional scope (110m total). |
+| Decision | Rebalance core planned workload to 3,445 person-minutes across the three developers (Team A: 1,145m core; Team B: 1,140m core; Team C: 1,140m core). This leaves 875 minutes (~15 person-hours, or ~5 hours per dev) of integration buffer. Move cosmetic polish and nonessential export wiring (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) to optional scope (110m total). |
 | Alternatives | Cut core economic/trust features; keep 4,080m plan and risk integration failure. |
 | Consequences | Ample integration buffer; Team A capacity deficit resolved; all critical-path features preserved. |
 | Revisit | At each phase gate checkpoint. |
@@ -477,6 +477,18 @@ Record the filled note here and in the tracker checkpoint log. Never overwrite a
 5. Record the checkpoint outcome.
 
 If a change affects money, verification, inventory or a demo claim, it requires all three workstreams to acknowledge.
+
+---
+
+### D-029 — Constrained Demo Authentication, Safe Agent-Package Submission Pipeline, and Execution Safety Boundary
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Principal Architect |
+| Context | The previous role switcher was insufficient for demonstrating authentic multi-tenant platform mechanics, while manifest-only agent registration failed to demonstrate realistic software package submission. At the same time, allowing untrusted uploaded code to execute inside the runtime would introduce unacceptable security vulnerabilities during a 24-hour hackathon. |
+| Decision | 1. **Constrained Demo Authentication:** Replace the role switcher with a minimal authenticated session flow (`/login`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`). Seeded accounts for Northstar Warehouse (`buyer@northstar.demo`) and Jordan Lee (`jordan@demoagent.studio`). Server-managed signed session cookie `proofhire_session` with server-side role authorization (`BUYER` vs `BUILDER`) and route guards. Clear demo account indicator in the application shell. Public sign-up, OAuth providers, and enterprise IAM are explicitly deferred.<br>2. **Constrained Agent-Package Submission Pipeline:** Replace manifest-only registration with a developer ZIP upload pipeline (`POST /api/builder/packages/upload`). Accepts archives up to 5MB containing `manifest.json`, input/output schemas, configuration schemas, evaluation fixtures, and dependency metadata. Backend validates archive structure, rejects path traversal attacks (`../`), computes a SHA-256 digest, stores the artifact in a persistent storage abstraction (`artifacts/packages/{packageId}/{versionId}.zip`), and creates an immutable `AgentVersion` record with status `PENDING_APPROVAL`. Frontend provides Publish Agent screen (`/builder/agents/publish`) and My Agents version manager (`/builder/agents`).<br>3. **Critical Execution Safety Boundary:** Uploading arbitrary source code does NOT make it executable inside ProofHire! The Northstar MVP runtime executes ONLY approved, platform-hosted adapters (`src/server/agents/**`). Unapproved uploads remain stored and validated (`PENDING_APPROVAL`, `executionEligible: false`) but cannot be bound into workflow execution graphs. The compiler rejects unapproved packages with `UNAPPROVED_EXECUTION_BINDING`. Zero dynamic `eval()` or dynamic `import()`.<br>4. **Canonical 18-Step Journey:** Formally specify the 18-step end-to-end journey from builder sign-in, package upload, and validation to buyer sign-in, WH-204 review, dynamic compilation/audition across 10 fixtures, dynamic candidate selection, work order approval, execution, v1.0.0 failure & v1.1.0 recovery, independent 10-check verification, 42->42 inventory invariant lock, receipt hash, and simulated earnings.<br>5. **Workload Rebalancing:** Rebalance tasks in P1 and P2 (`P1-B-003`, `P1-A-003`, `P1-A-002`, `P2-B-003`, `P2-B-004`, `P2-A-005`, `P2-C-003`, `P2-C-004`). Total core planned workload is frozen at **3,445 person-minutes** across 108 tasks, leaving an **875-minute (~20.3%) team integration buffer** across the 24 hours (plus 180m in P9 unallocated contingency reserve). |
 
 ---
 

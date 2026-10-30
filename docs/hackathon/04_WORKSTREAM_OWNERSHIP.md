@@ -62,9 +62,10 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 |---|---|
 | Database | `prisma/schema.prisma`, `prisma/migrations/**`, `prisma/seed.ts`, Neon connection pooling and direct migration configuration |
 | DB access | `src/server/db.ts`, `src/server/repositories/**` |
+| Storage | `src/server/storage/**` (package artifact storage abstraction) |
 | API handlers | `src/app/api/**` |
 | Services | `src/server/services/**` (orchestration/persistence only; domain rules delegated to C) |
-| Auth/role guard | `src/server/auth/**`, persona cookie, route guard |
+| Auth/role guard | `src/server/auth/**`, session cookie (`proofhire_session`), login/logout, route guards |
 | Scripts | `scripts/**`, `package.json` scripts, `.env.example` |
 | Operations | reset, backup, seed verification, health, performance |
 
@@ -104,11 +105,12 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 
 ## 3. Module and route ownership matrix
 
-### 3.1 Buyer routes
+### 3.1 Shared & Buyer routes
 
 | Route | Owner | API dependencies | Key task |
 |---|---|---|---|
-| `/buyer/overview` | A | `GET /api/dashboard/buyer`, `GET /api/me` | `P1-A-003` |
+| `/login` | A | `POST /api/auth/login`, `GET /api/auth/me` | `P1-A-003` |
+| `/buyer/overview` | A | `GET /api/dashboard/buyer`, `GET /api/auth/me` | `P1-A-003` |
 | `/buyer/jobs` | A | `GET /api/jobs` | `P2-A-004` |
 | `/buyer/jobs/new` | A | `POST /api/jobs`, compiler preview | `P2-A-003` |
 | `/buyer/jobs/[jobId]` | A | `GET /api/jobs/:id` | `P2-A-004` |

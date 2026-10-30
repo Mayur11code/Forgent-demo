@@ -55,21 +55,23 @@ To ensure structural consistency across all three engines, ProofHire strictly de
 
 | Area | Included |
 |---|---|
-| Marketplace | Buyer catalog, agent detail, version timeline, builder profile, demo-scoped agent registration, versioned manifests and reputation |
+| Authentication | Constrained demo authentication: seeded Northstar Buyer (`buyer@northstar.demo`) and Jordan Lee (`jordan@demoagent.studio`), `/login` screen with 1-click persona quick-select, server-managed `proofhire_session` cookies, server-side role authorization (`BUYER` vs `BUILDER`), protected route guards, dashboard redirects, demo badge. No public signup or OAuth. |
+| Marketplace & Packages | Buyer catalog, agent detail, version timeline, builder profile, constrained package submission pipeline (ZIP archive upload, 5MB limit, anti-path-traversal validation, SHA-256 digest, persistent storage abstraction, immutable `PENDING_APPROVAL` version records), My Agents manager, and versioned reputation. |
+| Execution Safety | Runtime execution safety boundary: only pre-approved platform-hosted adapters (`src/server/agents/**`) can be bound into workflow execution graphs. Uploaded packages remain safely stored and validated (`PENDING_APPROVAL`) without runtime execution. Zero dynamic `eval` or dynamic imports. |
 | Job creation | Three-step wizard, structured evidence inputs, budget/deadline, acceptance contract compile |
 | Team Compiler | Capability matching, compatibility checks, three candidates, ten-fixture audition, hard-constraint selection, capability gaps |
 | Commercial | Work order, ₹10,000 allocation, buyer approval, simulated settlement eligibility |
-| Execution | Six-stage runtime, persisted events, injected failure, bounded replacement, downstream rerun, safe stop |
+| Execution | Six-stage runtime, fail-closed safety limits & 42->42 inventory lock enforced before execution, persisted events, injected failure, bounded replacement, downstream rerun, safe stop |
 | Trust | Independent ten-check verifier, state diff, tamper-evident receipt with SHA-256 hash, human review, blocked inventory commit (42 → 42 invariant) |
 | Economics | Stage attribution, v1.0.0 ₹0, v1.1.0 ₹2,500, builder ₹5,500, platform ₹2,500, reserves |
 | Operations | Deterministic seed/reset, health endpoint, demo runbook, backup, rehearsals |
 
 ### Explicitly out of scope
 
-- Real authentication, real payments, escrow, KYC, billing or payout rails.
+- Public sign-up, OAuth providers, password reset, enterprise multi-tenant IAM, real payment gateways, real escrow, KYC, billing or bank payout rails (MVP uses constrained demo session authentication with seeded accounts and simulated economic settlement).
 - Real warehouse or ERP integration; the ledger is simulated.
-- Public builder onboarding, third-party acquisition or unrestricted bidding.
-- Arbitrary untrusted agent code execution, queues or websockets. Model calls are isolated to hybrid adapters with deterministic fallbacks.
+- Public builder self-service onboarding, third-party acquisition or unrestricted bidding.
+- Arbitrary untrusted dynamic code execution, public container sandboxing, queues or websockets. Uploaded packages are stored and validated in pending-approval status without runtime execution; live workflows execute only approved platform adapters.
 - PDF receipt export, cross-job audit browser, disputes centre, crypto settlement.
 - A real capability-bounty submission flow.
 - Production multi-tenancy, horizontal scale, SLA or compliance claims.
@@ -320,8 +322,8 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | Phase | A minutes | B minutes | C minutes | Window | Buffer & Rule |
 |---|---:|---:|---:|---:|---|
 | P0 | 55 | 55 | 55 | 60 | 5m slack per dev; contract freeze is the gate. |
-| P1 | 160 | 145 | 140 | 180 | 20–40m slack; seeded overviews complete. |
-| P2 | 160 | 160 | 150 | 180 | 20–30m slack; contract compiler and marketplace active. |
+| P1 | 160 | 150 | 140 | 180 | 20–40m slack; authenticated login, session cookie and overviews complete. |
+| P2 | 170 | 160 | 155 | 180 | 10–25m slack; package upload pipeline, execution safety boundary, contract compiler and catalog active. |
 | P3 | 160 (185) | 155 | 160 | 180 | 20–25m buffer per dev. Auditions run across 10 fixtures; comparison matrix rendered; selection in P4. |
 | P4 | 160 | 175 | 175 | 180 | 5m buffer per dev. Dynamic ranking, fail-closed limits & 42->42 invariant locked, recovery runtime. |
 | P5 | 150 (170) | 165 | 130 | 180 | 15–50m buffer. Independent verifier, state diff assertion, tamper-evident receipt, and demo reset. |
@@ -330,7 +332,7 @@ H0 is the first implementation minute. Calendar time is irrelevant; elapsed hour
 | P8 | 95 | 90 | 95 (120) | 120 | 25m buffer per dev for 3 full rehearsals and release lock. |
 | P9 | 0 | 0 | 0 | 60 | 60m unallocated contingency buffer (180 person-minutes reserve) for demo freeze. |
 
-**Capacity rebalancing summary:** Core planned workload is reduced to **3,425 person-minutes** across all three developers (Team A: 1,145m core / 1,230m total; Team B: 1,140m core / 1,140m total; Team C: 1,140m core / 1,165m total). This creates **895 minutes (~15 person-hours)** of team integration buffer. Team A is fully rebalanced from its previous 1,430m load, eliminating the previous capacity deficit. Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.
+**Capacity rebalancing summary:** Core planned workload is frozen at **3,445 person-minutes** across all three developers (Team A: 1,155m core / 1,240m total; Team B: 1,145m core / 1,145m total; Team C: 1,145m core / 1,170m total). This creates **875 minutes (~14.6 person-hours)** of team integration buffer (plus 180m in P9 unallocated contingency reserve). Every workstream in every phase operates within available phase capacity (Phase 1 core: 450m / 540m; Phase 2 core: 485m / 540m). Optional tasks (`P3-A-006`, `P5-A-004`, `P6-A-005`, `P7-A-004`, `P8-C-004`) total 110m and are the first to be dropped if any phase slips.
 
 ---
 

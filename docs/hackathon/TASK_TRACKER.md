@@ -19,28 +19,28 @@
 | **Dropped/deferred** | **2** | `P5-A-005` (PDF export) and `P7-B-004` (audit event browser) |
 | **Optional scope** | **5** | `P3-A-006` (25m), `P5-A-004` (20m), `P6-A-005` (20m), `P7-A-004` (20m), `P8-C-004` (25m) |
 | **Critical path** | **46** | Sequential dependency chain defining the release boundary |
-| **Core planned minutes** | **3425** | Across 3 developers (Team A: 1145m, Team B: 1140m, Team C: 1140m) |
+| **Core planned minutes** | **3445** | Across 3 developers (Team A: 1155m, Team B: 1145m, Team C: 1145m) |
 | **Optional planned minutes** | **110** | 5 non-critical polish tasks |
-| **Total estimated minutes** | **3535** | Core + optional minutes |
+| **Total estimated minutes** | **3555** | Core + optional minutes |
 | **Total developer capacity** | **4,320** | 3 developers × 1,440 minutes (24 hours) |
-| **Integration buffer** | **895** | ~14.9 person-hours reserve (~20.7% of total developer capacity) |
+| **Integration buffer** | **875** | ~14.6 person-hours reserve (~20.3% of total developer capacity) |
 
 ### Workstream breakdown
 
 | Workstream | Tasks | Core minutes | Optional minutes | Total minutes | Developer buffer |
 |---|---:|---:|---:|---:|---:|
-| **A — Frontend/UX** | 40 | 1145m | 85m | 1230m | 295m core buffer (210m total) |
-| **B — Backend/Platform** | 34 | 1140m | 0m | 1140m | 300m core buffer (300m total) |
-| **C — AI/Compiler/Eval** | 34 | 1140m | 25m | 1165m | 300m core buffer (275m total) |
-| **TOTAL** | **108** | **3425m** | **110m** | **3535m** | **895m core buffer** (785m total) |
+| **A — Frontend/UX** | 40 | 1155m | 85m | 1240m | 285m core buffer (200m total) |
+| **B — Backend/Platform** | 34 | 1145m | 0m | 1145m | 295m core buffer (295m total) |
+| **C — AI/Compiler/Eval** | 34 | 1145m | 25m | 1170m | 295m core buffer (270m total) |
+| **TOTAL** | **108** | **3445m** | **110m** | **3555m** | **875m core buffer** (765m total) |
 
 ### Planned effort per phase and workstream (minutes)
 
 | Phase | WS A | WS B | WS C | Capacity per dev | Core Total | Phase Capacity | Phase Utilization | Status |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | P0 | 55 | 55 | 55 | 60 | 165m | 180m | 91.7% | PASS |
-| P1 | 160 | 145 | 140 | 180 | 445m | 540m | 82.4% | PASS |
-| P2 | 160 | 160 | 150 | 180 | 470m | 540m | 87.0% | PASS |
+| P1 | 160 | 150 | 140 | 180 | 450m | 540m | 83.3% | PASS |
+| P2 | 170 | 160 | 155 | 180 | 485m | 540m | 89.8% | PASS |
 | P3 | 160 (185) | 155 | 160 | 180 | 475m | 540m | 88.0% | PASS |
 | P4 | 160 | 175 | 175 | 180 | 510m | 540m | 94.4% | PASS |
 | P5 | 150 (170) | 165 | 130 | 180 | 445m | 540m | 82.4% | PASS |
@@ -49,7 +49,7 @@
 | P8 | 95 | 90 | 95 (120) | 120 | 280m | 360m | 77.8% | PASS |
 | P9 | 0 | 0 | 0 | 60 | 0m | 180m | 0.0% | PASS |
 
-> Optional tasks are excluded from core phase totals. All workstreams are balanced within each phase capacity, leaving a collective 895-minute integration buffer across the 24-hour hackathon.
+> Optional tasks are excluded from core phase totals. All workstreams are balanced within each phase capacity, leaving a collective 875-minute integration buffer across the 24-hour hackathon.
 
 ---
 
