@@ -242,6 +242,17 @@
 | Response | Reassign by ownership matrix; cut optional scope; protect the trust/economics chain |
 | Residual | Low |
 
+### R-21 — Arbitrary third-party code execution vulnerability
+
+| Field | Detail |
+|---|---|
+| Likelihood / impact | L / 5 |
+| Owner | B / C |
+| Trigger | Attempting to execute unvetted developer code or arbitrary scripts within the production runtime |
+| Mitigation | Hackathon MVP strictly executes curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads are explicitly deferred to the future roadmap requiring microVM/container isolation (Firecracker/gVisor), resource quotas, egress network firewalls, and secret protection |
+| Response | Reject arbitrary package execution; enforce platform adapter allow-list |
+| Residual | Low by architecture |
+
 ---
 
 ## 3. Risk heat summary
@@ -275,16 +286,15 @@
 - Premium shell, demo labels, no dead routes.
 - Runbook and three rehearsals.
 
-### 4.2 Out of scope (not built)
+### 4.2 Out of scope (not built in 24-hour hackathon MVP)
 
-- Real auth/KYC, payments, escrow, payouts, tax/invoicing.
-- Real inventory/ERP integration.
-- Public onboarding or unrestricted bidding.
-- Arbitrary code execution or external model calls.
-- PDF export, cross-job audit browser, disputes, crypto.
-- Bounty submission flow.
-- Production scale, SLA, compliance claims.
-- Historical demand, fake ratings, fake provider.
+- **Creation Agents:** Autonomous agents that inspect authorized repositories, generate/modify code in workspaces, run tests, and open Pull Requests (documented as long-term roadmap; not in Northstar MVP).
+- **Arbitrary Third-Party Code Uploads:** Public package uploads running arbitrary runtime code. (MVP uses curated platform-hosted Execution Agent adapters).
+- **Builder-Hosted & Customer-Hosted Runtimes:** External developer webhooks and on-premises / VPC customer execution (deferred to future roadmap).
+- **Production Business Connectors & Credential Vault:** Live enterprise ERP/WMS/CRM integrations; the Tool Gateway in MVP uses simulated local fixtures.
+- **Financial & Identity Rails:** Real auth/KYC, live payment gateway, escrow, bank payouts, tax/invoicing.
+- **Enterprise Ledger:** Real production inventory/ERP mutation (42 → 42 simulated ledger invariant; commit blocked).
+- **Other Deferred Features:** PDF export, cross-job audit browser, disputes center, crypto settlement, bounty submission flow.
 
 ### 4.3 Optional (build only if green)
 

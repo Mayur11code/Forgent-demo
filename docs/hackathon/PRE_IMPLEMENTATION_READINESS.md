@@ -50,6 +50,7 @@ Because this repository currently contains **zero application source code, zero 
 │ 4. No-Mock P7 Integration Gate Verification     │ ⚠️ WARNING     │ 38 routes spec pass; impl pend │
 │ 5. ₹10,000 Economics & Deduplication Integrity  │ ✅ SPEC_PASS   │ 0 paise diff; DB checks pend   │
 │ 6. Demo Reset & End-to-End Acceptance Tests     │ ✅ SPEC_PASS   │ 22 steps + 10 neg; tests pend  │
+│ 7. Canonical Architecture & Scope Boundaries    │ ✅ SPEC_PASS   │ 6 concepts; 2 types; MVP safe  │
 └─────────────────────────────────────────────────┴────────────────┴────────────────────────────────┘
 ```
 
@@ -274,6 +275,18 @@ $$\sum = ₹5,500 + ₹2,500 + ₹1,200 + ₹800 = ₹10,000.00 \quad (1,000,000
 - **Runtime Status:** ⚠️ **UNVERIFIED (PENDING IMPLEMENTATION).**
 
 **Verdict:** ✅ **SPEC_PASS (Exhaustive test specifications in place; execution pending implementation).**
+
+### 8.3 Audit Dimension 8: Canonical Architecture & Scope Boundaries
+
+- **Six Distinct Concepts Verified:** The specifications strictly distinguish Capability (functional requirement), Agent Package (reusable software package; manifest $\ne$ implementation), Agent Version (immutable release), Agent Instance (configured package + context + tools), Compiled Workflow (acyclic graph assembled by Team Compiler), and Execution (audited run with persistent evidence).
+- **Two Agent Categories:**
+  - *Execution Agents:* Curated platform-hosted implementations for operational data processing (Northstar receiving demo).
+  - *Creation Agents:* Autonomous software engineering agents that inspect repositories, generate code/tests, and open Pull Requests. Documented as long-term roadmap; strictly excluded from MVP scope.
+- **Where Executable Code Resides:** Platform-hosted callable adapters in `src/server/agents/**`. Arbitrary third-party code uploads are strictly prohibited in the hackathon MVP.
+- **Business-System Integration & Tool Gateway:** Scenario A (operational business data access) is mediated by the Tool Gateway with narrow tool scopes, credential protection, operation-level authorization, and read vs. write separation. Agents never receive unrestricted production database credentials. Scenario B (codebase modifications) is documented as a future controlled coding workflow.
+- **Conceptual Entity Model:** Explicitly mapped across required MVP persistence tables, runtime abstractions, and future infrastructure.
+
+**Verdict:** ✅ **SPEC_PASS (All canonical architectural boundaries cleanly separated and verified).**
 
 ---
 

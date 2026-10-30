@@ -35,6 +35,30 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | Economics | Buyer ₹10,000; builder ₹5,500; platform fee ₹2,500; reserves ₹1,200/₹800 |
 | Payout | v1.0.0 ₹0; v1.1.0 ₹2,500; `ELIGIBLE_SIMULATED`; no real money moves |
 
+### Canonical Agent Architecture at a Glance
+
+ProofHire establishes strict separation across six core concepts:
+1. **Capability:** A declared unit of functionality (e.g. invoice extraction, quantity reconciliation, repository analysis). Provided by single agents, cooperating agents, deterministic platform functions, business connectors, or human checkpoints. *Not every capability is an agent.*
+2. **Agent Package:** The reusable software package published by a developer. Contains identity, versioned executable implementation, capability manifest, schemas, permissions, synthetic evaluation suites, and pricing. *The manifest alone is not the agent implementation.*
+3. **Agent Version:** An immutable, identifiable release (e.g. `1.0.0`, `1.1.0`) ensuring reproducible execution, evaluation, and attribution.
+4. **Agent Instance:** A configured instance of an agent version for a specific job, combining the package implementation with business context, configuration, runtime limits, and allowed tools mediated by the Tool Gateway.
+5. **Compiled Workflow:** A versioned execution graph assembled by the Team Compiler (composed of configured instances, deterministic code, connectors, and human gates).
+6. **Execution:** An auditable run against authorized inputs, persisting exact versions, configurations, tool permissions, stage traces, and tamper-evident evidence receipts.
+
+**Two Agent Categories:**
+- **Execution Agents:** Existing executable implementations performing declared tasks directly (e.g., Northstar's `Evidence Reader`, `Reconciliation Specialist`, `Exception Reporter`). This is the sole agent category in the hackathon MVP.
+- **Creation Agents:** Future agents capable of analyzing authorized repositories, generating/modifying code in restricted workspaces, running tests, and opening reviewed Pull Requests. *Generated code is an output artifact, not automatically a new marketplace package.* Deferred to future platform roadmap.
+
+**Deployment Models:**
+- **Platform-Hosted:** ProofHire operates runtime (sole model in hackathon MVP; curated callable adapters).
+- **Builder-Hosted:** Developers host authenticated webhook endpoints (future).
+- **Customer-Hosted:** Agents execute within customer VPC / on-premises (future).
+- *Arbitrary public code execution is strictly prohibited in the hackathon MVP.*
+
+**Business Integration & Tool Gateway:**
+- **Scenario A (Operational Data):** Business System $\rightarrow$ Business Connector $\rightarrow$ **ProofHire Tool Gateway** $\rightarrow$ Workflow Runtime $\rightarrow$ Agent Instance. Tool Gateway enforces narrow scopes, credential protection, operation-level authorization, read vs write separation, and human approval for consequential actions.
+- **Scenario B (Codebase Modification):** Authorized Repo $\rightarrow$ Restricted Workspace Sandbox $\rightarrow$ Repo Analysis $\rightarrow$ Code Generation $\rightarrow$ Test Verification $\rightarrow$ Pull Request $\rightarrow$ Business Review (Future).
+
 ---
 
 ## 2. Reading paths
@@ -108,7 +132,7 @@ It is **not** a claim that the product exists. The repository is greenfield: no 
 | Core (non-optional) minutes | 3,425 |
 | Total team integration buffer | 895 minutes (~21% buffer) |
 
-Per phase: P0 9 · P1 10 · P2 13 · P3 15 · P4 12 · P5 13 · P6 13 · P7 11 · P8 12.
+Per phase: P0 9 · P1 10 · P2 13 · P3 12 · P4 13 · P5 14 · P6 13 · P7 12 · P8 12.
 
 **Capacity rebalancing:** Core planned workload is reduced to 3,425 person-minutes, leaving 895 minutes (~15 person-hours) of team buffer. Team A has been fully rebalanced to 1,145 core minutes (leaving ~295 minutes of capacity buffer). All workstreams operate strictly within their phase windows in P0–P8.
 
@@ -160,6 +184,18 @@ A phase is complete only when its gate passes, its prototype is usable and its t
 | No-mock gate (P7) | `Live Next.js API & Neon PostgreSQL persistence` | Zero UI/mock layer; seeded profiles and simulated settlement remain labelled |
 
 **Never claim:** real payment, live inventory mutation, production auth, public demand, certified compliance, guaranteed earnings, or that hardcoded logic is an autonomous third-party AI.
+
+### 7.1 Explicit Scope Boundaries: MVP vs. Future Platform
+
+| Area | 24-Hour Hackathon MVP | Near-Term Evolution | Long-Term Platform |
+|---|---|---|---|
+| **Agent Packages** | Curated Execution Agents (`src/server/agents/**`) | Public developer uploads & sandbox check | Creation Agents (Software Engineering) |
+| **Hosting Model** | Platform-hosted callable adapters | Builder-hosted webhook endpoints | Customer-hosted (VPC / on-premise) |
+| **Tool Integration** | Local simulated fixtures | Tool Gateway + OAuth business connectors | Enterprise KMS credential vault & rotation |
+| **Code Modification** | Strictly prohibited (read/process only) | Bounded scripts in restricted sandboxes | Autonomous repo analysis, tests, PRs |
+| **Inventory State** | Simulated ledger (42 → 42 invariant) | ERP sandbox staging | Production 2-phase commit with ERP |
+| **Settlement** | Mathematical paise simulation | Stripe Connect / Escrow sandbox | Multi-currency real bank settlement |
+| **Arbitrary Code** | Prohibited (no third-party runtime) | Isolated container sandbox | MicroVM (Firecracker/gVisor) fleet |
 
 ---
 

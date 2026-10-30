@@ -19,6 +19,45 @@
 
 ---
 
+## 1.1 Conceptual Entity Model vs. Hackathon MVP Persistence
+
+To maintain architectural purity without bloating the 24-hour hackathon scope, ProofHire explicitly maps its conceptual domain entities across three layers:
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        CONCEPTUAL ENTITY ARCHITECTURE MAPPING                          │
+├─────────────────────────┬───────────────────────────────┬──────────────────────────────┤
+│ Conceptual Entity       │ Hackathon MVP Persistence     │ Structural Role & Rationale  │
+├─────────────────────────┼───────────────────────────────┼──────────────────────────────┤
+│ AgentPackage            │ Table: `Agent`                │ Package identity & author.   │
+│ AgentVersion            │ Table: `AgentVersion`         │ Immutable release & adapter. │
+│ Capability              │ Table: `Capability`           │ Neutral functional skills.   │
+│ AgentCapability         │ Table: `AgentVersionCap...`   │ Declared skill mapping.      │
+│ AgentInstance           │ Table: `CandidateStage`       │ Configured instance for job. │
+│ AgentConfiguration      │ Embedded JSON on `StageRun`   │ Runtime business context.    │
+│ EvaluationSuite         │ Table: `EvaluationRun` (suite)│ 10-fixture suite metadata.   │
+│ EvaluationRun           │ Table: `EvaluationRun`        │ Persisted audition runs.     │
+│ CompiledWorkflow        │ Table: `WorkflowCandidate`    │ Acyclic workflow graph.      │
+│ WorkflowNode / Edge     │ Embedded in `graphJson`       │ Visual & execution topology. │
+│ Execution               │ Table: `ExecutionRun`         │ Commercial execution run.    │
+│ ExecutionStage          │ Table: `StageRun`             │ Stage attempt trace & cost.  │
+│ ToolPermission          │ Runtime Tool Gateway policy   │ Mediated least-privilege.    │
+│ BusinessIntegration     │ Local test fixtures           │ Simulated ERP/scan fixtures. │
+│ EvidenceReceipt         │ Table: `EvidenceReceipt`      │ SHA-256 tamper-evident hash. │
+│ ContributionRecord      │ Table: `ContributionRecord`   │ Stage-level builder earning. │
+│ SettlementRecord        │ Table: `SettlementRecord`     │ Simulated payout eligibility.│
+├─────────────────────────┴───────────────────────────────┴──────────────────────────────┤
+│ FUTURE ARCHITECTURE (DEFERRED): BuilderHostedEndpoint, CustomerHostedRunner,            │
+│ CodeRepositoryConnection, PullRequestArtifact, CredentialVaultRecord.                  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Required Hackathon Persistence:** The 20 Prisma tables defined below provide all state needed for the complete buyer-to-freelancer demo loop.
+- **Logical / Runtime Abstractions:** Abstractions like `AgentInstance`, `ToolPermission`, and `WorkflowEdge` are enforced in TypeScript runtime code and serialized into parent rows rather than requiring redundant relational tables.
+- **Future Infrastructure:** Enterprise connectors, external repository sandboxes, and customer-hosted runner tables are deferred.
+
+---
+
 ## 2. Entity relationship diagram
 
 ```mermaid

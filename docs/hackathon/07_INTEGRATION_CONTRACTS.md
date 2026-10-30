@@ -104,8 +104,16 @@ export const CAPABILITIES = [
   "exception_reporting",
   "inventory_proposal",
   "human_approval",
+  // Creation Agent Capabilities (Platform Roadmap - deferred beyond hackathon MVP)
+  "repository_analysis",
+  "code_generation",
+  "test_generation",
+  "test_execution",
 ] as const;
 export type CapabilityKey = (typeof CAPABILITIES)[number];
+
+export type AgentCategory = "EXECUTION" | "CREATION";
+export type DeploymentModel = "PLATFORM_HOSTED" | "BUILDER_HOSTED" | "CUSTOMER_HOSTED";
 
 export const PERMISSIONS = [
   "read:purchase_orders",
@@ -115,6 +123,11 @@ export const PERMISSIONS = [
   "read:inventory_ledger",
   "propose:inventory_delta",
   "commit:inventory", // never granted to an agent in this demo
+  // Creation Agent Permissions (Roadmap)
+  "read:repository",
+  "write:workspace_code",
+  "exec:workspace_tests",
+  "create:pull_request",
 ] as const;
 export type PermissionKey = (typeof PERMISSIONS)[number];
 
@@ -255,15 +268,32 @@ export interface Agent {
   createdAt: string;
 }
 
+export interface AgentPackage {
+  packageId: string;
+  builderId: string;
+  name: string;
+  summary: string;
+  category: AgentCategory;
+  deploymentModel: DeploymentModel;
+  capabilities: CapabilityKey[];
+  registryVisible: boolean;
+  isSeeded: boolean;
+  createdAt: string;
+}
+
 export interface AgentVersion {
   versionId: string;
   agentId: string;
+  packageId?: string;
   builderId: string;
   version: string;
   status: EntityStatus;
+  category: AgentCategory;
+  deploymentModel: DeploymentModel;
   capabilities: CapabilityKey[];
   inputSchemaId: string;
   outputSchemaId: string;
+  configSchemaJson?: Record<string, unknown>;
   permissions: PermissionKey[];
   pricing: { model: "PER_ACCEPTED_STAGE"; amountPaise: number; currency: Currency };
   estimatedLatencyMs: number;
@@ -283,6 +313,61 @@ export interface AgentManifest extends AgentVersion {
   name: string;
   inputSchema: JsonSchemaRef;
   outputSchema: JsonSchemaRef;
+}
+
+export interface AgentInstanceConfig {
+  instanceId: string;
+  jobId: string;
+  versionId: string;
+  stageKey: CapabilityKey;
+  businessConfig: Record<string, unknown>;
+  allowedTools: string[];
+  permissionScope: "READ_ONLY" | "READ_WRITE_STAGED";
+  timeoutMs: number;
+  maxCostPaise: number;
+}
+
+export interface ToolGatewayRequest {
+  requestId: string;
+  jobId: string;
+  executionId: string;
+  stageId: string;
+  agentVersionId: string;
+  toolName: string;
+  operation: "READ" | "WRITE_PROPOSAL" | "WRITE_COMMIT";
+  payload: Record<string, unknown>;
+  idempotencyKey: string;
+}
+
+export interface ToolGatewayResponse<T = unknown> {
+  requestId: string;
+  status: "AUTHORIZED" | "BLOCKED" | "APPROVAL_REQUIRED";
+  data?: T;
+  errorCode?: string;
+  errorMessage?: string;
+  auditRef: string;
+}
+
+export interface AgentExecutionResult<T> {
+  status: "SUCCESS" | "FAILED";
+  output?: T;
+  rawOutput?: unknown;
+  errorCode?: string;
+  errorMessage?: string;
+  costPaise: number;
+  latencyMs: number;
+  traceRef: string;
+}
+
+export interface AgentAdapter<TInput, TOutput> {
+  manifest: AgentManifest;
+  execute(
+    input: TInput,
+    instanceConfig: AgentInstanceConfig
+  ): Promise<AgentExecutionResult<TOutput>>;
+  validateInput(input: unknown): input is TInput;
+  validateOutput(output: unknown): output is TOutput;
+  healthCheck(): Promise<{ ok: boolean; message?: string }>;
 }
 ```
 

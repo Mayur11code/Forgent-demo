@@ -243,6 +243,8 @@ If running short:
 | “Can an agent commit inventory?” | “No. No agent has `commit:inventory`. A direct attempt is blocked and audited. A human must approve.” |
 | “Why three candidates?” | “To make the selection falsifiable: a baseline, a fixed team and a compiled team, all on the same suite and seed. A and B are rejected for recorded reasons.” |
 | “Is the baseline a Jordan Lee listing?” | “No. It is an evaluation-only baseline, hidden from the marketplace (`registryVisible=false`), so the comparison is fair.” |
+| “Can developers upload arbitrary executable code right now?” | “No. The hackathon MVP uses curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads require sandboxed microVM/container runtimes, resource quotas, and egress firewalls, which are scheduled for our near-term roadmap.” |
+| “Does ProofHire modify our business codebase?” | “No. The Northstar receiving scenario is an operational data-processing workflow mediated by our Tool Gateway. Creation Agents that analyze repos, write code, run tests, and open Pull Requests belong to our long-term software engineering roadmap, not this receiving demo.” |
 | “What is not real?” | “Auth, payments, inventory integration, public onboarding, historical demand and production scale. Everything simulated is labelled.” |
 | “What would you validate next?” | “Buyer willingness to pay, builder acquisition, verification cost per job, dispute rates and real recovery behaviour on messy evidence.” |
 

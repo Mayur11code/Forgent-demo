@@ -56,6 +56,8 @@ ProofHire is a trust product. Tests must prove not only that the happy path work
 | Attribution | v1.0.0 ₹0; v1.1.0 ₹2,500; total ₹5,500 |
 | Settlement | `ELIGIBLE_SIMULATED`; provider null; replay idempotent |
 | Reputation | Version isolation; basis points; replay no double increment |
+| Tool Gateway | Scope validation; read operations pass; write-commit operations blocked pending human approval; direct DB credentials rejected |
+| Agent Categories | Execution Agents: strict I/O schema enforcement, latency/cost bounds; Creation Agents (Roadmap): code correctness, test pass rate, regression preservation, clean PR generation |
 
 ### 2.2 Contract
 

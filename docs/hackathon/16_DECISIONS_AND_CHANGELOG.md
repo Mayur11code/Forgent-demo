@@ -372,6 +372,19 @@ At the documentation baseline, stack and interface decisions are `PROPOSED — F
 | Consequences | Bulletproof financial ledger invariant; auditable arithmetic; prevents accounting bugs. |
 | Revisit | Multi-attempt cost-plus pricing post-hackathon. |
 
+### D-028 — Canonical Agent Architecture, Taxonomy (Execution vs. Creation), and Tool Gateway Mediation
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Principal Architect |
+| Context | Terminology around agents, capabilities, packages, and code generation needed rigorous formalization to prevent scope creep and architectural confusion. |
+| Decision | Formalize the canonical architecture across ProofHire: 1) Strict separation of six concepts: Capability (declared functional requirement; capabilities $\ne$ agents), Agent Package (reusable software package; manifest $\ne$ implementation), Agent Version (immutable release), Agent Instance (configured package + context + tools), Compiled Workflow (versioned acyclic graph assembled by Team Compiler), and Execution (audited run with persistent evidence). 2) Two Agent Categories: Type 1 Execution Agents (existing code execution on inputs; sole type in Northstar MVP) vs Type 2 Creation Agents (repo inspection, code/test generation, PR review; output code artifact $\ne$ new marketplace package; deferred to platform roadmap). 3) Deployment models: Platform-hosted callable adapters in ProofHire runtime (`src/server/agents/**`) for MVP; Builder-hosted and Customer-hosted deferred. 4) Business Integration: Tool Gateway mediates all data access (narrow scopes, credential protection, operation authorization, audit logs, read vs write separation, human gates for consequential actions; no direct DB credentials to agents). |
+| Alternatives | Treat agents as plain prompt templates; allow arbitrary code execution in MVP; allow agents direct database access. |
+| Consequences | Clean separation of concerns; zero arbitrary execution vulnerability; clear scope boundary protecting 24-hour delivery; foundational design for future creation agents. |
+| Revisit | Creation agent pilot in Phase 2 roadmap. |
+
 ---
 
 ## 3. Open questions

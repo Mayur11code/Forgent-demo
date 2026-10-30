@@ -26,6 +26,27 @@ The plan is deliberately narrower than the long-term product and deliberately wi
 5. **Everything simulated is labelled.** Payments are simulated eligibility, not settlement. Inventory is a local ledger, not a warehouse integration. Demo profiles are seeded.
 6. **The UI is a product, not a wireframe.** Premium dark B2B operations console with no dead routes and no fake deferred actions.
 
+### 1.3 Canonical Agent Architecture Principles
+
+To ensure structural consistency across all three engines, ProofHire strictly defines the following architectural abstractions:
+
+1. **Capability:** A declared unit of business functionality (e.g. `document_evidence_extraction`, `quantity_reconciliation`, `repository_analysis`). Capabilities define *what* is needed; they can be supplied by single agents, cooperating agents, deterministic platform functions, business connectors, or human checkpoints. *Not every capability is an agent.*
+2. **Agent Package:** The reusable, versioned software package authored and published by an independent developer. Conceptually contains developer identity, versioned executable implementation, capability manifest, schemas, permissions, synthetic evaluation suites, and pricing. *The manifest alone is not the implementation.*
+3. **Agent Version:** An immutable, uniquely identified release of an agent package (e.g., `1.0.0`, `1.1.0`), ensuring that execution history, evaluations, recovery events, and contribution attribution remain reproducible.
+4. **Agent Instance:** A configured instance of an agent version bound to a specific job step, combining the reusable package code with business context, configuration, runtime limits, and allowed tools mediated by the ProofHire Tool Gateway.
+5. **Compiled Workflow:** A versioned, acyclic execution graph composed of configured agent instances, deterministic functions, business connectors, failure recovery paths, and human approval checkpoints. The Team Compiler assembles workflows; agents do not assemble the final workflow themselves.
+6. **Execution:** An auditable run of the compiled workflow against authorized business inputs, persisting exact versions, configurations, tool permissions, stage traces, and tamper-evident evidence receipts.
+
+**Two Distinct Agent Categories:**
+- **Execution Agents (Type 1):** Possess an existing executable implementation that performs an operational task directly on input data (e.g. extracting invoice fields, reconciling quantities). They deliver their capability without writing new application code. All worker agents in the Northstar hackathon MVP are Execution Agents.
+- **Creation Agents (Type 2):** Capable of inspecting authorized repositories, generating/modifying code in an isolated workspace, generating tests, running static checks, and producing a reviewed Pull Request. *Generated business code is an output artifact, not automatically a new marketplace package.* Creation agents belong to ProofHire's long-term product roadmap and are excluded from the current MVP.
+
+**Deployment Models:**
+- **Platform-Hosted (MVP):** ProofHire operates the execution runtime via curated, platform-hosted callable adapters (`src/server/agents/**`).
+- **Builder-Hosted (Future):** Developers maintain external webhook endpoints conforming to ProofHire's agent protocol.
+- **Customer-Hosted (Future):** Agents execute within customer VPC / on-premises environments.
+- *Arbitrary untrusted public code execution is strictly prohibited in the hackathon MVP.*
+
 ---
 
 ## 2. Scope
@@ -155,6 +176,11 @@ flowchart TB
 - **Resume from persistence.** Stage state is written to Neon PostgreSQL before and after every transition. A page refresh or reconnect continues cleanly from database state.
 - **Deterministic adapters.** Hybrid architecture: Evidence Reader calls multimodal models with instant fallback to `evidencePacket_WH204` fixture; Reconciliation and Verifier are deterministic.
 - **Neon connection pooling.** Database operations run through `@neondatabase/serverless` connection pool via `DATABASE_URL`, with `DIRECT_URL` for Prisma migrations.
+- **ProofHire Tool Gateway.** Mediates all interactions between agent instances and business systems. Enforces least-privilege tool scopes, operation-level authorization, input/output validation, audit logging, and strict read versus write separation (with human approval required for consequential operations like inventory commit). Agents never receive raw database credentials.
+- **The 9-Step Compiler Pipeline.** 1) Decompose outcome into capabilities $\rightarrow$ 2) Query registry $\rightarrow$ 3) Identify packages, platform code & connectors $\rightarrow$ 4) Generate candidate graphs $\rightarrow$ 5) Configure candidate instances $\rightarrow$ 6) Check schemas, dependencies & budgets $\rightarrow$ 7) Audition on synthetic suite $\rightarrow$ 8) Reject hard constraint failures $\rightarrow$ 9) Dynamically select the qualifying workflow. Multi-agent execution is never mandatory.
+- **Business Integration Models:**
+  - *Scenario A (Operational Data — MVP):* Business System $\rightarrow$ Business Connector $\rightarrow$ Tool Gateway $\rightarrow$ Workflow Runtime $\rightarrow$ Agent Instance (read-only PO, Invoice, Scan; inventory commit blocked).
+  - *Scenario B (Codebase Modification — Future Roadmap):* Authorized Repo $\rightarrow$ Restricted Workspace Sandbox $\rightarrow$ Repo Analysis $\rightarrow$ Code Generation $\rightarrow$ Test Verification $\rightarrow$ Pull Request $\rightarrow$ Business Review (not part of Northstar demo).
 
 ### 4.3 Repository shape (to be created at P0)
 

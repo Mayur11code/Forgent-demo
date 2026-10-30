@@ -19,6 +19,18 @@ The Team Compiler turns a buyer's outcome into a bounded, auditioned, selected w
 
 It is not a prompt chain and it does not generate a workflow from prose alone. The job is structured; the contract is compiled; the candidates are bounded; the results are measured.
 
+### 1.1 The 9-Step Compiler Pipeline
+When a business submits an outcome request and budget/deadline constraints, the Team Compiler executes a deterministic 9-step intelligence pipeline:
+1. **Decomposes** the requested business outcome into required capabilities (e.g. extraction, reconciliation, policy, reporting, human gate).
+2. **Queries** the versioned Agent/Capability Registry to identify candidate packages and implementations.
+3. **Identifies** suitable agent packages, deterministic platform functions, and business system connectors.
+4. **Generates** candidate workflow graphs. *Multi-agent execution is not mandatory.* The compiler may assemble a single agent, cooperating specialists, deterministic platform code, or human review gates.
+5. **Configures** candidate agent instances with job-specific parameters, business context, and Tool Gateway permission scopes.
+6. **Checks** schemas, dependencies, permissions, compatibility, budget ceilings, and execution limits.
+7. **Auditions** candidates on comparable synthetic fixtures (`wh204-suite-v1`).
+8. **Rejects** candidates that fail critical acceptance constraints (e.g. quantity mismatch, schema corruption).
+9. **Selects** a qualifying workflow dynamically based on observed accuracy, cost, latency, recovery, and human intervention.
+
 ---
 
 ## 2. Inputs
@@ -334,6 +346,32 @@ Ten fixtures, fixed seed, same suite for A/B/C. Eight visible, two held-out.
 | Individual fixture | Under 2 seconds |
 | Public comparison payload | Small enough to render three columns without pagination |
 | Timeout handling | Typed `AGENT_TIMEOUT`; no infinite `RUNNING` |
+
+### 7.4 Evaluation Differences Across Agent Categories
+
+Evaluation methodology strictly differentiates between package types:
+1. **Execution Agents:** Evaluated on operational precision:
+   - Capability correctness and task completion.
+   - Strict input and output schema compliance.
+   - Data extraction accuracy from raw documents.
+   - Execution reliability and determinism across repeated trials.
+   - Compute cost (paise) and latency (milliseconds).
+   - Tool permission compliance (rejecting unauthorized tool calls).
+2. **Creation Agents (Platform Roadmap):** Evaluated on software engineering outputs:
+   - Correctness of generated code artifacts against functional requirements.
+   - Automated unit and integration test pass rates.
+   - Existing codebase behavior preservation (zero unintended regressions).
+   - Static analysis, linting, and security vulnerability scans.
+   - Scope compliance (restricting modifications to authorized paths).
+   - Quality of reviewable deliverables (clean git diffs, PR descriptions).
+3. **Workflow-Level Evaluations:**
+   - Multi-node data handoff integrity and schema compatibility.
+   - Bounded error detection, failure isolation, and fallback replacement.
+   - Final acceptance contract verification by the independent oracle.
+   - Side-effect safety (guaranteeing consequential operations like inventory commit remain blocked).
+4. **Synthetic Test Boundaries:**
+   - Synthetic auditions provide empirical verification against calibrated test cases.
+   - They demonstrate measurable competence under specified conditions; they do not claim or guarantee universal correctness on unobserved real-world inputs.
 
 ---
 

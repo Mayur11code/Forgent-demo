@@ -59,14 +59,15 @@ Execution cannot start until the buyer approves a versioned work order.
 
 ### 3.1 Runtime shape
 
-- In-process orchestrator behind a Next.js route handler.
-- Topological stage execution in dependency order.
-- Each stage is persisted before and after execution.
-- One execution per reset; idempotent start.
-- Browser polls every 500 ms; stop at a terminal state.
-- A restart resumes from persisted stage state.
-- No arbitrary code execution; adapters are allow-listed functions.
-- No network or LLM dependency on the critical path.
+- **Serverless orchestrator & durable queue.** Next.js route handlers orchestrating step execution with Upstash QStash webhook progression (`/api/webhooks/qstash/execution-step`).
+- **ProofHire Tool Gateway mediation.** All tool operations and business data access are mediated by the Tool Gateway. Enforces least-privilege tool scopes, schema validation on inputs/outputs, operation-level authorization, audit logging, and strict read versus write separation. Agents never receive direct database credentials or unrestricted production access.
+- **Fail-closed execution limits & state invariant.** Timeout thresholds (max 3,000ms per stage), cost limits, and the 42→42 inventory invariant lock are enforced before runtime execution begins. Consequential actions (inventory commit) remain strictly locked at `BLOCKED_PENDING_APPROVAL`. Independent verification in P5 confirms the invariant held.
+- **Topological stage execution.** Stages execute strictly in dependency order.
+- **Durable persistence.** Each stage is persisted before and after execution in Neon PostgreSQL.
+- **One execution per reset.** Idempotent execution start prevents duplicate runs.
+- **Client visibility.** Frontend polls `/api/jobs/:jobId/execution` (default 700ms) with clean resumption from database state.
+- **No arbitrary code execution.** All candidate implementations are curated platform-hosted Execution Agent adapters or deterministic platform functions.
+- **No network/LLM dependency on critical path.** Evidence Reader uses hybrid model-backed capability with instant deterministic fallback; Reconciliation and Verifier are deterministic rules.
 
 ### 3.2 Stage sequence
 
