@@ -348,6 +348,6 @@ Critical-path tasks in this tracker: P0-B-001, P0-C-001, P0-C-002, P1-B-001, P1-
 
 | Phase | Tag | Target / Actual | Gate Result | Tagger | Summary / Evidence |
 |---|---|---|---|---|---|
-| **P0** | `p0-foundation` | H1 / H1 | **PASS** | Staff Eng / Joint Lead | Next.js 15 App Router boots cleanly; dark graphite tokens & navigation registry verified; shared Zod contracts & TypeScript types frozen; Prisma 7 with Neon PostgreSQL connection pooling operational; GET `/api/health` returns 200 with `status: ok` and live DB connectivity; 14 Vitest unit/contract tests passing; `tsc --noEmit` and `next lint` 100% clean. |
+| **P0** | `p0-foundation` | H1 / H1 | **PASS** | Staff Eng / Joint Lead | Next.js 15 App Router boots cleanly; dark graphite tokens & navigation registry verified; shared Zod contracts & TypeScript types frozen; Prisma 7 with Neon PostgreSQL connection pooling operational; GET `/api/health` returns 200 with `status: ok` and live DB connectivity; 16 Vitest unit/contract/routing tests passing; `tsc --noEmit` and `next lint` 100% clean. Remediation: GET `/` -> `/buyer/overview` (307 redirect verified); `/dev/tokens` preview active; dependencies upgraded (zod 4.6.7, vitest 5.0.5); critical vulnerabilities eliminated. |
 
 ---

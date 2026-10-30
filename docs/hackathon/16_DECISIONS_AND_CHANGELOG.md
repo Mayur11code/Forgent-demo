@@ -512,6 +512,32 @@ If a change affects money, verification, inventory or a demo claim, it requires 
 
 ---
 
+### D-030 — P0 Remediation: Root Route Redirect and Dependency Security Audit
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Senior Next.js Engineer |
+| Context | Targeted P0 verification audit identified two specific gaps: (1) `GET /` was serving the development token preview directly instead of redirecting to `/buyer/overview`; (2) initial `npm install` reported dependency vulnerabilities across `zod`, `vitest`, `tinypool`, and `postcss`. |
+| Decision | 1. **Root Route Redirect (`P0-A-001`):** In `src/app/page.tsx`, implement server-side `redirect("/buyer/overview")` returning HTTP 307. Create minimal P0 placeholder route at `src/app/(buyer)/buyer/overview/page.tsx` returning HTTP 200 with design tokens and verification status. Relocate design token preview to `/dev/tokens` (`src/app/dev/tokens/page.tsx`, HTTP 200). Add automated routing test in `tests/routing.test.ts`.<br>2. **Dependency Remediation (`P0-B-001`):** Upgrade `zod` to `^4.6.7` (resolves GHSA-mrhx-c7xc-m3w5 high severity memory exhaustion; 100% backward compatible with contract schemas). Upgrade dev dependency `vitest` to `^5.0.5` (resolves `tinypool` critical prototype pollution GHSA-5gmw-xhrv-c9v3 / GHSA-85c8-ppgw-ccpr and `@vitest/mocker` GHSA-82fw-gwwq-j7x9 / GHSA-qxg6-89mg-rqv8). Migrate `vitest.config.ts` to `vitest.config.mts` with `import.meta.dirname`.<br>3. **Transitive Next.js PostCSS Exposure Analysis:** Next.js 15.5.28 bundles internal `postcss@8.4.31`. In accordance with the stack freeze preserving Next.js 15 and React 19 (rejecting forced major-version upgrade to Next.js 16) and avoiding unsupported package overrides, this finding is documented: PostCSS is utilized exclusively during build-time CSS bundling on author-controlled static Tailwind CSS; zero user-supplied CSS is processed; runtime exposure is non-existent. |
+
+---
+
+### D-031 — Canonical Route Architecture Audit, Role Boundary Isolation, and Deep-Linking Strategy
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Frontend Integration & Next.js Architect |
+| Context | Comprehensive route architecture audit required mapping all public, buyer, builder, shared, and infrastructure endpoints. Clear boundary rules were needed between P0 verification redirect behaviour, P1 authentication routing, and deep-linking across job sub-views. |
+| Decision | 1. **Canonical 41-Route Architecture:** Formally document the 41-route inventory across 4 classifications in `09_UI_UX_SPECIFICATION.md`: (A) Public (6 routes), (B) Buyer (15 routes), (C) Builder (11 routes), (D) Shared/Dev/API (9 routes).<br>2. **Status Accounting:** Freeze status counts: 4 `IMPLEMENTED` (`/`, `/_not-found`, `/dev/tokens`, `/api/health`), 2 `PLACEHOLDER` (`/buyer/overview`, `/builder/overview`), 27 `PLANNED` (core 22 hackathon screens + endpoints), 8 `DEFERRED` (post-hackathon self-service onboarding, billing, settings, and bounty submission). Zero orphaned or dead routes.<br>3. **Deep-Linking & Shared Layout Hierarchy:** Job sub-views (Contract, Compiler, Candidates, Work Order, Execution, Verification, Receipt, Economics) are specified as dedicated App Router URL paths (`/buyer/jobs/[jobId]/<tab>`), not fragile URL search parameters. The parent `layout.tsx` preserves job metadata and tab navigation without layout shifts while child sub-views stream server-rendered data.<br>4. **Role Isolation & Navigation Registry:** In `src/lib/navigation.ts`, strictly isolate buyer and builder navigation items via `getNavigationForRole()`. Verified with 5 automated Vitest unit tests in `tests/routing.test.ts`.<br>5. **Root Route Transition Plan:** In P0, `GET /` server-redirects (HTTP 307) to `/buyer/overview`. In P1 (`P1-A-003`/`P1-B-003`), when session cookies (`proofhire_session`) are activated, `/` inspects session state: unauthenticated visitors see the public landing/sign-in view, while authenticated sessions redirect to their respective persona command centre (`/buyer/overview` or `/builder/overview`). |
+
+---
+
+---
+
 ## Related documents
 
 - [01 — Repository Audit](01_REPOSITORY_AUDIT.md)
