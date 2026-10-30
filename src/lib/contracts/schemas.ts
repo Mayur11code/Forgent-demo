@@ -89,6 +89,7 @@ export const AgentManifestSchema = z.object({
   fallbackVersionIds: z.array(z.string()).default([]),
   runtimeAdapter: z.string().nullable().default(null),
   executionEligible: z.boolean().default(false),
+  registryVisible: z.boolean().default(true),
 });
 
 // Workflow Stage & Graph

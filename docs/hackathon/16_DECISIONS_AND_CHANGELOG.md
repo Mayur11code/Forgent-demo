@@ -536,6 +536,18 @@ If a change affects money, verification, inventory or a demo claim, it requires 
 
 ---
 
+### D-032 — P1 Wave 1 Implementation: Core UI Primitives, 31-Model Prisma Schema & Migration Artifact, and Capability Taxonomy with Frozen Manifests
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-31 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Workstream Leads (Team A, Team B, Team C) |
+| Context | P1 Wave 1 foundation implementation required delivering the foundational UI primitives (`P1-A-001`), complete Prisma 7 schema v1 and migration artifact (`P1-B-001`), and canonical capability taxonomy with frozen agent manifests (`P1-C-001`). Crucial operational safety rules were enforced to avoid destructive actions against the shared remote Neon database and explicitly formalize the 5-manifest vs 4-adapter distinction. |
+| Decision | 1. **Core UI Primitives (`P1-A-001`):** Created 17 dark design-token primitives in `src/components/ui/` (`button`, `card`, `badge`, `status-badge`, `input`, `textarea`, `select`, `tabs`, `skeleton`, `empty-state`, `error-state`, `money`, `tooltip`, `table`, `page-header`, `stat-card`, `divider`). Configured Vitest 5 with OXC automatic JSX parsing (`vitest.config.mts`). Verified in `tests/ui-primitives.test.ts`.<br>2. **31-Model Schema & Migration Safety (`P1-B-001`):** Defined all 30 domain models and 1 platform infrastructure model (`SystemHealth`) in `prisma/schema.prisma` (31 total models), matching Section 3 of `08_DATABASE_AND_SEED_PLAN.md`. Validated with Prisma 7 CLI (`db:validate`), generated Prisma Client v7.10.1, and produced clean PostgreSQL DDL migration artifact `prisma/migrations/20261031000000_p1_schema_v1/migration.sql` (750 lines). Remote Neon database remained untouched during Wave 1. Model reflection verified in `tests/schema.test.ts`.<br>3. **Taxonomy & Frozen Manifests (`P1-C-001`):** Created `src/server/compiler/capability-taxonomy.ts` (6 canonical keys, 7 stage schema IDs, permission safety check rejecting `commit:inventory`) and `src/server/agents/manifests.ts` (5 frozen manifests). Resolved 5-manifest / 4-adapter distinction: 4 marketplace agents have executable runtime adapters (`evidence-reader`, `reconciliation-v1`, `reconciliation-v11`, `exception-reporter`); `baseline-single-agent` is strictly evaluation-only (`registryVisible: false`, `executionEligible: false`, non-callable via marketplace). Verified TC-ADAPT-01 through TC-ADAPT-06 in `tests/taxonomy-manifests.test.ts`.<br>4. **Verification:** All 37 Vitest tests passing across 7 suites; `typecheck`, `lint` (0 warnings), and Next.js production build passing with all 7 routes prerendered. |
+
+---
+
 ---
 
 ## Related documents
