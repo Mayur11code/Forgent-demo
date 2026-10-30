@@ -512,6 +512,18 @@ If a change affects money, verification, inventory or a demo claim, it requires 
 
 ---
 
+### D-030 — P0 Remediation: Root Route Redirect and Dependency Security Audit
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Senior Next.js Engineer |
+| Context | Targeted P0 verification audit identified two specific gaps: (1) `GET /` was serving the development token preview directly instead of redirecting to `/buyer/overview`; (2) initial `npm install` reported dependency vulnerabilities across `zod`, `vitest`, `tinypool`, and `postcss`. |
+| Decision | 1. **Root Route Redirect (`P0-A-001`):** In `src/app/page.tsx`, implement server-side `redirect("/buyer/overview")` returning HTTP 307. Create minimal P0 placeholder route at `src/app/(buyer)/buyer/overview/page.tsx` returning HTTP 200 with design tokens and verification status. Relocate design token preview to `/dev/tokens` (`src/app/dev/tokens/page.tsx`, HTTP 200). Add automated routing test in `tests/routing.test.ts`.<br>2. **Dependency Remediation (`P0-B-001`):** Upgrade `zod` to `^4.6.7` (resolves GHSA-mrhx-c7xc-m3w5 high severity memory exhaustion; 100% backward compatible with contract schemas). Upgrade dev dependency `vitest` to `^5.0.5` (resolves `tinypool` critical prototype pollution GHSA-5gmw-xhrv-c9v3 / GHSA-85c8-ppgw-ccpr and `@vitest/mocker` GHSA-82fw-gwwq-j7x9 / GHSA-qxg6-89mg-rqv8). Migrate `vitest.config.ts` to `vitest.config.mts` with `import.meta.dirname`.<br>3. **Transitive Next.js PostCSS Exposure Analysis:** Next.js 15.5.28 bundles internal `postcss@8.4.31`. In accordance with the stack freeze preserving Next.js 15 and React 19 (rejecting forced major-version upgrade to Next.js 16) and avoiding unsupported package overrides, this finding is documented: PostCSS is utilized exclusively during build-time CSS bundling on author-controlled static Tailwind CSS; zero user-supplied CSS is processed; runtime exposure is non-existent. |
+
+---
+
 ## Related documents
 
 - [01 — Repository Audit](01_REPOSITORY_AUDIT.md)
