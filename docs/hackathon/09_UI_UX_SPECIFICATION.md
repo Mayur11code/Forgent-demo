@@ -113,7 +113,98 @@ No buyer route appears in builder navigation and vice versa. Direct-route access
 
 ---
 
-## 4. Complete page list
+## 4. Complete route inventory & canonical URL architecture
+
+### 4.1 Canonical Route Inventory (41 Routes Across 4 Categories)
+
+The application implements a clean, role-namespaced URL structure. Routes are categorized into:
+- **Core 22 MVP Hackathon Pages:** The essential, end-to-end interactive journey.
+- **Foundation & Infrastructure Routes:** Development harnesses, health probes, and authentication endpoints.
+- **Proposed / Deferred Routes:** Post-hackathon commercial routes explicitly out of 24h scope.
+
+#### Category A: Public Routes (6 routes)
+
+| Pathname | Purpose | Access Class | Owner | Phase | Status | Parent Nav | Deep-Linkable |
+|---|---|---|---|---|---|---|---|
+| `/` | Root entry; redirects to `/buyer/overview` in P0; in P1 authenticated sessions redirect to role overview, unauthenticated visitors to `/login` | `PUBLIC` | Joint | P0/P1 | `IMPLEMENTED` | Root | Yes |
+| `/login` | Demo authentication and persona quick-select (`Northstar Buyer` vs `Jordan Lee Studio`) | `PUBLIC` | Team A | P1 | `PLANNED` | `nav-login` | Yes |
+| `/signup` | Self-service account registration *(PROPOSED)* | `PUBLIC` | Joint | Post-H | `DEFERRED` | None | No |
+| `/auth/error` | Authentication failure and invalid/expired session error page | `PUBLIC` | Team B | P1 | `PLANNED` | None | Yes |
+| `/onboarding/buyer` | Business buyer company profile and ERP connector setup *(PROPOSED)* | `BUYER_ONLY` | Team A | Post-H | `DEFERRED` | None | No |
+| `/onboarding/builder` | Agent builder studio registration and payout setup *(PROPOSED)* | `BUILDER_ONLY` | Team A | Post-H | `DEFERRED` | None | No |
+
+#### Category B: Buyer Persona Routes (15 routes)
+
+| Pathname | Purpose | Access Class | Owner | Phase | Status | Parent Nav | Deep-Linkable |
+|---|---|---|---|---|---|---|---|
+| `/buyer/overview` | Command centre: spend metrics, active job WH-204 card, verification summary | `BUYER_ONLY` | Team A | P1 | `PLACEHOLDER` | `nav-buyer-overview` | Yes |
+| `/buyer/marketplace` | Agent package catalog, capability chips, pricing models, builder reputation | `BUYER_ONLY` | Team A | P2 | `PLANNED` | `nav-buyer-marketplace` | Yes |
+| `/buyer/marketplace/agents/[agentId]` | Agent detail: capability manifest, versions, benchmarks, evaluations | `BUYER_ONLY` | Team A | P2 | `PLANNED` | `nav-buyer-marketplace` | Yes |
+| `/buyer/jobs` | Buyer jobs and work-orders list with status filters and create CTA | `BUYER_ONLY` | Team A | P2 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/new` | Three-step job wizard: (1) outcome & evidence, (2) acceptance contract, (3) budget | `BUYER_ONLY` | Team A | P2 | `PLANNED` | `nav-buyer-jobs-new` | Yes |
+| `/buyer/jobs/[jobId]` | Job detail / Contract tab: canonical job record and frozen acceptance criteria | `BUYER_ONLY` | Team A | P2 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/compiler` | Team compiler interface: match 6 capabilities and generate candidates A/B/C | `BUYER_ONLY` | Team A | P3 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/candidates` | Audition comparison matrix: 3 candidates evaluated across 10 fixtures *(PROPOSED)* | `BUYER_ONLY` | Team A | P3 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/work-order` | Work-order review: agent allocations (₹5,500), platform fee, reserves, sign-off | `BUYER_ONLY` | Team A | P4 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/execution` | Live execution monitor: stage DAG, failure injection, replacement card (v1.1.0) | `BUYER_ONLY` | Team A | P4 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/verification` | Independent verification: 10-check cryptographic engine, inventory commit lock | `BUYER_ONLY` | Team A | P5 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/receipt` | Cryptographic evidence receipt: SHA-256 state hash, replacement history, JSON export | `BUYER_ONLY` | Team A | P5 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/jobs/[jobId]/economics` | Job settlement breakdown: escrow release, builder payout, platform fee | `BUYER_ONLY` | Team A | P6 | `PLANNED` | `nav-buyer-jobs` | Yes |
+| `/buyer/transactions` | Buyer financial ledger: all escrow commitments, allocations, releases | `BUYER_ONLY` | Team A | P6 | `PLANNED` | `nav-buyer-transactions` | Yes |
+| `/buyer/settings` | Buyer organization and ERP connector settings *(PROPOSED)* | `BUYER_ONLY` | Team A | Post-H | `DEFERRED` | None | No |
+
+#### Category C: Builder Persona Routes (11 routes)
+
+| Pathname | Purpose | Access Class | Owner | Phase | Status | Parent Nav | Deep-Linkable |
+|---|---|---|---|---|---|---|---|
+| `/builder/overview` | Studio command centre: published agents, earnings (₹5,500), attribution | `BUILDER_ONLY` | Team A | P1 | `PLACEHOLDER` | `nav-builder-overview` | Yes |
+| `/builder/agents` | My Agents: package version manager, status, SHA-256 checksums | `BUILDER_ONLY` | Team A | P2 | `PLANNED` | `nav-builder-agents` | Yes |
+| `/builder/agents/publish` | Publish agent package: ZIP archive upload pipeline (up to 5MB, SHA-256) | `BUILDER_ONLY` | Team A | P2 | `PLANNED` | `nav-builder-agents-publish` | Yes |
+| `/builder/agents/[agentId]` | Builder agent detail: version history, test runs, runtime performance | `BUILDER_ONLY` | Team A | P2 | `PLANNED` | `nav-builder-agents` | Yes |
+| `/builder/agents/[agentId]/versions/[versionId]` | Immutable version inspector: manifest JSON, schema validation status | `BUILDER_ONLY` | Team A | P2 | `PLANNED` | `nav-builder-agents` | Yes |
+| `/builder/opportunities` | Capability bounty & gap marketplace *(PROPOSED)* | `BUILDER_ONLY` | Team A | Post-H | `DEFERRED` | None | No |
+| `/builder/contributions` | Stage-level attribution: execution ledger proving agent contribution | `BUILDER_ONLY` | Team A | P6 | `PLANNED` | `nav-builder-contributions` | Yes |
+| `/builder/evaluations` | Automated evaluation suites: fixture pass/fail rates, latency percentiles | `BUILDER_ONLY` | Team C | P3 | `PLANNED` | `nav-builder-agents` | Yes |
+| `/builder/earnings` | Builder simulated earnings balance (₹5,500), eligibility rules, payout history | `BUILDER_ONLY` | Team A | P6 | `PLANNED` | `nav-builder-earnings` | Yes |
+| `/builder/profile` | Studio public profile, verified completion score, total jobs fulfilled | `BUILDER_ONLY` | Team A | P2 | `PLANNED` | `nav-builder-profile` | Yes |
+| `/builder/settings` | Builder studio settings, API keys, webhook endpoints *(PROPOSED)* | `BUILDER_ONLY` | Team A | Post-H | `DEFERRED` | None | No |
+
+#### Category D: Shared, Dev & API Routes (9 routes)
+
+| Pathname | Purpose | Access Class | Owner | Phase | Status | Parent Nav | Deep-Linkable |
+|---|---|---|---|---|---|---|---|
+| `/profile` | Current session identity and persona switch trigger | `AUTHENTICATED` | Team A | P1 | `PLANNED` | Persona Pill | Yes |
+| `/notifications` | Notification event stream for workflow and payout alerts *(PROPOSED)* | `AUTHENTICATED` | Team A | Post-H | `DEFERRED` | None | No |
+| `/settings` | Global platform preferences and session controls *(PROPOSED)* | `AUTHENTICATED` | Team A | Post-H | `DEFERRED` | None | No |
+| `/_not-found` (`not-found.tsx`) | Branded 404 handler with fallback navigation to persona command centre | `PUBLIC` | Team A | P0 | `IMPLEMENTED` | Root | No |
+| `error.tsx` | Global React error boundary capturing unhandled exceptions | `PUBLIC` | Team A | P1 | `PLANNED` | Root | No |
+| `/dev/tokens` | Visual token and surface hierarchy preview harness | `DEMO_ONLY` | Team A | P0 | `IMPLEMENTED` | None | Yes |
+| `/api/health` | Neon PostgreSQL connectivity, adapter status, and latency health probe | `PUBLIC` | Team B | P0 | `IMPLEMENTED` | None | Yes |
+| `/api/auth/login` | Session login endpoint setting HTTP-only `proofhire_session` cookie | `PUBLIC` | Team B | P1 | `PLANNED` | None | No |
+| `/api/auth/logout` | Session invalidation clearing `proofhire_session` cookie | `AUTHENTICATED` | Team B | P1 | `PLANNED` | None | No |
+
+### 4.2 Route Inventory Summary
+
+- **Total Canonical Routes Defined:** 41
+- **Status Counts:**
+  - `IMPLEMENTED` (HTTP 200/307 active in Next.js runtime): **4** (`/`, `/_not-found`, `/dev/tokens`, `/api/health`)
+  - `PLACEHOLDER` (P0 placeholder active in Next.js runtime): **2** (`/buyer/overview`, `/builder/overview`)
+  - `PLANNED` (Frozen for P1–P6 hackathon execution): **27**
+  - `DEFERRED` (Explicitly deferred post-hackathon scope): **8** (`/signup`, `/onboarding/buyer`, `/onboarding/builder`, `/buyer/settings`, `/builder/opportunities`, `/builder/settings`, `/notifications`, `/settings`)
+- **Core Hackathon Pages:** Exactly 22 pages (as listed in §4.3) + 2 infrastructure endpoints (`/api/health`, `/dev/tokens`).
+- **Dead / Broken Routes in Codebase:** **0** (all registered navigation targets resolve to valid endpoints).
+
+### 4.3 Deep-Linking and Tab Architecture
+
+A critical architectural requirement is whether job detail sub-views (Contract, Compiler, Candidates, Work Order, Execution, Verification, Receipt, Economics) are implemented as dedicated Next.js App Router sub-routes or URL query parameters:
+
+- **Canonical Architecture:** Sub-views are implemented as **dedicated Next.js App Router routes** (`/buyer/jobs/[jobId]/compiler`, `/buyer/jobs/[jobId]/execution`, etc.).
+- **Rationale:**
+  1. **Direct Deep-Linking:** Operators, evaluators, and judges can bookmark or directly navigate to an execution run or evidence receipt without client-side state loss.
+  2. **Server-Side Data Fetching:** Each sub-view can leverage Next.js Server Components to fetch exactly the domain records it requires (e.g., execution DAG vs cryptographic receipt hash) without over-fetching the entire job graph.
+  3. **Layout Sharing:** The parent `/buyer/jobs/[jobId]/layout.tsx` renders the persistent job header (WH-204, status badge, budget) and tab bar once, while `{children}` swaps seamlessly between sub-routes with zero layout shift.
+
+### 4.4 Core 22 MVP Hackathon Page List
 
 | # | Route | Page | Phase / task | Role |
 |---|---|---|---|---|

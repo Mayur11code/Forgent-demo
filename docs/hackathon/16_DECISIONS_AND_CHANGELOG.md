@@ -524,6 +524,20 @@ If a change affects money, verification, inventory or a demo claim, it requires 
 
 ---
 
+### D-031 — Canonical Route Architecture Audit, Role Boundary Isolation, and Deep-Linking Strategy
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-30 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Frontend Integration & Next.js Architect |
+| Context | Comprehensive route architecture audit required mapping all public, buyer, builder, shared, and infrastructure endpoints. Clear boundary rules were needed between P0 verification redirect behaviour, P1 authentication routing, and deep-linking across job sub-views. |
+| Decision | 1. **Canonical 41-Route Architecture:** Formally document the 41-route inventory across 4 classifications in `09_UI_UX_SPECIFICATION.md`: (A) Public (6 routes), (B) Buyer (15 routes), (C) Builder (11 routes), (D) Shared/Dev/API (9 routes).<br>2. **Status Accounting:** Freeze status counts: 4 `IMPLEMENTED` (`/`, `/_not-found`, `/dev/tokens`, `/api/health`), 2 `PLACEHOLDER` (`/buyer/overview`, `/builder/overview`), 27 `PLANNED` (core 22 hackathon screens + endpoints), 8 `DEFERRED` (post-hackathon self-service onboarding, billing, settings, and bounty submission). Zero orphaned or dead routes.<br>3. **Deep-Linking & Shared Layout Hierarchy:** Job sub-views (Contract, Compiler, Candidates, Work Order, Execution, Verification, Receipt, Economics) are specified as dedicated App Router URL paths (`/buyer/jobs/[jobId]/<tab>`), not fragile URL search parameters. The parent `layout.tsx` preserves job metadata and tab navigation without layout shifts while child sub-views stream server-rendered data.<br>4. **Role Isolation & Navigation Registry:** In `src/lib/navigation.ts`, strictly isolate buyer and builder navigation items via `getNavigationForRole()`. Verified with 5 automated Vitest unit tests in `tests/routing.test.ts`.<br>5. **Root Route Transition Plan:** In P0, `GET /` server-redirects (HTTP 307) to `/buyer/overview`. In P1 (`P1-A-003`/`P1-B-003`), when session cookies (`proofhire_session`) are activated, `/` inspects session state: unauthenticated visitors see the public landing/sign-in view, while authenticated sessions redirect to their respective persona command centre (`/buyer/overview` or `/builder/overview`). |
+
+---
+
+---
+
 ## Related documents
 
 - [01 — Repository Audit](01_REPOSITORY_AUDIT.md)
