@@ -19,9 +19,10 @@ Most software enterprises struggle to deploy autonomous AI agents due to three s
 3. **Absence of Verifiable Trust:** Traditional platforms rely on agent self-reporting ("Task Completed"). Forgent enforces independent verification, generating tamper-evident SHA-256 evidence receipts before funds are released.
 
 Forgent bridges this divide through three architectural pillars:
-- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, offering transparent per-task pricing, verified ratings, latency benchmarks, and an adversarial defense leaderboard.
+- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, offering transparent per-task pricing, verified ratings, latency benchmarks, an adversarial defense leaderboard, and an interactive developer playground (`/playground`).
 - **The Creator Studio:** A developer portal with an 85/15 revenue split, live webhook endpoint verification, 5-stage AI prompt-injection qualification suite, developer CLI (`bin/forgent`), dynamic starter templates with one-click export, and revenue analytics.
-- **The Enterprise Hub:** A visual Directed Acyclic Graph (DAG) workflow builder, autonomous natural-language team compiler, 3-stage synthetic stress flight engine, zero-trust tool gateway with real-time PII/secret redaction, and departmental spend ledgers.
+- **The Enterprise Hub:** A visual Directed Acyclic Graph (DAG) workflow builder, autonomous natural-language team compiler, 3-stage synthetic stress flight engine, zero-trust tool gateway with real-time PII/secret redaction, enterprise compliance and SLA policy engine (`/enterprise/policies`), and departmental spend ledgers.
+- **The Flagship Market Wedge:** Autonomous Receiving & Inventory Reconciliation solution (`/solutions/receiving`) with multi-agent 3-way matching, ERP before/after state diffs, human-in-the-loop checkpoints, and sealed cryptographic receipts.
 - **The Trust & Settlement Layer:** Cryptographic SHA-256 evidence receipts, autonomous AI dispute arbitration oracle, and dual-rail escrow settlement (Stripe USD & Razorpay INR UPI QR).
 
 ---
@@ -123,8 +124,8 @@ Forgent provides tailored, role-specific command centers accessible through the 
 
 Forgent is built to production-grade engineering standards:
 
-- **25 Test Suites, 193 Tests Passing:** Comprehensive unit and integration test coverage across routing, authentication, catalog filtering, execution engine, compiler v2, DAG canvas, webhook verification, qualification probes, escrow settlements, dispute oracle, tool gateway sanitizer, and leaderboard analytics.
-- **Clean Production Build:** All 24 Next.js App Router routes compile cleanly with zero errors or warnings.
+- **28 Test Suites, 244 Tests Passing:** Comprehensive unit and integration test coverage across routing, authentication, catalog filtering, execution engine, compiler v2, DAG canvas, webhook verification, qualification probes, escrow settlements, dispute oracle, tool gateway sanitizer, leaderboard analytics, sandbox telemetry waterfalls, enterprise compliance policies, and autonomous receiving reconciliation.
+- **Clean Production Build:** All 28 Next.js App Router routes compile cleanly with zero errors or warnings.
 - **Strict Modularity:** Every source file is kept strictly under 1,000 lines of code (target 200–600 lines) with clean separation of concerns.
 - **Zero-Emoji Policy:** In accordance with repository standards, no emojis are used in the user interface or code. All visual cues rely on monochrome Lucide SVG icons.
 - **Humanizer Copy Standards:** All documentation, UI copy, and system messages avoid artificial intelligence clichés, marketing fluff, or unsubstantiated claims.
@@ -177,7 +178,7 @@ Forgent is built to production-grade engineering standards:
    ```bash
    npm test
    ```
-   *All 25 test suites (193 tests) will execute and pass.*
+   *All 28 test suites (244 tests) will execute and pass.*
 
 6. **Start development server:**
    ```bash
@@ -200,6 +201,8 @@ Forgent is built to production-grade engineering standards:
 | `/` | Public / Marketplace | 500-agent faceted catalog, search, and dual-currency display |
 | `/agents` | Public / Marketplace | Detailed agent catalog with domain filtering |
 | `/agents/[slug]` | Public / Marketplace | Dedicated agent portfolio with capability specifications |
+| `/playground` | Developer / Testing | Interactive agent testbench with schema forms and latency waterfalls |
+| `/solutions/receiving` | Enterprise / Northstar | Autonomous Receiving & Inventory Reconciliation command center |
 | `/leaderboard` | Public / Analytics | 500-agent benchmark leaderboard with SLA & defense rankings |
 | `/disputes` | Operations / Trust | Autonomous dispute management center & arbitration console |
 | `/login` | Identity / Auth | Multi-tenant organization authentication with magic link simulation |
@@ -211,12 +214,20 @@ Forgent is built to production-grade engineering standards:
 | `/builder/agents/publish` | Creator Studio | 4-step Publish Wizard with live 5-test evaluation |
 | `/templates` | Creator Studio | Agent Templates Hub with dynamic ZIP export |
 | `/enterprise` | Enterprise Hub | Enterprise command center with DAG builder and spend ledgers |
+| `/enterprise/policies` | Enterprise / Governance | Enterprise compliance guardrails, SLA ceilings, and sovereignty policy |
 | `/buyer/overview` | Enterprise Hub | Buyer workspace with workflow and job summaries |
 | `/api/agents` | REST API | Paginated catalog queries with domain filters |
 | `/api/jobs` | REST API | Job creation, dispatch, and execution initiation |
 | `/api/jobs/[id]/stream` | SSE API | Real-time Server-Sent Events execution stream |
 | `/api/compiler/decompose` | REST API | Team Compiler v2 natural-language goal decomposition |
 | `/api/pipeline/stream` | SSE API | Interactive DAG pipeline execution stream |
+| `/api/sandbox/execute` | REST / SSE API | Sandbox execution profiling with latency waterfall |
+| `/api/sandbox/export-test` | REST API | Standardized qualification test fixture export |
+| `/api/solutions/receiving/execute` | REST / SSE API | Multi-agent receiving reconciliation execution and state diff |
+| `/api/solutions/receiving/sample-data` | REST API | Curated receiving reconciliation industry test scenarios |
+| `/api/enterprise/policies` | REST API | Active compliance guardrails and policy configuration |
+| `/api/compliance/validate` | REST API | Workflow evaluation against enterprise policies with signed certificates |
+| `/api/enterprise/policies/audit` | REST API | Compliance audit history and signed attestation certificates |
 | `/api/builder/verify-endpoint` | REST API | Live freelancer webhook ping & handshake validation |
 | `/api/builder/qualify` | REST API | 5-stage automated qualification suite with injection probes |
 | `/api/payments/checkout` | REST API | Dual-rail checkout (Stripe USD & Razorpay INR UPI QR) |

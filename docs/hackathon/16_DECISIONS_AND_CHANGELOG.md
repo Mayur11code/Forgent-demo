@@ -560,6 +560,30 @@ If a change affects money, verification, inventory or a demo claim, it requires 
 
 ---
 
+### D-034 — Advanced Enterprise Infrastructure Delivery: Compiler v2, Webhook Qualification, Dual-Rail Escrow, Dispute Oracle, Tool Gateway, and Benchmark Leaderboard (PRs #11–#16)
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-31 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Architecture & Platform Lead |
+| Context | Scale testing required autonomous goal decomposition, third-party webhook verification, dual-rail USD/INR payments, trustless cryptographic dispute arbitration, zero-trust credential masking, and public benchmark transparency. |
+| Decision | 1. **Compiler v2 & Live DAG Canvas (PR #11):** Natural language goal decomposition (`/api/compiler/decompose`) and live interactive DAG execution runner (`/api/pipeline/stream`, `dag-builder.tsx`, `live-pipeline-runner.tsx`).<br>2. **Creator Webhook Verification & 5-Stage Qualification (PR #12):** Live freelancer webhook handshake verification (`/api/builder/verify-endpoint`), 5-stage automated qualification suite with injection probes (`/api/builder/qualify`), and standalone Forgent Developer CLI (`bin/forgent`).<br>3. **Dual-Rail Payment Gateway & Escrow Settlement (PR #13):** Stripe USD & dynamic Razorpay INR UPI QR codes (`/api/payments/checkout`), atomic 85/15 creator escrow settlement (`escrow.ts`), and multi-tenant organization auth with passwordless magic link simulation (`/login`).<br>4. **Autonomous AI Dispute Oracle (PR #14):** Autonomous dispute arbitration engine (`oracle-arbiter.ts`, `/api/disputes`), cryptographic escrow resolution, and Dispute Management Center (`/disputes`).<br>5. **Enterprise Zero-Trust Tool Gateway (PR #15):** Tool interception layer (`tool-gateway.ts`, `data-sanitizer.ts`) with real-time PII & API secret redaction and security audit log view (`/api/gateway/audit-logs`).<br>6. **500-Agent Benchmark Leaderboard & Analytics (PR #16):** Public performance benchmark leaderboard (`/leaderboard`), SLA latency rankings, adversarial defense scores, and deep Creator Revenue Analytics (`creator-analytics-tab.tsx`). Verified with 25 test suites, 193 passing tests. |
+
+---
+
+### D-035 — Final Production Horizon: Interactive Agent Sandbox, Enterprise Governance & Policy Engine, and Autonomous Receiving Market Wedge (PRs #17–#19)
+
+| Field | Detail |
+|---|---|
+| Date | 2026-10-31 |
+| Status | `ACCEPTED` |
+| Owner | Joint / Chief Architect |
+| Context | Achieving 100% of the Blueprint vision required delivering the Northstar demonstration (autonomous receiving reconciliation), a full developer sandbox for capability testing, and enterprise governance guardrails. |
+| Decision | 1. **Developer & Buyer Agent Sandbox (PR #17):** Delivered `/playground` and `/dev/sandbox` with 500-agent search, dynamic schema forms, raw JSON editor, parameter configuration, multi-phase latency waterfall profiling (DNS, Tool Gateway, TTFT, generation), zero-trust tool inspector, and qualification test fixture export API (`/api/sandbox/export-test`).<br>2. **Enterprise Governance & Compliance Guardrails (PR #18):** Delivered `/enterprise/policies` and `/settings/compliance` with configurable SLA latency ceilings, task budget caps with integer paise precision, sovereign data residency enforcement (US, EU, India), LLM provider whitelisting/blacklisting, mandatory HITL checkpoints, and cryptographically signed SHA-256 compliance audit certificates (`/api/compliance/validate`, `/api/enterprise/policies/audit`).<br>3. **Flagship Autonomous Receiving Reconciliation Wedge (PR #19):** Delivered canonical Northstar market wedge (`/solutions/receiving`) with multi-agent 3-way matching (`Evidence Reader`, `Reconciliation Specialist`, `Exception Reporter`), real-time ERP before/after inventory state diffs, interactive human checkpoint modal for variance overrides (>2.0%), and sealed SHA-256 evidence receipts (`/api/solutions/receiving/execute`).<br>4. **Complete Verification:** All 28 test suites and 244 unit/integration tests passing cleanly. All 28 Next.js App Router routes compiling cleanly. |
+
+---
+
 ## Related documents
 
 - [01 — Repository Audit](01_REPOSITORY_AUDIT.md)
