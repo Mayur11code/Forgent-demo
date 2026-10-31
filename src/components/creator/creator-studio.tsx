@@ -7,6 +7,7 @@ import { INITIAL_CREATOR_AGENTS } from "./creator-data";
 import { MyAgentsTab } from "./my-agents-tab";
 import { PublishWizard } from "./publish-wizard/publish-wizard";
 import { EarningsCenter } from "./earnings/earnings-center";
+import { CreatorAnalyticsTab } from "./analytics/creator-analytics-tab";
 import {
   Boxes,
   PlusCircle,
@@ -15,9 +16,10 @@ import {
   CheckCircle2,
   FileCode,
   ShieldCheck,
+  BarChart3,
 } from "lucide-react";
 
-export type CreatorStudioTab = "my-agents" | "publish" | "earnings";
+export type CreatorStudioTab = "my-agents" | "analytics" | "publish" | "earnings";
 
 interface CreatorStudioProps {
   initialTab?: CreatorStudioTab;
@@ -113,12 +115,12 @@ export function CreatorStudio({ initialTab = "my-agents" }: CreatorStudioProps) 
             </div>
           )}
 
-          {/* 3 Primary Navigation Tabs */}
-          <div className="flex items-center gap-2 pt-2 border-t border-border-subtle">
+          {/* 4 Primary Navigation Tabs */}
+          <div className="flex items-center gap-2 pt-2 border-t border-border-subtle overflow-x-auto">
             <button
               type="button"
               onClick={() => setActiveTab("my-agents")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors shrink-0 ${
                 activeTab === "my-agents"
                   ? "bg-cobalt-500 text-white shadow-xs"
                   : "bg-surface-primary hover:bg-slate-100 text-slate-700 border border-slate-200"
@@ -130,21 +132,21 @@ export function CreatorStudio({ initialTab = "my-agents" }: CreatorStudioProps) 
 
             <button
               type="button"
-              onClick={() => setActiveTab("publish")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors ${
-                activeTab === "publish"
+              onClick={() => setActiveTab("analytics")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors shrink-0 ${
+                activeTab === "analytics"
                   ? "bg-cobalt-500 text-white shadow-xs"
                   : "bg-surface-primary hover:bg-slate-100 text-slate-700 border border-slate-200"
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Publish Agent Wizard</span>
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>Revenue &amp; Token Analytics</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("earnings")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors shrink-0 ${
                 activeTab === "earnings"
                   ? "bg-cobalt-500 text-white shadow-xs"
                   : "bg-surface-primary hover:bg-slate-100 text-slate-700 border border-slate-200"
@@ -152,6 +154,19 @@ export function CreatorStudio({ initialTab = "my-agents" }: CreatorStudioProps) 
             >
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Earnings &amp; Payout Center</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("publish")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-colors shrink-0 ${
+                activeTab === "publish"
+                  ? "bg-cobalt-500 text-white shadow-xs"
+                  : "bg-surface-primary hover:bg-slate-100 text-slate-700 border border-slate-200"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Publish Agent Wizard</span>
             </button>
           </div>
         </div>
@@ -166,6 +181,8 @@ export function CreatorStudio({ initialTab = "my-agents" }: CreatorStudioProps) 
             onOpenPublishWizard={() => setActiveTab("publish")}
           />
         )}
+
+        {activeTab === "analytics" && <CreatorAnalyticsTab />}
 
         {activeTab === "publish" && (
           <PublishWizard
