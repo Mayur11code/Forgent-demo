@@ -20,6 +20,14 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     role: "PUBLIC",
     phase: "P1",
   },
+  {
+    id: "nav-templates",
+    route: "/templates",
+    label: "Templates Hub",
+    section: "Public",
+    role: "PUBLIC",
+    phase: "P1",
+  },
 
   // Buyer Persona Navigation
   {

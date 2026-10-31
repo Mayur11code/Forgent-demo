@@ -196,6 +196,16 @@ export function Header() {
             Marketplace
           </Link>
           <Link
+            href="/templates"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              pathname === "/templates"
+                ? "bg-slate-100 text-cobalt-600 font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+          >
+            Templates
+          </Link>
+          <Link
             href="/buyer/overview"
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               pathname.startsWith("/buyer")
