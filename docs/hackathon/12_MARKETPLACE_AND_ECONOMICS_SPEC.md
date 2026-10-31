@@ -1,9 +1,9 @@
 # 12 — Marketplace and Economics Specification
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team C (rules), Team B (persistence/APIs), Team A (buyer/builder economic UI)  
 **Canonical code:** `src/server/economics/**`, `src/server/services/**`, `src/app/api/ledger/**`  
-**Core rule:** ProofHire is a marketplace where independent builders earn from accepted work. It is not an evaluator-only SaaS product.
+**Core rule:** Forgent is a marketplace where independent builders earn from accepted work. It is not an evaluator-only SaaS product.
 
 ---
 
@@ -55,7 +55,7 @@ Every simulated value carries a label. No document or screen may claim a real pa
 
 ### 2.1 Listing and Package Model
 
-In ProofHire, **developers publish reusable agent packages and immutable versions**, while **businesses purchase completed, verified business outcomes** delivered by compiled workflows (rather than buying isolated chatbot subscriptions or paying for raw compute tokens).
+In Forgent, **developers publish reusable agent packages and immutable versions**, while **businesses purchase completed, verified business outcomes** delivered by compiled workflows (rather than buying isolated chatbot subscriptions or paying for raw compute tokens).
 
 | Entity | Meaning |
 |---|---|
@@ -111,9 +111,9 @@ The demo prices work per accepted stage, not per token, seat or subscription.
 |---|---|---:|
 | Evidence extraction | Jordan Lee / Evidence Reader (Hybrid) | ₹2,000 |
 | Reconciliation | Jordan Lee / accepted version (v1.1.0) | ₹2,500 |
-| Policy validation | ProofHire platform function | no builder payout |
+| Policy validation | Forgent platform function | no builder payout |
 | Exception reporting | Jordan Lee / Exception Reporter | ₹1,000 |
-| Inventory proposal | ProofHire platform function | no builder payout |
+| Inventory proposal | Forgent platform function | no builder payout |
 | Human approval | Buyer | no payout |
 
 Builder subtotal: **₹5,500**.
@@ -142,7 +142,7 @@ Builder subtotal: **₹5,500**.
 | Reconciliation | 2,500 | 250,000 | Builder (accepted version only) |
 | Exception reporting | 1,000 | 100,000 | Builder |
 | **Builder subtotal** | **5,500** | **550,000** | Jordan Lee |
-| Platform fee | 2,500 | 250,000 | ProofHire |
+| Platform fee | 2,500 | 250,000 | Forgent |
 | Execution/recovery reserve | 1,200 | 120,000 | Bounded runtime/recovery cost |
 | Human-review reserve | 800 | 80,000 | Human review capacity |
 | **Buyer total** | **10,000** | **1,000,000** | — |
@@ -277,7 +277,7 @@ The blueprint's validation experiments (buyer demand, builder participation, pla
 
 ### 7.3 Platform-owned value
 
-ProofHire earns the fee by providing:
+Forgent earns the fee by providing:
 
 - Contract compilation.
 - Capability matching and candidate generation.

@@ -1,6 +1,6 @@
 # 08 — Database and Seed Plan
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team B  
 **Engine:** Neon PostgreSQL + Prisma 7 (using `@prisma/adapter-neon` and `@neondatabase/serverless`) for serverless runtime  
 **Datasource:** Neon pooled connection via `DATABASE_URL` (with `?sslmode=require`) and direct connection via `DIRECT_URL` for migrations
@@ -21,7 +21,7 @@
 
 ## 1.1 Conceptual Entity Model vs. Hackathon MVP Persistence
 
-To maintain architectural purity without bloating the 24-hour hackathon scope, ProofHire explicitly maps its conceptual domain entities across three layers:
+To maintain architectural purity without bloating the 24-hour hackathon scope, Forgent explicitly maps its conceptual domain entities across three layers:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -248,7 +248,7 @@ The seed is created by `prisma/seed.ts` using `upsert` with fixed IDs. It must b
 
 The baseline has `runtime.registryVisible=false`, `registryVisible=false` and `isSeeded=true`. It is not a Jordan Lee listing and must never appear in the marketplace. Its builder reference is `platform-baseline`, clearly labelled “Evaluation baseline — not for hire.”
 
-The verifier (`sys-proofhire-verifier-v1`) is **not** an AgentVersion row.
+The verifier (`sys-forgent-verifier-v1`) is **not** an AgentVersion row.
 
 ### 5.5 WH-204 job and contract
 

@@ -1,7 +1,7 @@
 # 03 — Phase Breakdown
 
-**Status:** `PROPOSED — FREEZE AT P0`  
-**Window:** 24 elapsed hours, H0–H24  
+**Status:** `COMPLETED — ALL PHASES (P0-P8) DELIVERED & VERIFIED`  
+**Window:** 24 elapsed hours, H0–H24 (All deliverables landed across PRs #6-#10)  
 **Phase count:** 10 (P0–P9)  
 **Rule:** a phase ends only when its gate is demonstrated, its prototype is usable and its checkpoint tag exists.
 
@@ -60,7 +60,7 @@ Each phase below records the same 18 fields so a stand-up, checkpoint or handoff
 | **1. Objective** | Make the product feel like a premium B2B console and establish the seeded identities, schema and overview data every later screen depends on. |
 | **2. Window** | H1–H4, 180 minutes. |
 | **3. Entry criteria** | P0 gate passed; contracts frozen; app boots; `p0-foundation` tag exists. |
-| **4. Exit gate** | Authenticated login works for seeded buyer and builder; session cookie proofhire_session and role authorization enforced; both personas see seeded overviews; demo badge visible; Neon schema v1 applied; seed is idempotent. |
+| **4. Exit gate** | Authenticated login works for seeded buyer and builder; session cookie forgent_session and role authorization enforced; both personas see seeded overviews; demo badge visible; Neon schema v1 applied; seed is idempotent. |
 | **5. Phase owner** | A (shell/overviews), B (schema/seed/APIs), C (manifests/adapters). |
 | **6. Tasks** | 10: `P1-A-001`, `P1-B-001`, `P1-C-001`, `P1-A-002`, `P1-B-002`, `P1-C-002`, `P1-C-003`, `P1-B-003`, `P1-A-003`, `P1-A-004`. |
 | **7. Critical path** | `P1-B-001` → `P1-B-002` → `P1-C-001` → `P1-C-002` / `P1-C-003`. |

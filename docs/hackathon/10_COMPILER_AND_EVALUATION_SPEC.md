@@ -1,6 +1,6 @@
 # 10 — Compiler and Evaluation Specification
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team C  
 **Consumers:** A (compiler UX, graph, comparison), B (persistence and APIs)  
 **Canonical code:** `src/server/compiler/**`, `src/server/agents/**`, `src/server/fixtures/**`  

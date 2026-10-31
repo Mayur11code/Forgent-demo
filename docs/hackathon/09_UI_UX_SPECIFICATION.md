@@ -1,6 +1,6 @@
 # 09 — UI/UX Specification
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team A  
 **Primary viewport:** desktop/laptop, 1280–1440 CSS px  
 **Design posture:** premium dark B2B operations console, not a marketing site and not a generic admin template
@@ -9,7 +9,7 @@
 
 ## 1. Design direction
 
-ProofHire should feel like a high-trust operations product where money, evidence and failure are visible. The visual language is restrained and precise: deep graphite surfaces, strong typography, thin borders, purposeful colour and motion that explains state changes rather than decorating them.
+Forgent should feel like a high-trust operations product where money, evidence and failure are visible. The visual language is restrained and precise: deep graphite surfaces, strong typography, thin borders, purposeful colour and motion that explains state changes rather than decorating them.
 
 Principles:
 
@@ -180,8 +180,8 @@ The application implements a clean, role-namespaced URL structure. Routes are ca
 | `error.tsx` | Global React error boundary capturing unhandled exceptions | `PUBLIC` | Team A | P1 | `PLANNED` | Root | No |
 | `/dev/tokens` | Visual token and surface hierarchy preview harness | `DEMO_ONLY` | Team A | P0 | `IMPLEMENTED` | None | Yes |
 | `/api/health` | Neon PostgreSQL connectivity, adapter status, and latency health probe | `PUBLIC` | Team B | P0 | `IMPLEMENTED` | None | Yes |
-| `/api/auth/login` | Session login endpoint setting HTTP-only `proofhire_session` cookie | `PUBLIC` | Team B | P1 | `PLANNED` | None | No |
-| `/api/auth/logout` | Session invalidation clearing `proofhire_session` cookie | `AUTHENTICATED` | Team B | P1 | `PLANNED` | None | No |
+| `/api/auth/login` | Session login endpoint setting HTTP-only `forgent_session` cookie | `PUBLIC` | Team B | P1 | `PLANNED` | None | No |
+| `/api/auth/logout` | Session invalidation clearing `forgent_session` cookie | `AUTHENTICATED` | Team B | P1 | `PLANNED` | None | No |
 
 ### 4.2 Route Inventory Summary
 
@@ -368,7 +368,7 @@ Three columns, horizontally aligned, same row ordering. See §9.
 ### 6.2 Builder profile
 
 - Identity, studio, bio, demo disclaimer.
-- Terms: ownership retained; ProofHire receives execution/evaluation rights only.
+- Terms: ownership retained; Forgent receives execution/evaluation rights only.
 - No fake ratings, followers or marketplace GMV.
 
 ### 6.3 My agents
@@ -489,10 +489,10 @@ Critical: `VERIFIED_PENDING_REVIEW` must not render as a plain green “Paid”.
 ## 9. Workflow graph behavior
 
 - Layout: left-to-right DAG; entry at evidence read; human approval at the end.
-- Node anatomy: stage label, capability, agent/version or `ProofHire deterministic`, status badge, attempt number, cost/latency on hover.
+- Node anatomy: stage label, capability, agent/version or `Forgent deterministic`, status badge, attempt number, cost/latency on hover.
 - Colours: pending grey, running cyan pulse, succeeded green, failed red, replaced amber dashed, awaiting approval amber lock, blocked red lock.
 - Replacement: failed node remains; replacement node is inserted or tagged `v1.1.0` with a dashed edge from the failed node and a label `REPLACED BY v1.1.0`. Never hide the original failure.
-- Deterministic nodes show a small `PROOFHIRE` chip. They do not show a builder avatar or payout.
+- Deterministic nodes show a small `FORGENT` chip. They do not show a builder avatar or payout.
 - Human node shows `BUYER CHECKPOINT` and a lock icon.
 - Click node → drawer with input/output refs, raw error, trace, permissions, cost, attempt history.
 - Controls: fit view, zoom, pan; no auto-layout jump after a status change. Preserve viewport on poll.
@@ -505,7 +505,7 @@ Critical: `VERIFIED_PENDING_REVIEW` must not render as a plain green “Paid”.
 
 ```
 ┌────────────────────────────── Header: "Three ways to deliver WH-204" ──────────────────────────────┐
-│ [A Single-agent baseline]      [B Fixed specialist team]        [C ProofHire selected]              │
+│ [A Single-agent baseline]      [B Fixed specialist team]        [C Forgent selected]              │
 │ ✕ Rejected — critical failure  ✕ Rejected — no safe recovery    ✓ Selected                          │
 │ 10/10 checks? 8/10 …           9/10 …                           10/10 incl. recovery                │
 │ Cost ₹… / Latency …            Cost ₹… / Latency …              Cost ₹… / Latency …                 │
@@ -541,7 +541,7 @@ Audition evidence: 10 fixtures (8 visible, 2 held out) · suite wh204-suite-v1 �
 
 ## 12. Evidence receipt layout
 
-1. **Header:** ProofHire mark, `EVIDENCE RECEIPT`, receipt ID, status seal `VERIFIED · PENDING HUMAN APPROVAL`, issued time.
+1. **Header:** Forgent mark, `EVIDENCE RECEIPT`, receipt ID, status seal `VERIFIED · PENDING HUMAN APPROVAL`, issued time.
 2. **Truth strip:** expected 12 · invoiced 12 · physically received 10 · discrepancy 2 · inventory commit blocked.
 3. **Job and contract:** buyer, job, contract version, execution, work order.
 4. **Workflow:** selected strategy, graph summary, suite version.
@@ -600,7 +600,7 @@ Permanent, visible, non-dismissible:
 - `SIMULATED INVENTORY` on the ledger and state diff.
 - `CONTROLLED FAILURE INJECTION` on the execution page and recovery card.
 - `EVALUATION BASELINE — NOT FOR HIRE` on candidate A.
-- `PROOFHIRE DETERMINISTIC` on policy, inventory proposal and verifier.
+- `FORGENT DETERMINISTIC` on policy, inventory proposal and verifier.
 - `NOT A PUBLIC RATING` on reputation.
 - `DEMO REGISTRATION ONLY` on builder registration.
 
@@ -629,7 +629,7 @@ No primary CTA may be clipped. Tables scroll inside their container. The receipt
 - [ ] All displayed money comes from paise records and is formatted consistently.
 - [ ] `VERIFIED_PENDING_REVIEW` is not presented as paid.
 - [ ] v1.0.0 failure remains visible after v1.1.0 replacement.
-- [ ] Deterministic functions and the verifier are labelled ProofHire, not builder agents.
+- [ ] Deterministic functions and the verifier are labelled Forgent, not builder agents.
 - [ ] The single-agent baseline is labelled evaluation-only and is absent from the marketplace.
 - [ ] Every simulated value is labelled.
 - [ ] Graph, comparison, timeline and receipt survive a 1024px viewport.

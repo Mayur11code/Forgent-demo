@@ -183,7 +183,7 @@
 | Likelihood / impact | M / 3 |
 | Owner | B |
 | Trigger | Direct route access without valid session or as unauthorized role; API call bypassing route guards |
-| Mitigation | Server-managed signed httpOnly session cookie (`proofhire_session`); Next.js middleware guards (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`); seeded accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`); explicit 401/403 negative tests |
+| Mitigation | Server-managed signed httpOnly session cookie (`forgent_session`); Next.js middleware guards (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`); seeded accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`); explicit 401/403 negative tests |
 | Response | Reject unauthorized requests with 401/403; redirect to `/login`; log security event |
 | Residual | Low for demo scope, accepted limitation |
 

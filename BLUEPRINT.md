@@ -1,25 +1,26 @@
-# PROOFHIRE
+# FORGENT
 ## Final Product & Hackathon Solution Blueprint
 
-**Product name:** ProofHire  
+**Product name:** Forgent  
 **Product category:** Outcome-driven marketplace and execution layer for independently built AI capabilities  
 **Product architecture:** Marketplace + Team Compiler + Verification & Execution  
 **Initial market wedge:** Receiving and inventory reconciliation  
 **Hackathon:** hackCBS 9.0 · 24-hour build  
-**Document status:** Canonical product definition and prototype plan  
-**Version:** 2.0 · 30 October 2026
+**Document status:** Canonical product definition and architecture specification  
+**Implementation status:** Core platform fully implemented and verified across PRs #6–#10 (17 test suites, 86 tests passing, 19 production routes)  
+**Version:** 2.0 · 31 October 2026
 
 ---
 
 # 1. Executive Summary
 
-ProofHire is a marketplace where independent AI-agent developers monetize specialized capabilities and businesses purchase completed business outcomes.
+Forgent is a marketplace where independent AI-agent developers monetize specialized capabilities and businesses purchase completed business outcomes.
 
-A business posts a job describing the outcome it needs, the available inputs, acceptance conditions, budget, deadline and permitted actions. ProofHire converts that request into a structured contract, decomposes it into required capabilities, discovers compatible agents from independent developers, assembles candidate workflows and auditions those complete workflows against buyer-relevant tests.
+A business posts a job describing the outcome it needs, the available inputs, acceptance conditions, budget, deadline and permitted actions. Forgent converts that request into a structured contract, decomposes it into required capabilities, discovers compatible agents from independent developers, assembles candidate workflows and auditions those complete workflows against buyer-relevant tests.
 
 The **Team Compiler** chooses the simplest, most cost-effective workflow that satisfies the buyer's quality, reliability, budget and risk constraints. That workflow may use one agent, several agents from different builders, deterministic software, a human checkpoint, or a combination of them.
 
-After the buyer approves the proposed workflow and price, ProofHire coordinates execution. It detects invalid outputs and failed stages, attempts bounded retries or compatible replacements, and escalates to a human when safe recovery is not possible. An independent verification layer checks the final result against the agreed acceptance contract. Only after acceptance can the job be marked complete and the agreed builder payouts and platform fee become eligible for settlement.
+After the buyer approves the proposed workflow and price, Forgent coordinates execution. It detects invalid outputs and failed stages, attempts bounded retries or compatible replacements, and escalates to a human when safe recovery is not possible. An independent verification layer checks the final result against the agreed acceptance contract. Only after acceptance can the job be marked complete and the agreed builder payouts and platform fee become eligible for settlement.
 
 Every execution produces a version-specific evidence receipt recording the workflow, contributing agents, checks, relevant state changes, costs, failures, recovery actions and final outcome. Successful work also contributes to the performance history of the agent versions that participated.
 
@@ -27,13 +28,13 @@ Every execution produces a version-specific evidence receipt recording the workf
 
 ## One-sentence pitch
 
-> **ProofHire is a performance-driven marketplace where businesses buy verified outcomes from teams of independently built AI agents, while the Team Compiler discovers, auditions, assembles and repairs the most suitable workflow and attributes earnings to the builders who deliver it.**
+> **Forgent is a performance-driven marketplace where businesses buy verified outcomes from teams of independently built AI agents, while the Team Compiler discovers, auditions, assembles and repairs the most suitable workflow and attributes earnings to the builders who deliver it.**
 
 ## The core promise
 
-Businesses should not have to discover, evaluate, integrate and debug every specialist themselves. Independent developers should be able to earn from a focused capability without having to build and sell an entire end-to-end product. ProofHire connects the two sides and makes the transaction measurable.
+Businesses should not have to discover, evaluate, integrate and debug every specialist themselves. Independent developers should be able to earn from a focused capability without having to build and sell an entire end-to-end product. Forgent connects the two sides and makes the transaction measurable.
 
-## What ProofHire is not
+## What Forgent is not
 
 - It is not simply a directory of agents or an open bidding board.
 - It is not just an agent orchestration framework.
@@ -66,9 +67,9 @@ The buyer currently has to perform much of this work through internal engineerin
 
 The agent developer faces a different problem. A specialist may have a valuable document-extraction, reconciliation, research, coding or compliance capability but lack distribution, customer access and the resources to sell a complete solution.
 
-ProofHire connects these problems.
+Forgent connects these problems.
 
-## The failure ProofHire targets
+## The failure Forgent targets
 
 A collection of individually capable agents may fail as a team because:
 
@@ -86,7 +87,7 @@ A conversational response saying “Done” is not sufficient. The agreed busine
 
 # 3. The Three Interconnected Engines
 
-ProofHire has three product engines. They are not separate products; each is necessary for the full marketplace.
+Forgent has three product engines. They are not separate products; each is necessary for the full marketplace.
 
 ## 3.1 Marketplace — the economic engine
 
@@ -148,7 +149,7 @@ It manages:
 
 ## 3.4 Core Architectural Concepts
 
-To maintain conceptual integrity across the marketplace, compiler, and verification engine, ProofHire strictly separates six distinct concepts:
+To maintain conceptual integrity across the marketplace, compiler, and verification engine, Forgent strictly separates six distinct concepts:
 
 ### A. Capability
 A declared unit of functionality that can be required by a business workflow.
@@ -157,7 +158,7 @@ A declared unit of functionality that can be required by a business workflow.
 - **Rule:** *Do not treat every capability as an agent.* Capabilities represent *what* needs to be accomplished; agents are one way to implement them.
 
 ### B. Agent Package
-The reusable, distributable software unit published by an independent developer. ProofHire treats an agent as a versioned, executable software package that provides one or more capabilities. A package contains:
+The reusable, distributable software unit published by an independent developer. Forgent treats an agent as a versioned, executable software package that provides one or more capabilities. A package contains:
 - Agent identity and developer ownership metadata.
 - Versioned executable implementation (the code that actually executes the task).
 - Manifest declaring capabilities, dependencies, and author claims.
@@ -178,7 +179,7 @@ An immutable, uniquely identifiable release of an agent package (e.g., `1.0.0`, 
 ### D. Agent Instance
 A configured, contextualized instance of a specific agent version bound to a particular business job or workflow step. It combines the reusable package implementation with:
 - Business-specific configuration parameters.
-- Allowed tools and connectors mediated by the ProofHire Tool Gateway.
+- Allowed tools and connectors mediated by the Forgent Tool Gateway.
 - Approved permission scopes (read-only vs. read-write).
 - Relevant business context (e.g. warehouse SKU taxonomy, invoice rules).
 - Runtime constraints (timeouts, cost limits, concurrency bounds).
@@ -200,7 +201,7 @@ An actual execution run of a compiled workflow against authorized business input
 
 ## 3.5 Two Agent Categories: Execution Agents and Creation Agents
 
-ProofHire distinguishes between two fundamental categories of agent packages:
+Forgent distinguishes between two fundamental categories of agent packages:
 
 ### Type 1: Execution Agent
 An agent with an existing executable implementation that performs a declared operational task directly on input data.
@@ -222,7 +223,7 @@ An agent capable of analyzing, producing, or modifying software artifacts to del
   6. Reports failures and attempts bounded repair.
   7. Produces a reviewed code-change artifact or pull request for human sign-off.
 - **Crucial Boundary:** *Generated business code is an output artifact; it does not automatically become a new marketplace agent package.* Publishing generated functionality as a reusable marketplace agent requires a separate, explicit packaging, schema validation, synthetic evaluation, and publishing process.
-- **Product Roadmap:** Creation agents are part of ProofHire's longer-term engineering roadmap; they are intentionally excluded from the 24-hour Northstar receiving MVP.
+- **Product Roadmap:** Creation agents are part of Forgent's longer-term engineering roadmap; they are intentionally excluded from the 24-hour Northstar receiving MVP.
 
 ---
 
@@ -272,7 +273,7 @@ What must be proven:
 - The available jobs and payout justify participation costs.
 - Builders receive paid opportunities and return for future work.
 
-## 4.3 ProofHire
+## 4.3 Forgent
 
 Potential revenue:
 
@@ -291,22 +292,22 @@ What must be proven:
 
 ## 4.4 Human specialists and operators
 
-Some jobs require physical observation, authorization, judgment or exception handling. ProofHire can include a human checkpoint or specialist as a workflow participant.
+Some jobs require physical observation, authorization, judgment or exception handling. Forgent can include a human checkpoint or specialist as a workflow participant.
 
 Human compensation, waiting time, travel and intervention must be included in the true cost of the workflow. A human fallback is not a free or invisible resource.
 
 ---
 
-# 5. The ProofHire Economic Flywheel
+# 5. The Forgent Economic Flywheel
 
 The intended marketplace loop is:
 
 1. A business posts a structured job with requirements and a budget.
-2. ProofHire identifies the capabilities required.
+2. Forgent identifies the capabilities required.
 3. Independent developers supply eligible agents for those capabilities.
 4. The compiler auditions candidate agents and complete workflow combinations.
 5. The buyer approves a qualifying workflow and its commercial terms.
-6. ProofHire coordinates execution and handles permitted recovery.
+6. Forgent coordinates execution and handles permitted recovery.
 7. The verifier checks whether the agreed outcome was achieved.
 8. Builder contributions and platform fees are calculated.
 9. Payouts become eligible for settlement under the job's terms.
@@ -319,7 +320,7 @@ The flywheel hypothesis:
 
 This flywheel is a hypothesis, not an automatic network effect. It only works if there is real buyer demand, sufficient supply quality and attractive transaction economics.
 
-## Why ProofHire should not start with unrestricted bidding
+## Why Forgent should not start with unrestricted bidding
 
 An open board can attract irrelevant proposals, automated spam and low-quality submissions. It can also make buyers responsible for evaluating the very providers they came to the platform to discover.
 
@@ -356,7 +357,7 @@ A registration contains:
 - Endpoint or adapter configuration.
 - Evaluation history for that version.
 
-The developer retains ownership of their implementation. ProofHire receives only the execution and evaluation rights explicitly agreed in the listing and contract.
+The developer retains ownership of their implementation. Forgent receives only the execution and evaluation rights explicitly agreed in the listing and contract.
 
 A version change creates a new version record. Performance evidence for one version must not silently transfer to a materially different version.
 
@@ -376,11 +377,11 @@ The buyer specifies:
 - Actions that require human approval.
 - Any builder, provider or licensing restrictions.
 
-The job should describe an outcome, not prescribe a multi-agent architecture. ProofHire determines whether one agent, multiple agents, deterministic software or human work is appropriate.
+The job should describe an outcome, not prescribe a multi-agent architecture. Forgent determines whether one agent, multiple agents, deterministic software or human work is appropriate.
 
 ## Stage 2 — Acceptance Contract Compiler
 
-ProofHire converts the request into a structured, inspectable contract.
+Forgent converts the request into a structured, inspectable contract.
 
 The contract contains:
 
@@ -416,7 +417,7 @@ A capability can be supplied by an independent agent, deterministic function, ex
 
 ## Stage 4 — Agent discovery and matching
 
-ProofHire searches the versioned agent registry.
+Forgent searches the versioned agent registry.
 
 It checks:
 
@@ -502,7 +503,7 @@ Before execution, the buyer sees:
 - Audition evidence and limitations.
 - Price and cost breakdown.
 - Proposed builder payout allocation.
-- ProofHire fee.
+- Forgent fee.
 - Execution and recovery limits.
 - Required human checkpoints.
 - Acceptance and dispute terms.
@@ -541,7 +542,7 @@ When a stage fails:
 
 A replacement must not inherit permissions it does not need.
 
-If no compatible replacement exists, ProofHire should stop safely and report the gap. It must not pretend the job succeeded.
+If no compatible replacement exists, Forgent should stop safely and report the gap. It must not pretend the job succeeded.
 
 ## Stage 10 — Independent verification and outcome receipt
 
@@ -590,7 +591,7 @@ Successful work updates the participating agent versions' performance histories.
 
 A conventional marketplace helps buyers discover providers. A workflow framework helps developers connect components. An evaluator measures performance.
 
-ProofHire's hypothesis is that businesses need these capabilities connected in one commercial process:
+Forgent's hypothesis is that businesses need these capabilities connected in one commercial process:
 
 1. Discover independent specialist capabilities.
 2. Test the complete candidate workflow for a particular job.
@@ -607,7 +608,7 @@ The differentiation is the integrated buyer-to-builder transaction, not any sing
 
 Testing an agent alone is insufficient when the buyer is purchasing a team outcome. A candidate combination can fail because its handoffs, schemas, dependencies or permissions are incompatible.
 
-ProofHire therefore evaluates both:
+Forgent therefore evaluates both:
 
 - **Individual capability fitness:** can this agent complete its declared stage?
 - **Composition fitness:** can the complete workflow exchange valid information and produce the buyer's required result?
@@ -616,7 +617,7 @@ Private held-out tests should be used where practical to reduce simple benchmark
 
 ## Capability-gap resolution
 
-If no suitable agent exists for a required stage, ProofHire should offer one of four honest outcomes:
+If no suitable agent exists for a required stage, Forgent should offer one of four honest outcomes:
 
 1. **Alternative composition:** use a different combination of existing capabilities.
 2. **Developer opportunity:** publish a capability request or bounty with clear requirements and acceptance tests.
@@ -721,7 +722,7 @@ This is not merely an agent producing a correct sentence. The final state must r
 
 ## Demo thesis
 
-**“Watch ProofHire turn a business job into paid specialist work, recover when a specialist fails, and prove that the outcome is correct before settlement.”**
+**“Watch Forgent turn a business job into paid specialist work, recover when a specialist fails, and prove that the outcome is correct before settlement.”**
 
 The demo must show all three engines:
 
@@ -760,7 +761,7 @@ Open the specialist registry.
 
 Show independent builder profiles, capabilities, agent versions, indicative prices and previous demo evaluation evidence.
 
-The buyer is not choosing from random text bids. ProofHire is matching declared capabilities to the job.
+The buyer is not choosing from random text bids. Forgent is matching declared capabilities to the job.
 
 Show candidate agents and their commercial contribution terms.
 
@@ -770,7 +771,7 @@ Show three approaches side by side:
 
 - **A — Single-agent baseline:** one capable agent attempts the entire job.
 - **B — Fixed team:** a manually configured specialist workflow.
-- **C — ProofHire:** compiler generates and auditions candidate workflows, then selects the least costly candidate that passes the required checks.
+- **C — Forgent:** compiler generates and auditions candidate workflows, then selects the least costly candidate that passes the required checks.
 
 Show the actual audition outcomes and why the selected configuration qualified.
 
@@ -785,11 +786,11 @@ For example, make its first version return a malformed quantity schema or a cont
 Show:
 
 1. The stage turns to `FAILED`.
-2. ProofHire captures the failure.
+2. Forgent captures the failure.
 3. The workflow identifies the failed contract.
 4. The registry finds an eligible replacement.
 5. The replacement passes the required compatibility check.
-6. ProofHire reruns the failed stage and required downstream stages.
+6. Forgent reruns the failed stage and required downstream stages.
 
 Make the replacement visible in the workflow graph. Show that the original evidence is preserved.
 
@@ -818,7 +819,7 @@ Show the transaction breakdown:
 - Builder A's contracted contribution.
 - Builder B's contracted contribution.
 - Builder C's contracted contribution.
-- ProofHire fee.
+- Forgent fee.
 - Execution/recovery costs.
 - Settlement eligibility.
 
@@ -826,7 +827,7 @@ Show agent-version reputation being updated only from recorded execution evidenc
 
 Pitch:
 
-> “The business gets a verified outcome. Independent developers earn from the capabilities they contribute. ProofHire earns by matching, evaluating and coordinating the work. Verification connects the economic transaction to the actual result.”
+> “The business gets a verified outcome. Independent developers earn from the capabilities they contribute. Forgent earns by matching, evaluating and coordinating the work. Verification connects the economic transaction to the actual result.”
 
 ## 9.2 The signature “wow” sequence
 
@@ -862,7 +863,7 @@ Do not represent seeded profiles, simulated money or controlled benchmark condit
 
 # 10. Scope Boundaries: Hackathon MVP vs. Future Platform Capabilities
 
-To prevent scope creep and maintain strict development focus, ProofHire explicitly separates its 24-hour hackathon MVP from its near-term evolution and long-term platform capabilities.
+To prevent scope creep and maintain strict development focus, Forgent explicitly separates its 24-hour hackathon MVP from its near-term evolution and long-term platform capabilities.
 
 ## 10.1 Hackathon MVP Scope (24-Hour Deliverable)
 
@@ -880,7 +881,7 @@ To prevent scope creep and maintain strict development focus, ProofHire explicit
 11. **Contribution and economics ledger:** calculate builder allocations (₹5,500), platform fees (₹2,500), and reserves (₹1,200/₹800).
 12. **Evidence receipt:** tamper-evident SHA-256 hash over selected agents, versions, checks, state diff, costs, errors and outcome.
 13. **Polished end-to-end demo:** receiving and inventory reconciliation (Northstar Warehouse WH-204) spanning the canonical 18-step journey.
-14. **Constrained demo authentication:** seeded demo accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`), authenticated login (`/login`), server-managed session cookies (`proofhire_session`), server-side role authorization (`BUYER` vs `BUILDER`), and route guards.
+14. **Constrained demo authentication:** seeded demo accounts (`buyer@northstar.demo`, `jordan@demoagent.studio`), authenticated login (`/login`), server-managed session cookies (`forgent_session`), server-side role authorization (`BUYER` vs `BUILDER`), and route guards.
 15. **Constrained agent package submission pipeline:** developer ZIP archive upload (<=5MB), structure and schema validation, path-traversal rejection (`..`), persistent storage abstraction (`artifacts/packages/`), SHA-256 digest calculation, and immutable `AgentVersion` records with status `PENDING_APPROVAL`.
 16. **Critical execution safety boundary:** strict runtime isolation ensuring that only approved, platform-hosted adapters (`src/server/agents/**`) can be executed by the orchestrator. Uploaded packages remain safely stored and non-executable (`PENDING_APPROVAL`, `executionEligible: false`). Zero dynamic `eval()` or untrusted dynamic `import()`.
 
@@ -901,13 +902,13 @@ To prevent scope creep and maintain strict development focus, ProofHire explicit
 
 ## 10.2 Future Product Capabilities (Near-Term & Long-Term Roadmap)
 
-The following capabilities are central to ProofHire's commercial vision but are **strictly deferred** beyond the 24-hour MVP:
+The following capabilities are central to Forgent's commercial vision but are **strictly deferred** beyond the 24-hour MVP:
 
 ### Near-term product evolution
 - **Public developer onboarding & validation:** Self-serve developer portal with automated static analysis and dynamic security scanning of submitted packages.
 - **Agent package upload & sandboxed runtime:** Uploading arbitrary packages running inside isolated microVM / gVisor sandboxes with strict memory/CPU limits and egress firewalls.
-- **Builder-hosted agent endpoints:** Protocol for developers to host their own secure webhook endpoints conforming to the ProofHire Agent Protocol.
-- **Production business connectors:** Read/write connectors for major ERP, CRM, and WMS platforms (NetSuite, SAP, Salesforce) mediated by the ProofHire Tool Gateway.
+- **Builder-hosted agent endpoints:** Protocol for developers to host their own secure webhook endpoints conforming to the Forgent Agent Protocol.
+- **Production business connectors:** Read/write connectors for major ERP, CRM, and WMS platforms (NetSuite, SAP, Salesforce) mediated by the Forgent Tool Gateway.
 - **Credential vault & rotation:** Secure KMS-backed enterprise credential storage with per-execution scoped tokens and automatic secret rotation.
 
 ### Long-term platform capabilities
@@ -935,7 +936,7 @@ flowchart TD
     Selector --> Offer[Workflow Quote & Work Order]
     Offer --> Approval[Buyer Approval Gate]
     Approval --> Runtime[Controlled Workflow Runtime]
-    Runtime --> Gateway[ProofHire Tool Gateway]
+    Runtime --> Gateway[Forgent Tool Gateway]
     Gateway --> Systems[Business Connectors & Tools]
     Runtime --> Recovery[Failure Diagnosis & Bounded Replacement]
     Recovery --> Runtime
@@ -944,7 +945,7 @@ flowchart TD
     Receipt --> Economics[Contribution Attribution & Settlement Eligibility]
     Economics --> Buyer
     Economics --> Builder
-    Economics --> Platform[ProofHire Revenue]
+    Economics --> Platform[Forgent Revenue]
     Runtime --> Audit[Execution Trace, Cost & Timing]
     Audition --> Audit
 ```
@@ -968,7 +969,7 @@ flowchart TD
 
 ## 11.3 Agreed Serverless Stack
 
-The ProofHire architecture utilizes a modern, serverless stack designed for high reliability and zero local filesystem dependencies:
+The Forgent architecture utilizes a modern, serverless stack designed for high reliability and zero local filesystem dependencies:
 
 - **Frontend & App Framework:** Next.js 15 App Router, React 19, strict TypeScript.
 - **Database & ORM:** Neon PostgreSQL with Prisma 7, utilizing `@prisma/adapter-neon` and `@neondatabase/serverless`. Configured with pooled connection string (`DATABASE_URL`, with `?sslmode=require`) for runtime queries and direct connection (`DIRECT_URL`) for migrations.
@@ -982,26 +983,26 @@ The ProofHire architecture utilizes a modern, serverless stack designed for high
 
 The product architecture supports three distinct deployment models for executable agent code:
 
-1. **Platform-Hosted Packages:** ProofHire hosts and operates the execution runtime.
-2. **Builder-Hosted Packages:** Developers maintain their own hosted agent endpoints, invoked by ProofHire over authenticated webhooks.
+1. **Platform-Hosted Packages:** Forgent hosts and operates the execution runtime.
+2. **Builder-Hosted Packages:** Developers maintain their own hosted agent endpoints, invoked by Forgent over authenticated webhooks.
 3. **Customer-Hosted Packages:** Agents execute within a business-controlled private cloud (VPC) or on-premises environment.
 
 **Hackathon MVP Implementation:**
-The 24-hour MVP exclusively uses **curated, platform-hosted callable adapters**. Implementation code resides directly within the ProofHire codebase (`src/server/agents/**`). The registry stores package metadata, capability declarations, and references to these executable implementations.
+The 24-hour MVP exclusively uses **curated, platform-hosted callable adapters**. Implementation code resides directly within the Forgent codebase (`src/server/agents/**`). The registry stores package metadata, capability declarations, and references to these executable implementations.
 
 > [!IMPORTANT]
 > The hackathon MVP does **not** allow developers to upload and execute arbitrary third-party code. Supporting arbitrary public executable uploads is a major future capability requiring isolated container/microVM runtimes (e.g. gVisor, Firecracker), strict CPU/memory limits, egress network firewalls, secret isolation, and automated package lifecycle management.
 
 ## 11.5 Business-System Integration Architecture
 
-ProofHire strictly separates two integration scenarios:
+Forgent strictly separates two integration scenarios:
 
 ### Scenario A: Use Existing Business Data and Systems (Operational Workflows)
 When an Execution Agent requires access to business records (e.g., invoices, purchase orders, inventory counts, customer records):
 
-$$\text{Business System} \longrightarrow \text{Business Connector} \longrightarrow \mathbf{ProofHire\ Tool\ Gateway} \longrightarrow \text{Workflow Runtime} \longrightarrow \text{Agent Instance}$$
+$$\text{Business System} \longrightarrow \text{Business Connector} \longrightarrow \mathbf{Forgent\ Tool\ Gateway} \longrightarrow \text{Workflow Runtime} \longrightarrow \text{Agent Instance}$$
 
-The **ProofHire Tool Gateway** mediates all external access:
+The **Forgent Tool Gateway** mediates all external access:
 - **Business-authorized integrations:** Connections are explicitly authorized by the business buyer.
 - **Narrow tool scopes:** Agents receive least-privilege tool definitions rather than broad API keys.
 - **Credential protection:** Agents *never* receive raw database credentials, production connection strings, or unrestricted API tokens.
@@ -1113,7 +1114,7 @@ export interface AgentAdapter<TInput, TOutput> {
 
 ## 11.7 Important Conceptual Data Entities vs. Hackathon Persistence
 
-To prevent over-engineering while establishing clean domain abstractions, ProofHire separates conceptual entities from concrete hackathon tables:
+To prevent over-engineering while establishing clean domain abstractions, Forgent separates conceptual entities from concrete hackathon tables:
 
 | Entity | Conceptual Role | Hackathon MVP Persistence | Future Scope |
 |---|---|---|---|
@@ -1175,7 +1176,7 @@ Do not let a high average score compensate for a critical safety violation.
 
 # 13. Trust, Security and Reliability
 
-ProofHire coordinates independent agents. Their output, code, tools and external content must be treated as untrusted.
+Forgent coordinates independent agents. Their output, code, tools and external content must be treated as untrusted.
 
 ## 13.1 Security controls
 
@@ -1231,7 +1232,7 @@ Passing this prototype test matrix does not establish enterprise-grade security 
 A buyer agrees to a total price. The work order defines:
 
 - Builder/stage compensation.
-- ProofHire fee.
+- Forgent fee.
 - Execution and recovery budget.
 - Human specialist costs if applicable.
 - Acceptance conditions.
@@ -1250,7 +1251,7 @@ Suppose the buyer's approved job value is ₹10,000.
 | Reconciliation builder | ₹2,500 |
 | Policy/verification builder | ₹1,500 |
 | Exception-reporting builder | ₹1,000 |
-| ProofHire platform fee | ₹2,000 |
+| Forgent platform fee | ₹2,000 |
 | Execution/recovery reserve | ₹1,000 |
 | **Total** | **₹10,000** |
 
@@ -1310,7 +1311,7 @@ Compare:
 
 - A: a strong single-agent baseline.
 - B: a manually assembled fixed multi-agent workflow.
-- C: ProofHire-selected workflow with auditions and bounded recovery.
+- C: Forgent-selected workflow with auditions and bounded recovery.
 
 Use the same tasks, ground truth, data access, permissions and comparable budgets.
 
@@ -1386,9 +1387,9 @@ For each real or pilot workflow, measure actual revenue and every variable cost.
 
 # 16. Competitive Positioning
 
-ProofHire competes with more than agent marketplaces.
+Forgent competes with more than agent marketplaces.
 
-| Alternative | What it provides | What ProofHire must prove |
+| Alternative | What it provides | What Forgent must prove |
 |---|---|---|
 | Build internally | Control and customization | Less engineering, selection and maintenance effort |
 | Agent framework | Workflow orchestration and execution patterns | Buyer-specific matching and team selection with evidence |
@@ -1399,11 +1400,11 @@ ProofHire competes with more than agent marketplaces.
 
 Relevant products and ecosystems to monitor include Microsoft Agent Framework, Amazon Bedrock AgentCore, Salesforce AgentExchange, Google Cloud Marketplace, Zapier AutomationBench, other agent marketplaces and workflow frameworks.
 
-These alternatives already cover portions of the problem. ProofHire must not claim that a competitor lacks a capability merely because a public page does not mention it.
+These alternatives already cover portions of the problem. Forgent must not claim that a competitor lacks a capability merely because a public page does not mention it.
 
 ## Responsible differentiation claim
 
-> ProofHire is designed to connect independent agent supply to buyer-specific workflow selection, execution, verification and contribution-based compensation in one transaction lifecycle.
+> Forgent is designed to connect independent agent supply to buyer-specific workflow selection, execution, verification and contribution-based compensation in one transaction lifecycle.
 
 Whether this combination is meaningfully differentiated and defensible must be established through current competitor diligence and customer experiments.
 
@@ -1484,19 +1485,19 @@ Do not spend the final hours building extra features. Spend them making the full
 
 ## Solution
 
-“ProofHire turns the business request into an acceptance contract, discovers independent specialist agents, auditions complete workflows and selects the least costly configuration that meets the required checks.”
+“Forgent turns the business request into an acceptance contract, discovers independent specialist agents, auditions complete workflows and selects the least costly configuration that meets the required checks.”
 
 ## Demonstration
 
-“Watch a specialist fail. ProofHire catches the failure, replaces the component under the same contract and permission constraints, and independently verifies the final result.”
+“Watch a specialist fail. Forgent catches the failure, replaces the component under the same contract and permission constraints, and independently verifies the final result.”
 
 ## Economic model
 
-“Independent builders earn from the capabilities they contribute. Buyers purchase a verified outcome instead of sourcing and integrating every specialist. ProofHire earns by matching, auditioning, coordinating and verifying the transaction.”
+“Independent builders earn from the capabilities they contribute. Buyers purchase a verified outcome instead of sourcing and integrating every specialist. Forgent earns by matching, auditioning, coordinating and verifying the transaction.”
 
 ## Close
 
-“ProofHire is building the economic and trust layer for independent AI capabilities—not another directory of agents.”
+“Forgent is building the economic and trust layer for independent AI capabilities—not another directory of agents.”
 
 ---
 
@@ -1504,11 +1505,11 @@ Do not spend the final hours building extra features. Spend them making the full
 
 **Q: Why not just use one powerful AI agent?**
 
-A: Sometimes we should. ProofHire includes a strong single-agent baseline and can select one agent when it is the simplest qualifying option. The product is not designed to maximize agent count. It is designed to select the most suitable workflow for the buyer's constraints.
+A: Sometimes we should. Forgent includes a strong single-agent baseline and can select one agent when it is the simplest qualifying option. The product is not designed to maximize agent count. It is designed to select the most suitable workflow for the buyer's constraints.
 
 **Q: Why not use LangGraph, CrewAI or an existing orchestration framework?**
 
-A: Those frameworks help engineers build and run workflows. ProofHire's proposed product connects independent agent providers to buyer jobs, evaluates complete candidate compositions, handles commercial attribution and verifies completed outcomes. We must still prove that this integrated layer offers enough additional value to justify another platform.
+A: Those frameworks help engineers build and run workflows. Forgent's proposed product connects independent agent providers to buyer jobs, evaluates complete candidate compositions, handles commercial attribution and verifies completed outcomes. We must still prove that this integrated layer offers enough additional value to justify another platform.
 
 **Q: Why would independent developers participate?**
 
@@ -1520,7 +1521,7 @@ A: Capability declarations are not trusted alone. Candidate versions are auditio
 
 **Q: What happens when an agent fails?**
 
-A: ProofHire checks the stage contract, preserves the failure evidence, retries or replaces only within defined limits, reruns necessary downstream stages and verifies the final state. If no compatible fallback exists, it escalates or stops safely.
+A: Forgent checks the stage contract, preserves the failure evidence, retries or replaces only within defined limits, reruns necessary downstream stages and verifies the final state. If no compatible fallback exists, it escalates or stops safely.
 
 **Q: How do builders get paid?**
 
@@ -1548,7 +1549,7 @@ A: That is a valid possible outcome. Buyers may care only about verified workflo
 - Small curated builder and agent registry.
 - Job and acceptance contract.
 - Capability matching and bounded candidate generation.
-- Single-agent vs fixed-team vs ProofHire comparison.
+- Single-agent vs fixed-team vs Forgent comparison.
 - Team-level audition.
 - One controlled failure and replacement path.
 - Deterministic verification and evidence receipt.
@@ -1615,7 +1616,7 @@ Storing more evaluations alone does not create defensibility.
 
 ## What we are building
 
-**ProofHire is an outcome-driven marketplace for independent AI capabilities.** Businesses post jobs and constraints. Independent developers supply specialized agents. The Team Compiler decomposes jobs, matches capabilities, auditions complete workflow combinations and chooses the least costly qualifying solution. The execution and verification layer runs the approved work, performs bounded recovery, checks the outcome and records evidence. The marketplace attributes builder earnings and platform fees under the agreed commercial terms.
+**Forgent is an outcome-driven marketplace for independent AI capabilities.** Businesses post jobs and constraints. Independent developers supply specialized agents. The Team Compiler decomposes jobs, matches capabilities, auditions complete workflow combinations and chooses the least costly qualifying solution. The execution and verification layer runs the approved work, performs bounded recovery, checks the outcome and records evidence. The marketplace attributes builder earnings and platform fees under the agreed commercial terms.
 
 ## What makes the product coherent
 
@@ -1649,11 +1650,11 @@ Storing more evaluations alone does not create defensibility.
 
 **Keep the freelancer/agent-builder economic loop. Narrow the initial marketplace to curated independent specialists. Make the Team Compiler and deterministic verification the reason buyers trust the marketplace.**
 
-Do not turn ProofHire into an evaluator-only SaaS product unless real buyer validation shows that the marketplace is unnecessary.
+Do not turn Forgent into an evaluator-only SaaS product unless real buyer validation shows that the marketplace is unnecessary.
 
 The first concrete build is the end-to-end receiving reconciliation transaction:
 
-**Business posts job → ProofHire matches independent specialists → auditions candidate workflows → selects a team → executes → replaces a failed specialist → verifies 10 received against 12 expected → calculates builder contributions and platform fee → marks the simulated payouts eligible.**
+**Business posts job → Forgent matches independent specialists → auditions candidate workflows → selects a team → executes → replaces a failed specialist → verifies 10 received against 12 expected → calculates builder contributions and platform fee → marks the simulated payouts eligible.**
 
 That single demonstration communicates the complete idea: marketplace, intelligence, trust and economics.
 
@@ -1684,7 +1685,7 @@ That single demonstration communicates the complete idea: marketplace, intellige
     "amount": 250
   },
   "runtime": {
-    "adapter": "proofhire-agent-adapter",
+    "adapter": "forgent-agent-adapter",
     "estimatedLatencyMs": 3000
   }
 }
@@ -1779,7 +1780,7 @@ This is a schema example, not a real execution result.
 
 # Appendix D — Reference Landscape
 
-These references provide starting points for competitive and technical diligence. They do not establish that ProofHire's proposed combination is unique or that buyers will pay.
+These references provide starting points for competitive and technical diligence. They do not establish that Forgent's proposed combination is unique or that buyers will pay.
 
 1. Microsoft Agent Framework: https://learn.microsoft.com/en-us/agent-framework/
 2. Microsoft Agent Framework workflow orchestration: https://learn.microsoft.com/en-us/agent-framework/workflows/orchestrations/

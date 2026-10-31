@@ -1,9 +1,11 @@
 # 01 — Repository Audit
 
+> [!NOTE]
+> **Implementation Complete:** This document records the initial Day 0 pre-implementation repository audit conducted on 2026-10-30 prior to scaffolding. The complete Forgent platform has since been implemented across Phases P0–P8, verified by 17 test suites (86 passing tests) and 19 production routes.
+
 **Audit date:** 2026-10-30  
 **Branch:** `main`  
 **Last commit:** `b547a7d Initial commit`  
-**Working tree:** clean except `BLUEPRINT.md`, which is untracked (`?? BLUEPRINT.md`)  
 **Auditor:** Principal Architect / TPM (documentation baseline)
 
 ---
@@ -13,7 +15,7 @@
 | Path | State | Notes |
 |---|---|---|
 | `README.md` | Present | 14 bytes: `# Forgent-demo`. No run instructions, stack or product description. |
-| `BLUEPRINT.md` | Present, untracked | 1,606 lines. The canonical ProofHire product and hackathon blueprint. |
+| `BLUEPRINT.md` | Present, untracked | 1,606 lines. The canonical Forgent product and hackathon blueprint. |
 | `.gitignore` | Present | Generic Node/Vite/Next ignore list. Includes `.next`, `node_modules`, `.env*`, `dist`, coverage, `.turbo`, `.vite`. For the serverless stack (Neon PostgreSQL + Prisma 7), ensure `.env.local`, `.env*.local`, generated Prisma engine binaries, and database dump artifacts are ignored. |
 | `.git/` | Present | Single commit on `main`. |
 
@@ -26,7 +28,7 @@ Nothing else exists. There is **no** `package.json`, lockfile, `src/`, `app/`, `
 | Node.js | `v22.18.0` |
 | npm | `10.9.3` |
 | Git | `2.50.0.windows.1` |
-| Platform | Windows (`win32`), repository under `C:\Users\Mayur\Desktop\Forgent-demo` |
+| Platform | Windows (`win32`), repository under `forgent-demo` |
 
 ### Verified Git state
 
@@ -42,15 +44,15 @@ Status: ?? BLUEPRINT.md
 
 ## 2. Source-of-truth blueprint
 
-The task brief refers to `ProofHire_Final_Solution_Blueprint.md`. The actual file in this repository is:
+The task brief refers to `Forgent_Final_Solution_Blueprint.md`. The actual file in this repository is:
 
 ```text
-C:\Users\Mayur\Desktop\Forgent-demo\BLUEPRINT.md
+BLUEPRINT.md
 ```
 
-It is the same canonical content: ProofHire v2.0, dated 30 October 2026, covering the marketplace, Team Compiler, verification/execution, the Northstar receiving scenario, the 24-hour plan, economics and demo authenticity rules.
+It is the same canonical content: Forgent v2.0, dated 30 October 2026, covering the marketplace, Team Compiler, verification/execution, the Northstar receiving scenario, the 24-hour plan, economics and demo authenticity rules.
 
-**Decision:** `BLUEPRINT.md` remains the canonical product source. The documentation package links to it rather than duplicating it. A future rename to `ProofHire_Final_Solution_Blueprint.md` is optional and should be done as a tracked move with a decision-log entry; do not maintain two copies.
+**Decision:** `BLUEPRINT.md` remains the canonical product source. The documentation package links to it rather than duplicating it. A future rename to `Forgent_Final_Solution_Blueprint.md` is optional and should be done as a tracked move with a decision-log entry; do not maintain two copies.
 
 The blueprint is currently **untracked**. It should be committed before implementation so every teammate and checkpoint sees the same product source.
 
@@ -197,15 +199,15 @@ No real payment key or warehouse physical credential is required for the critica
 
 | # | Conflict / gap | Resolution recorded |
 |---|---|---|
-| C-01 | The brief names `ProofHire_Final_Solution_Blueprint.md`; the repository file is `BLUEPRINT.md`. | Treat `BLUEPRINT.md` as canonical; do not duplicate. Decision `D-008`. |
+| C-01 | The brief names `Forgent_Final_Solution_Blueprint.md`; the repository file is `BLUEPRINT.md`. | Treat `BLUEPRINT.md` as canonical; do not duplicate. Decision `D-008`. |
 | C-02 | Blueprint suggests PostgreSQL; no local Postgres daemon exists. | Neon Serverless PostgreSQL with Prisma 7 (`@prisma/adapter-neon`). Zero local daemon setup needed; aligns with blueprint PostgreSQL mandate. Decision `D-002`. |
-| C-03 | Blueprint's receiving example lists five candidate specialists including a Policy Checker and a separate Fallback Reconciler; the task specifies one freelancer with four versions (Evidence Reader, Reconciliation v1.0.0/v1.1.0, Exception Reporter). | Policy validation becomes a deterministic ProofHire capability; v1.1.0 is the compatible fallback. No fake fifth builder. Decision `D-009`, `D-010`, `D-011`. |
+| C-03 | Blueprint's receiving example lists five candidate specialists including a Policy Checker and a separate Fallback Reconciler; the task specifies one freelancer with four versions (Evidence Reader, Reconciliation v1.0.0/v1.1.0, Exception Reporter). | Policy validation becomes a deterministic Forgent capability; v1.1.0 is the compatible fallback. No fake fifth builder. Decision `D-009`, `D-010`, `D-011`. |
 | C-04 | Blueprint often speaks of Builders A–E; the task seeds a single freelancer, Jordan Lee. | All builder allocations aggregate to Jordan / Demo Agent Studio; per-agent contributions remain visible. |
 | C-05 | Blueprint marks buyer/builder dashboards as "should build if time permits"; the task requires them as part of the demo. | Dashboards and economics views are P0, not optional. |
 | C-06 | Blueprint defers public builder onboarding; the task lists agent registration/edit UI. | Implement a demo-scoped registration/edit flow with immutable published versions; no public onboarding or fake third-party acquisition. |
 | C-07 | Blueprint says team may use Next.js/Postgres "suggested"; no repository preference exists. | All stack decisions are `PROPOSED` and frozen at P0, not presented as approved facts. |
 | C-08 | Blueprint says 8–12 test cases; the plan must be concrete. | Ten fixtures: eight visible, two held-out, versioned `wh204-suite-v1`. Decision `D-015`. |
-| C-09 | Blueprint warns that an agent saying "Done" is not proof; the demo needs an independent verifier. | Verifier is a deterministic module owned by ProofHire, excluded from the agent registry and marketplace. |
+| C-09 | Blueprint warns that an agent saying "Done" is not proof; the demo needs an independent verifier. | Verifier is a deterministic module owned by Forgent, excluded from the agent registry and marketplace. |
 | C-10 | No task tracker, roadmap or docs exist. | This package creates them under `docs/hackathon/`; `TASK_TRACKER.md` is canonical. |
 | C-11 | Blueprint mentions workflow selection; previous draft implied Candidate C was predetermined. | Dynamic selection algorithm implemented: selection is computed from persisted audition runs; Candidate A, B or C can qualify; example 10/10 and ₹10,000 are illustrative. Decision `D-025`. |
 

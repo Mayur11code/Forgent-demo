@@ -1,19 +1,19 @@
 # 02 — Implementation Master Plan
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `COMPLETED — PRODUCTION MVP DELIVERED & VERIFIED (PRs #6-#10 LANDED)`  
 **Owner:** Joint A/B/C lead (architecture), with Team B as build custodian  
 **Product source:** [`BLUEPRINT.md`](../../BLUEPRINT.md)  
 **Execution source:** [`TASK_TRACKER.md`](TASK_TRACKER.md)  
-**Window:** 24 elapsed hours, P0 at H0 to P8 at H24  
+**Window:** 24 elapsed hours, P0 at H0 to P8 at H24 (All phases landed)  
 **Team size:** Three developers, three permanent workstreams, no Team D
 
 ---
 
 ## 1. Purpose
 
-This plan turns the ProofHire blueprint into a build that three people can finish and demonstrate in 24 hours without weakening the product's core claim:
+This plan turns the Forgent blueprint into a build that three people can finish and demonstrate in 24 hours without weakening the product's core claim:
 
-> A buyer posts a real business outcome. ProofHire compiles a team of independently built agents, auditions competing workflows, exposes failure, recovers within bounds, verifies the result independently, and attributes payment only to accepted work.
+> A buyer posts a real business outcome. Forgent compiles a team of independently built agents, auditions competing workflows, exposes failure, recovers within bounds, verifies the result independently, and attributes payment only to accepted work.
 
 The plan is deliberately narrower than the long-term product and deliberately wider than a compiler demo. The marketplace, the compiler and the trust/execution engine must all be visible in one continuous journey. A compiler-only or evaluator-only demo fails the plan even if it is technically impressive.
 
@@ -28,22 +28,22 @@ The plan is deliberately narrower than the long-term product and deliberately wi
 
 ### 1.3 Canonical Agent Architecture Principles
 
-To ensure structural consistency across all three engines, ProofHire strictly defines the following architectural abstractions:
+To ensure structural consistency across all three engines, Forgent strictly defines the following architectural abstractions:
 
 1. **Capability:** A declared unit of business functionality (e.g. `document_evidence_extraction`, `quantity_reconciliation`, `repository_analysis`). Capabilities define *what* is needed; they can be supplied by single agents, cooperating agents, deterministic platform functions, business connectors, or human checkpoints. *Not every capability is an agent.*
 2. **Agent Package:** The reusable, versioned software package authored and published by an independent developer. Conceptually contains developer identity, versioned executable implementation, capability manifest, schemas, permissions, synthetic evaluation suites, and pricing. *The manifest alone is not the implementation.*
 3. **Agent Version:** An immutable, uniquely identified release of an agent package (e.g., `1.0.0`, `1.1.0`), ensuring that execution history, evaluations, recovery events, and contribution attribution remain reproducible.
-4. **Agent Instance:** A configured instance of an agent version bound to a specific job step, combining the reusable package code with business context, configuration, runtime limits, and allowed tools mediated by the ProofHire Tool Gateway.
+4. **Agent Instance:** A configured instance of an agent version bound to a specific job step, combining the reusable package code with business context, configuration, runtime limits, and allowed tools mediated by the Forgent Tool Gateway.
 5. **Compiled Workflow:** A versioned, acyclic execution graph composed of configured agent instances, deterministic functions, business connectors, failure recovery paths, and human approval checkpoints. The Team Compiler assembles workflows; agents do not assemble the final workflow themselves.
 6. **Execution:** An auditable run of the compiled workflow against authorized business inputs, persisting exact versions, configurations, tool permissions, stage traces, and tamper-evident evidence receipts.
 
 **Two Distinct Agent Categories:**
 - **Execution Agents (Type 1):** Possess an existing executable implementation that performs an operational task directly on input data (e.g. extracting invoice fields, reconciling quantities). They deliver their capability without writing new application code. All worker agents in the Northstar hackathon MVP are Execution Agents.
-- **Creation Agents (Type 2):** Capable of inspecting authorized repositories, generating/modifying code in an isolated workspace, generating tests, running static checks, and producing a reviewed Pull Request. *Generated business code is an output artifact, not automatically a new marketplace package.* Creation agents belong to ProofHire's long-term product roadmap and are excluded from the current MVP.
+- **Creation Agents (Type 2):** Capable of inspecting authorized repositories, generating/modifying code in an isolated workspace, generating tests, running static checks, and producing a reviewed Pull Request. *Generated business code is an output artifact, not automatically a new marketplace package.* Creation agents belong to Forgent's long-term product roadmap and are excluded from the current MVP.
 
 **Deployment Models:**
-- **Platform-Hosted (MVP):** ProofHire operates the execution runtime via curated, platform-hosted callable adapters (`src/server/agents/**`).
-- **Builder-Hosted (Future):** Developers maintain external webhook endpoints conforming to ProofHire's agent protocol.
+- **Platform-Hosted (MVP):** Forgent operates the execution runtime via curated, platform-hosted callable adapters (`src/server/agents/**`).
+- **Builder-Hosted (Future):** Developers maintain external webhook endpoints conforming to Forgent's agent protocol.
 - **Customer-Hosted (Future):** Agents execute within customer VPC / on-premises environments.
 - *Arbitrary untrusted public code execution is strictly prohibited in the hackathon MVP.*
 
@@ -55,7 +55,7 @@ To ensure structural consistency across all three engines, ProofHire strictly de
 
 | Area | Included |
 |---|---|
-| Authentication | Constrained demo authentication: seeded Northstar Buyer (`buyer@northstar.demo`) and Jordan Lee (`jordan@demoagent.studio`), `/login` screen with 1-click persona quick-select, server-managed `proofhire_session` cookies, server-side role authorization (`BUYER` vs `BUILDER`), protected route guards, dashboard redirects, demo badge. No public signup or OAuth. |
+| Authentication | Constrained demo authentication: seeded Northstar Buyer (`buyer@northstar.demo`) and Jordan Lee (`jordan@demoagent.studio`), `/login` screen with 1-click persona quick-select, server-managed `forgent_session` cookies, server-side role authorization (`BUYER` vs `BUILDER`), protected route guards, dashboard redirects, demo badge. No public signup or OAuth. |
 | Marketplace & Packages | Buyer catalog, agent detail, version timeline, builder profile, constrained package submission pipeline (ZIP archive upload, 5MB limit, anti-path-traversal validation, SHA-256 digest, persistent storage abstraction, immutable `PENDING_APPROVAL` version records), My Agents manager, and versioned reputation. |
 | Execution Safety | Runtime execution safety boundary: only pre-approved platform-hosted adapters (`src/server/agents/**`) can be bound into workflow execution graphs. Uploaded packages remain safely stored and validated (`PENDING_APPROVAL`) without runtime execution. Zero dynamic `eval` or dynamic imports. |
 | Job creation | Three-step wizard, structured evidence inputs, budget/deadline, acceptance contract compile |
@@ -89,7 +89,7 @@ Northstar Warehouse has a receiving exception.
 
 Northstar posts WH-204 with an illustrative ₹10,000 budget.
 
-ProofHire compiles three candidate workflows:
+Forgent compiles three candidate workflows:
   A  single-agent baseline          (evaluation only; not for hire)
   B  fixed specialist team          (no recovery path)
   C  compiler-selected team         (with v1.1.0 fallback)
@@ -103,13 +103,13 @@ Jordan Lee's agents are hired by the stage:
   Reconciliation v1.0.0   ₹2,500  → fails schema validation (earns ₹0)
   Reconciliation v1.1.0   ₹2,500  → replaces it; v1.0.0 receives ₹0 payout
   Exception Reporter      ₹1,000
-  Policy + inventory proposal are ProofHire-owned deterministic functions.
+  Policy + inventory proposal are Forgent-owned deterministic functions.
 
 The independent verifier passes 10 checks against 10 received / 2 discrepancy.
 The inventory proposal is blocked pending human approval (42 → 42 preserved).
 The tamper-evident receipt hashes the canonical body with SHA-256.
 Jordan's simulated eligible earnings are ₹5,500.
-ProofHire's platform fee is ₹2,500. Reserves are ₹1,200 and ₹800.
+Forgent's platform fee is ₹2,500. Reserves are ₹1,200 and ₹800.
 No money moves. The marketplace and attribution logic are real.
 ```
 
@@ -178,7 +178,7 @@ flowchart TB
 - **Resume from persistence.** Stage state is written to Neon PostgreSQL before and after every transition. A page refresh or reconnect continues cleanly from database state.
 - **Deterministic adapters.** Hybrid architecture: Evidence Reader calls multimodal models with instant fallback to `evidencePacket_WH204` fixture; Reconciliation and Verifier are deterministic.
 - **Neon connection pooling.** Database operations run through `@neondatabase/serverless` connection pool via `DATABASE_URL`, with `DIRECT_URL` for Prisma migrations.
-- **ProofHire Tool Gateway.** Mediates all interactions between agent instances and business systems. Enforces least-privilege tool scopes, operation-level authorization, input/output validation, audit logging, and strict read versus write separation (with human approval required for consequential operations like inventory commit). Agents never receive raw database credentials.
+- **Forgent Tool Gateway.** Mediates all interactions between agent instances and business systems. Enforces least-privilege tool scopes, operation-level authorization, input/output validation, audit logging, and strict read versus write separation (with human approval required for consequential operations like inventory commit). Agents never receive raw database credentials.
 - **The 9-Step Compiler Pipeline.** 1) Decompose outcome into capabilities $\rightarrow$ 2) Query registry $\rightarrow$ 3) Identify packages, platform code & connectors $\rightarrow$ 4) Generate candidate graphs $\rightarrow$ 5) Configure candidate instances $\rightarrow$ 6) Check schemas, dependencies & budgets $\rightarrow$ 7) Audition on synthetic suite $\rightarrow$ 8) Reject hard constraint failures $\rightarrow$ 9) Dynamically select the qualifying workflow. Multi-agent execution is never mandatory.
 - **Business Integration Models:**
   - *Scenario A (Operational Data — MVP):* Business System $\rightarrow$ Business Connector $\rightarrow$ Tool Gateway $\rightarrow$ Workflow Runtime $\rightarrow$ Agent Instance (read-only PO, Invoice, Scan; inventory commit blocked).

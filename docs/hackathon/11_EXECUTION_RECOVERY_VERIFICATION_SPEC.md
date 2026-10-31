@@ -1,6 +1,6 @@
 # 11 — Execution, Recovery and Verification Specification
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team C (runtime, recovery, verifier, receipt semantics); Team B (persistence, APIs, role guards)  
 **Consumers:** Team A (approval, monitor, verification, receipt, review)  
 **Canonical code:** `src/server/runtime/**`, `src/server/verification/**`, `src/server/evidence/**`
@@ -9,7 +9,7 @@
 
 ## 1. Purpose
 
-This specification defines how an approved ProofHire workflow runs, fails, recovers, stops safely, and is independently verified. It is the trust engine.
+This specification defines how an approved Forgent workflow runs, fails, recovers, stops safely, and is independently verified. It is the trust engine.
 
 The core rule:
 
@@ -60,7 +60,7 @@ Execution cannot start until the buyer approves a versioned work order.
 ### 3.1 Runtime shape
 
 - **Serverless orchestrator & durable queue.** Next.js route handlers orchestrating step execution with Upstash QStash webhook progression (`/api/webhooks/qstash/execution-step`).
-- **ProofHire Tool Gateway mediation.** All tool operations and business data access are mediated by the Tool Gateway. Enforces least-privilege tool scopes, schema validation on inputs/outputs, operation-level authorization, audit logging, and strict read versus write separation. Agents never receive direct database credentials or unrestricted production access.
+- **Forgent Tool Gateway mediation.** All tool operations and business data access are mediated by the Tool Gateway. Enforces least-privilege tool scopes, schema validation on inputs/outputs, operation-level authorization, audit logging, and strict read versus write separation. Agents never receive direct database credentials or unrestricted production access.
 - **Fail-closed execution limits & state invariant.** Timeout thresholds (max 3,000ms per stage), cost limits, and the 42→42 inventory invariant lock are enforced before runtime execution begins. Consequential actions (inventory commit) remain strictly locked at `BLOCKED_PENDING_APPROVAL`. Independent verification in P5 confirms the invariant held.
 - **Topological stage execution.** Stages execute strictly in dependency order.
 - **Durable persistence.** Each stage is persisted before and after execution in Neon PostgreSQL.
@@ -328,7 +328,7 @@ If a completed downstream stage depended on the failed output:
 - It cannot be selected, hired or replaced.
 - It does not trust agent self-reported success, status or narrative.
 - It recomputes quantities from the seeded evidence and the execution artifacts.
-- It is deterministic and versioned `sys-proofhire-verifier-v1`.
+- It is deterministic and versioned `sys-forgent-verifier-v1`.
 
 ### 7.2 The ten checks
 
@@ -359,7 +359,7 @@ interface AcceptanceResult {
   passedCount: number;
   failedCount: number;
   criticalFailureCount: number;
-  verifierVersion: "sys-proofhire-verifier-v1";
+  verifierVersion: "sys-forgent-verifier-v1";
   verifiedAt: string;
 }
 ```

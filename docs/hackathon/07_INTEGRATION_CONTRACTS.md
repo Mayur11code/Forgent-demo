@@ -1,6 +1,6 @@
 # 07 — Integration Contracts
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Owner:** Team C (contract author), Team B (persistence), Team A (consumers)  
 **Canonical code location after P0:** `src/lib/contracts/`  
 **Rule:** after P0, no shape in this document changes without an entry in [16 — Decisions and Changelog](16_DECISIONS_AND_CHANGELOG.md). UI and backend must be able to work independently against these shapes.
@@ -27,7 +27,7 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 | Demo persona cookie instead of real auth | Security boundary is intentionally limited | `D-004` |
 | QStash durable step webhooks and polling API | Durable async execution in serverless environment with frontend polling | `D-005` |
 | Native Json/jsonb and Prisma 7 string enums on Neon PostgreSQL | Persistence implementation on Neon PostgreSQL | `D-006`, `D-007` |
-| Platform-owned policy/inventory/verification capabilities | Avoids falsely presenting ProofHire code as a freelancer agent | `D-009` |
+| Platform-owned policy/inventory/verification capabilities | Avoids falsely presenting Forgent code as a freelancer agent | `D-009` |
 | Evaluation-only single-agent baseline | Fair three-way comparison without a fake listing | `D-010` |
 | ₹10,000 allocation and 25% platform fee | Commercial demo values, not validated pricing | `D-012` |
 | Ten-fixture audition suite | Evaluation scope and held-out disclosure | `D-015` |
@@ -65,14 +65,14 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 | Agent: Exception Reporter | `agent-exception-reporter` | Exception Reporter | Owned by Jordan |
 | Version | `av-exception-reporter-100` | v1.0.0 | Active |
 | Evaluation baseline | `baseline-single-agent` | Single-agent baseline | `registryVisible=false`; not for hire |
-| Platform policy function | `fn-policy-check-v1` | Policy Validator | Deterministic ProofHire capability |
+| Platform policy function | `fn-policy-check-v1` | Policy Validator | Deterministic Forgent capability |
 | Platform inventory function | `fn-inventory-proposal-v1` | Inventory Proposal | Deterministic; no commit authority |
-| Platform verifier | `sys-proofhire-verifier-v1` | Acceptance Verifier | Not an agent, not a registry listing |
+| Platform verifier | `sys-forgent-verifier-v1` | Acceptance Verifier | Not an agent, not a registry listing |
 | Job | `job-wh-204` | WH-204 — Inbound shipment reconciliation | Seeded, starts `CONTRACT_READY` |
 | Contract | `contract-wh-204-v1` | Acceptance Contract v1 | Frozen at job creation |
 | Candidate A | `cand-wh204-single` | Single-agent baseline | Evaluated against WH-204 fixtures; baseline comparison |
 | Candidate B | `cand-wh204-fixed` | Fixed specialist team | Evaluated against WH-204 fixtures; no fallback bound |
-| Candidate C | `cand-wh204-compiled` | ProofHire dynamic team | Evaluated alongside A and B; selected if constraints pass |
+| Candidate C | `cand-wh204-compiled` | Forgent dynamic team | Evaluated alongside A and B; selected if constraints pass |
 | Audition suite | `audsuite-wh204-v1` | `wh204-suite-v1` | Ten fixtures |
 | Work order | `wo-wh-204-v1` | WH-204 work order | ₹10,000 buyer total |
 | Execution | `exec-wh-204-001` | WH-204 execution | One run per reset |
@@ -85,9 +85,9 @@ All domain types, API envelopes, route shapes, state machines and fixture IDs be
 |---|---|---|
 | `stage-evidence-read` | `document_evidence_extraction` | Evidence Reader v1.0.0 |
 | `stage-reconcile` | `quantity_reconciliation` | Reconciliation v1.0.0, fallback v1.1.0 |
-| `stage-policy-check` | `policy_validation` | ProofHire deterministic function |
+| `stage-policy-check` | `policy_validation` | Forgent deterministic function |
 | `stage-exception-report` | `exception_reporting` | Exception Reporter v1.0.0 |
-| `stage-propose-inventory` | `inventory_proposal` | ProofHire deterministic function; no commit |
+| `stage-propose-inventory` | `inventory_proposal` | Forgent deterministic function; no commit |
 | `stage-human-approval` | `human_approval` | Buyer checkpoint |
 
 Verification runs **outside** the workflow graph, after the execution reaches the approval gate.
@@ -758,7 +758,7 @@ export interface AcceptanceResult {
   passedCount: number;
   failedCount: number;
   criticalFailureCount: number;
-  verifierVersion: "sys-proofhire-verifier-v1";
+  verifierVersion: "sys-forgent-verifier-v1";
   verifiedAt: string;
 }
 
@@ -921,15 +921,15 @@ export interface AgentVersionStats {
 
 ## 10. API routes
 
-All routes are same-origin. The authenticated demo session is resolved from the server-managed, signed, httpOnly `proofhire_session` cookie containing `{ userId, email, name, role }`. Next.js middleware and server-side route guards strictly enforce access control (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`).
+All routes are same-origin. The authenticated demo session is resolved from the server-managed, signed, httpOnly `forgent_session` cookie containing `{ userId, email, name, role }`. Next.js middleware and server-side route guards strictly enforce access control (`requireAuth`, `requireRole('BUYER')`, `requireRole('BUILDER')`).
 
 ### Authentication and identity
 
 | Method | Route | Purpose | Role |
 |---|---|---|---|
 | GET | `/api/health` | App/DB health probe | public |
-| POST | `/api/auth/login` | Authenticate credentials or 1-click demo select (`buyer@northstar.demo`, `jordan@demoagent.studio`); sets `proofhire_session` cookie | public |
-| POST | `/api/auth/logout` | Clear `proofhire_session` cookie and end session | authenticated |
+| POST | `/api/auth/login` | Authenticate credentials or 1-click demo select (`buyer@northstar.demo`, `jordan@demoagent.studio`); sets `forgent_session` cookie | public |
+| POST | `/api/auth/logout` | Clear `forgent_session` cookie and end session | authenticated |
 | GET | `/api/auth/me` | Current authenticated user account, name and role | authenticated |
 | GET | `/api/me` | Backward-compatibility alias for `/api/auth/me` | authenticated |
 | POST | `/api/demo/reset` | Reset and reseed demo database to canonical baseline | demo admin / any |
@@ -1026,7 +1026,7 @@ All routes are same-origin. The authenticated demo session is resolved from the 
 POST /api/jobs
 Content-Type: application/json
 Idempotency-Key: create-wh-204
-Cookie: proofhire_persona=buyer-northstar
+Cookie: forgent_persona=buyer-northstar
 ```
 
 ```json

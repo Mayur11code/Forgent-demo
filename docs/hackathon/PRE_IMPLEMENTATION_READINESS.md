@@ -1,4 +1,4 @@
-# ProofHire Pre-Implementation Readiness Audit
+# Forgent Pre-Implementation Readiness Audit
 
 **Document Reference:** `docs/hackathon/PRE_IMPLEMENTATION_READINESS.md`  
 **Date:** 2026-10-30  
@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary & Evidence Classification Framework
 
-Prior to commencing software development for the 24-hour ProofHire hackathon, a pre-implementation readiness audit was conducted across the 19 architecture specifications, integration contracts, task registers, and testing matrices.
+Prior to commencing software development for the 24-hour Forgent hackathon, a pre-implementation readiness audit was conducted across the 19 architecture specifications, integration contracts, task registers, and testing matrices.
 
 ### 1.1 Strict Evidence Classification Policy
 
@@ -75,17 +75,17 @@ Because task `P3-A-006` (25m) was already classified as `OPTIONAL` and excluded 
 To establish healthy phase margins while preserving dependency ordering and milestone gates, **110 minutes of core work** were redistributed from Phase P3 into later phases with idle capacity (P4, P5, and P7):
 
 1. **Team A (30m shifted):**
-   - [`P3-A-005`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L440-L450) (*Polish graph and comparison responsiveness*, 30m) moved from **P3 $\rightarrow$ P5**.
+   - [`P3-A-005`](TASK_TRACKER.md#L440-L450) (*Polish graph and comparison responsiveness*, 30m) moved from **P3 $\rightarrow$ P5**.
    - *Rationale:* Polishing responsiveness is non-blocking for auditions and naturally executes alongside the Evidence Center UI in Phase P5.
    - *Result for Team A in P3:* Core effort reduced from 190m to **160m** (88.9% utilization $\le$ 180m).
 2. **Team B (40m shifted):**
-   - [`P3-B-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L430-L440) (*Persist selection and expose selection API*, 40m) moved from **P3 $\rightarrow$ P4**.
-   - *Cascade adjustments:* In P4, Team B task [`P4-B-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L530-L540) (*Implement idempotent demo reset*, 35m) moved from **P4 $\rightarrow$ P5**.
-   - *Dependency fix:* [`P3-A-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L410-L420) dependencies updated from `P3-A-002;P3-A-003;P3-B-003;P3-B-004` to `P3-A-002;P3-A-003;P3-B-003`.
+   - [`P3-B-004`](TASK_TRACKER.md#L430-L440) (*Persist selection and expose selection API*, 40m) moved from **P3 $\rightarrow$ P4**.
+   - *Cascade adjustments:* In P4, Team B task [`P4-B-004`](TASK_TRACKER.md#L530-L540) (*Implement idempotent demo reset*, 35m) moved from **P4 $\rightarrow$ P5**.
+   - *Dependency fix:* [`P3-A-004`](TASK_TRACKER.md#L410-L420) dependencies updated from `P3-A-002;P3-A-003;P3-B-003;P3-B-004` to `P3-A-002;P3-A-003;P3-B-003`.
    - *Result for Team B in P3:* Core effort reduced from 195m to **155m** (86.1% utilization $\le$ 180m).
 3. **Team C (40m shifted):**
-   - [`P3-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L420-L430) (*Implement candidate ranking and dynamic selection*, 30m) moved from **P3 $\rightarrow$ P4**.
-   - *Execution safety and invariant protection:* Task [`P4-C-004`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L540-L550) (*Implement safe execution limits and state invariant*, 35m) is scheduled in **Phase P4 before runtime execution**, locking fail-closed resource limits and the 42→42 inventory guard prior to orchestrator execution. In Phase P5, Team C focuses on independent acceptance verification and state-diff audit (`P5-C-001`, `P5-C-002`, `P5-C-004`, 130m total). Task [`P5-C-003`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L620-L630) (*Add negative verifier regression cases*, 35m) moved from **P5 $\rightarrow$ P7** (where full-system regression testing belongs).
+   - [`P3-C-004`](TASK_TRACKER.md#L420-L430) (*Implement candidate ranking and dynamic selection*, 30m) moved from **P3 $\rightarrow$ P4**.
+   - *Execution safety and invariant protection:* Task [`P4-C-004`](TASK_TRACKER.md#L540-L550) (*Implement safe execution limits and state invariant*, 35m) is scheduled in **Phase P4 before runtime execution**, locking fail-closed resource limits and the 42→42 inventory guard prior to orchestrator execution. In Phase P5, Team C focuses on independent acceptance verification and state-diff audit (`P5-C-001`, `P5-C-002`, `P5-C-004`, 130m total). Task [`P5-C-003`](TASK_TRACKER.md#L620-L630) (*Add negative verifier regression cases*, 35m) moved from **P5 $\rightarrow$ P7** (where full-system regression testing belongs).
    - *Result for Team C in P3:* Core effort reduced from 200m to **160m** (88.9% utilization $\le$ 180m).
 
 ### 2.3 Recalculated Phase-by-Phase Capacity & Utilization Matrix
@@ -130,12 +130,12 @@ Phase P9 was previously ambiguous. It is now formally defined across all project
 ### 3.2 Schedule Synchronization Across the Documentation Suite
 
 The master schedule is now 100% synchronized across all canonical documents:
-- [`02_IMPLEMENTATION_MASTER_PLAN.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/02_IMPLEMENTATION_MASTER_PLAN.md#L280-L305)
-- [`03_PHASE_BREAKDOWN.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/03_PHASE_BREAKDOWN.md#L15-L26)
-- [`TASK_TRACKER.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L65-L95)
-- [`TASK_TRACKER.csv`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.csv)
-- [`README.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/README.md#L115-L135)
-- [`DOCUMENTATION_AUDIT.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/DOCUMENTATION_AUDIT.md#L135-L175)
+- [`02_IMPLEMENTATION_MASTER_PLAN.md`](02_IMPLEMENTATION_MASTER_PLAN.md#L280-L305)
+- [`03_PHASE_BREAKDOWN.md`](03_PHASE_BREAKDOWN.md#L15-L26)
+- [`TASK_TRACKER.md`](TASK_TRACKER.md#L65-L95)
+- [`TASK_TRACKER.csv`](TASK_TRACKER.csv)
+- [`README.md`](README.md#L115-L135)
+- [`DOCUMENTATION_AUDIT.md`](DOCUMENTATION_AUDIT.md#L135-L175)
 
 ---
 
@@ -143,7 +143,7 @@ The master schedule is now 100% synchronized across all canonical documents:
 
 ### 4.1 Dependency Analysis
 
-A comprehensive audit of the rebalanced [`TASK_TRACKER.csv`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.csv) confirmed:
+A comprehensive audit of the rebalanced [`TASK_TRACKER.csv`](TASK_TRACKER.csv) confirmed:
 - **Zero non-existent dependency IDs.**
 - **Zero dependency cycle loops.**
 - **Zero forward-phase dependencies** (no task depends on a task scheduled in a future phase).
@@ -171,14 +171,14 @@ To guarantee genuine parallel progress:
 
 ### 5.1 Credential Audit Status
 
-- **Specification Status:** ✅ **SPEC_PASS.** The Evidence Reader v1.0.0 hybrid adapter architecture, `.env.local` schema, 3000ms ping timeout watchdog, and pre-validated fallback fixture `evidencePacket_WH204` are fully specified in [`07_INTEGRATION_CONTRACTS.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/07_INTEGRATION_CONTRACTS.md#L180-L220).
+- **Specification Status:** ✅ **SPEC_PASS.** The Evidence Reader v1.0.0 hybrid adapter architecture, `.env.local` schema, 3000ms ping timeout watchdog, and pre-validated fallback fixture `evidencePacket_WH204` are fully specified in [`07_INTEGRATION_CONTRACTS.md`](07_INTEGRATION_CONTRACTS.md#L180-L220).
 - **Physical Environment Status:** ⚠️ **PENDING RUNTIME PROBE (UNVERIFIED).**
   - Actual availability of a valid `GEMINI_API_KEY` or `OPENAI_API_KEY` in `.env.local` has **not been verified**.
   - Provider network connectivity, quota limits, and latency have **not been tested**.
 
 ### 5.2 Mandatory Early H0/H1 Probe Directive
 
-As part of task [`P0-C-002`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L80-L90), Team C must execute `npm run check:model` immediately upon repo initialization:
+As part of task [`P0-C-002`](TASK_TRACKER.md#L80-L90), Team C must execute `npm run check:model` immediately upon repo initialization:
 - If API responds with HTTP 200 within 3,000ms: Adapter activates `executionMode: "HYBRID"` with live multimodal extraction.
 - If key is missing, invalid (401/403), or times out (>3,000ms): Adapter logs warning and activates `executionMode: "DETERMINISTIC"` with zero demo disruption.
 - UI badges must honestly render `[LIVE MODEL: gemini-2.0-flash]` or `[DEMO: DETERMINISTIC FALLBACK]`.
@@ -201,7 +201,7 @@ The specification defines **38 discrete HTTP endpoints** covering:
 
 ### 6.2 Implementation Verification Status
 
-- **Specification Status:** ✅ **SPEC_PASS.** All 38 routes have defined HTTP verbs, request/response Zod envelopes, error payloads, and backing Prisma relational models in [`07_INTEGRATION_CONTRACTS.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/07_INTEGRATION_CONTRACTS.md#L350-L450).
+- **Specification Status:** ✅ **SPEC_PASS.** All 38 routes have defined HTTP verbs, request/response Zod envelopes, error payloads, and backing Prisma relational models in [`07_INTEGRATION_CONTRACTS.md`](07_INTEGRATION_CONTRACTS.md#L350-L450).
 - **Executable Status:** ⚠️ **PENDING IMPLEMENTATION.**
   - Zero route handlers currently exist on disk in `src/app/api/`.
   - Zero database tables currently exist in Neon PostgreSQL.
@@ -242,7 +242,7 @@ $$\sum = ₹5,500 + ₹2,500 + ₹1,200 + ₹800 = ₹10,000.00 \quad (1,000,000
 
 ### 7.2 Database Deduplication & Idempotency Status
 
-- **Design-Level Status:** ✅ **SPEC_PASS.** The proposed schema in [`08_DATABASE_AND_SEED_PLAN.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/08_DATABASE_AND_SEED_PLAN.md) defines:
+- **Design-Level Status:** ✅ **SPEC_PASS.** The proposed schema in [`08_DATABASE_AND_SEED_PLAN.md`](08_DATABASE_AND_SEED_PLAN.md) defines:
   1. `AgentContribution`: `@@unique([executionId, stageId])` — prevents multiple payouts for the same stage across retries.
   2. `SettlementRecord`: `@@unique([workOrderId])` — guarantees payout idempotency.
   3. Failure isolation rule: Failed execution attempts (`status: "FAILED"`) record ₹0 payout; only terminal successful stages write contribution records.
@@ -257,7 +257,7 @@ $$\sum = ₹5,500 + ₹2,500 + ₹1,200 + ₹800 = ₹10,000.00 \quad (1,000,000
 
 ### 8.1 Demo Reset Specification
 
-- **Design-Level Status:** ✅ **SPEC_PASS.** Acceptance test `TC-RESET-01` in [`14_TESTING_AND_ACCEPTANCE_PLAN.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/14_TESTING_AND_ACCEPTANCE_PLAN.md#L71-L85) establishes explicit pass criteria:
+- **Design-Level Status:** ✅ **SPEC_PASS.** Acceptance test `TC-RESET-01` in [`14_TESTING_AND_ACCEPTANCE_PLAN.md`](14_TESTING_AND_ACCEPTANCE_PLAN.md#L71-L85) establishes explicit pass criteria:
   1. Executes in **<10 seconds**.
   2. Reverts job WH-204 to status `CONTRACT_READY`.
   3. Reverts simulated inventory ledger to baseline: **42 units on-hand** (0 pending, 0 committed).
@@ -270,7 +270,7 @@ $$\sum = ₹5,500 + ₹2,500 + ₹1,200 + ₹800 = ₹10,000.00 \quad (1,000,000
 ### 8.2 Canonical 22-Step Journey & Negative Suite
 
 - **Specification Status:** ✅ **SPEC_PASS.**
-  - Canonical 22-step release checklist ([`14_TESTING_AND_ACCEPTANCE_PLAN.md`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/14_TESTING_AND_ACCEPTANCE_PLAN.md#L140-L167)) covers the full arc from buyer overview through compilation, auditions, execution, fallback replacement, verifier checks, tamper-evident receipt, and builder settlement.
+  - Canonical 22-step release checklist ([`14_TESTING_AND_ACCEPTANCE_PLAN.md`](14_TESTING_AND_ACCEPTANCE_PLAN.md#L140-L167)) covers the full arc from buyer overview through compilation, auditions, execution, fallback replacement, verifier checks, tamper-evident receipt, and builder settlement.
   - 10 negative/adversarial test cases (`N-01` through `N-10`) are defined with explicit typed error codes.
 - **Runtime Status:** ⚠️ **UNVERIFIED (PENDING IMPLEMENTATION).**
 
@@ -351,13 +351,13 @@ print('Broken markdown relative links:', broken)
 All pre-implementation checks, capacity models, schedule definitions, and integration contracts are verified and ready for execution.
 
 **Actionable Next Steps for Hour 0 (H0–H1):**
-1. **Team B:** Execute [`P0-B-001`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L190-L200) to scaffold Next.js, TypeScript, Tailwind, and Prisma.
-2. **Team C:** Execute [`P0-C-001`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L200-L210) to freeze domain contracts in `src/types/` and run the model connectivity probe [`P0-C-002`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L210-L220).
-3. **Team A:** Execute [`P0-A-001`](file:///C:/Users/Mayur/Desktop/Forgent-demo/docs/hackathon/TASK_TRACKER.md#L190-L200) to scaffold design tokens and app layout shell.
+1. **Team B:** Execute [`P0-B-001`](TASK_TRACKER.md#L190-L200) to scaffold Next.js, TypeScript, Tailwind, and Prisma.
+2. **Team C:** Execute [`P0-C-001`](TASK_TRACKER.md#L200-L210) to freeze domain contracts in `src/types/` and run the model connectivity probe [`P0-C-002`](TASK_TRACKER.md#L210-L220).
+3. **Team A:** Execute [`P0-A-001`](TASK_TRACKER.md#L190-L200) to scaffold design tokens and app layout shell.
 4. **Hour 1 Milestone Gate:** Validate `npm run dev` serves HTTP 200, TypeScript compiles with zero errors, and create Git tag `p0-foundation`.
 
 ---
 
 **Audit Sign-off:**  
-*ProofHire Principal Software Architect & TPM*  
+*Forgent Principal Software Architect & TPM*  
 *Status: CLEARED FOR KICKOFF (PHASE P0)*

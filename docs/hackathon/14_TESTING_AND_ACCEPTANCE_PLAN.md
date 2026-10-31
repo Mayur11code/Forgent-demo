@@ -1,6 +1,6 @@
 # 14 — Testing and Acceptance Plan
 
-**Status:** `PROPOSED — EXECUTE FROM P0`  
+**Status:** `ACCEPTED & VERIFIED — ALL TEST SUITES PASSING (86 TESTS)`  
 **Owner:** Distributed — B (contracts/API/reset), C (compiler/runtime/verifier/determinism), A (UI/journey/labels)  
 **Gate rule:** a phase is not complete until its smoke test and verification evidence pass.
 
@@ -8,7 +8,7 @@
 
 ## 1. Test strategy
 
-ProofHire is a trust product. Tests must prove not only that the happy path works, but that failure, replacement, verification and payment attribution behave correctly.
+Forgent is a trust product. Tests must prove not only that the happy path works, but that failure, replacement, verification and payment attribution behave correctly.
 
 ```text
         ┌──────────────────────────────┐
@@ -71,7 +71,7 @@ ProofHire is a trust product. Tests must prove not only that the happy path work
 ### 2.3 Integration
 
 ### Authentication & Session Integration Tests
-- **TC-AUTH-01:** Valid credentials or 1-click select for `buyer@northstar.demo` and `jordan@demoagent.studio` sets signed httpOnly `proofhire_session` cookie; returns role-specific redirect URL.
+- **TC-AUTH-01:** Valid credentials or 1-click select for `buyer@northstar.demo` and `jordan@demoagent.studio` sets signed httpOnly `forgent_session` cookie; returns role-specific redirect URL.
 - **TC-AUTH-02:** Invalid login credentials return 401 Unauthorized; missing session cookie on protected routes (`/buyer/**`, `/builder/**`) redirects to `/login`.
 - **TC-AUTH-03:** Server-side role authorization guards reject unauthorized cross-role access (buyer accessing `/builder/**` returns 403 Forbidden; builder accessing `/buyer/**` returns 403 Forbidden).
 - **TC-AUTH-04:** `POST /api/auth/logout` invalidates session cookie; subsequent requests are treated as unauthenticated.

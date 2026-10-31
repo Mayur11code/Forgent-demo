@@ -187,7 +187,7 @@ export function validateCapabilityRequirements(declaredKeys: readonly string[]):
 
 /**
  * Validates that agent permissions do NOT violate safety boundaries.
- * In ProofHire, no agent is EVER permitted to hold `commit:inventory`.
+ * In Forgent, no agent is EVER permitted to hold `commit:inventory`.
  */
 export function checkPermissionSafety(permissions: readonly string[]): {
   safe: boolean;

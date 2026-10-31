@@ -1,6 +1,6 @@
 # 13 — Demo Runbook
 
-**Status:** `PROPOSED — REHEARSE AT P8`  
+**Status:** `ACCEPTED — PRODUCTION VERIFIED RUNBOOK`  
 **Owner:** Team A (delivery), B (environment/reset), C (technical chain)  
 **Demo length:** target **3:00**, hard ceiling **3:15**  
 **Source of truth:** seeded WH-204 + live APIs; no pre-recorded run unless explicitly labelled as a fallback
@@ -9,7 +9,7 @@
 
 ## 1. Demo thesis
 
-> ProofHire does not just generate a workflow. It compiles a team of independently built agents, auditions competing teams, survives a real failure, verifies the outcome independently, and pays only the work that was accepted.
+> Forgent does not just generate a workflow. It compiles a team of independently built agents, auditions competing teams, survives a real failure, verifies the outcome independently, and pays only the work that was accepted.
 
 The three moments the judges must remember:
 
@@ -72,7 +72,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 | Step | Action | Route | Persona |
 |---|---|---|---|
-| **1** | Open ProofHire login | `/login` | Public |
+| **1** | Open Forgent login | `/login` | Public |
 | **2** | Sign in as Jordan Lee (Builder) | `/api/auth/login` | Jordan Lee |
 | **3** | View My Agents and version history | `/builder/agents` | Jordan Lee |
 | **4** | Open Publish Agent & upload package ZIP | `/builder/agents/publish` | Jordan Lee |
@@ -101,7 +101,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 1. Click "Sign in as Jordan Lee (Builder)" 1-click quick-select.
 2. Open `/builder/agents/publish` and upload the example `reconciliation-agent.zip`.
 3. Highlight real-time extraction: parsed `manifest.json`, input/output schemas, SHA-256 digest, persistent storage abstraction, and the `PENDING_APPROVAL` status badge.
-4. **Emphasize execution safety:** "ProofHire stores and validates the package. For hackathon security, arbitrary untrusted code is never dynamically executed; live workflows execute only approved platform adapters."
+4. **Emphasize execution safety:** "Forgent stores and validates the package. For hackathon security, arbitrary untrusted code is never dynamically executed; live workflows execute only approved platform adapters."
 5. Click "Sign Out".
 
 ---
@@ -152,7 +152,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **Say:**
 
-> “ProofHire compiles three bounded candidates: a single-agent baseline, a fixed specialist team, and a compiler-selected team with a bound fallback. All three audition dynamically on the same ten fixtures and the same seed. Selection is computed in real time from persisted audition runs — Candidate C is not preordained; any candidate can qualify if it passes hard constraints.”
+> “Forgent compiles three bounded candidates: a single-agent baseline, a fixed specialist team, and a compiler-selected team with a bound fallback. All three audition dynamically on the same ten fixtures and the same seed. Selection is computed in real time from persisted audition runs — Candidate C is not preordained; any candidate can qualify if it passes hard constraints.”
 
 **Point at:**
 - Candidates A, B, and C auditioning side-by-side.
@@ -175,7 +175,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **Say:**
 
-> “The buyer approves ₹10,000 before execution. Jordan’s stages total ₹5,500. ProofHire’s fee is ₹2,500. ₹1,200 is reserved for execution and recovery, ₹800 for human review. Settlement is simulated eligibility, not a real payment.”
+> “The buyer approves ₹10,000 before execution. Jordan’s stages total ₹5,500. Forgent’s fee is ₹2,500. ₹1,200 is reserved for execution and recovery, ₹800 for human review. Settlement is simulated eligibility, not a real payment.”
 
 **Do not:** rush past the arithmetic; judges remember coherent money.
 
@@ -195,7 +195,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **At the dashed replacement:**
 
-> “ProofHire checks compatibility: same capability, compatible input and output schemas, permissions subset, within reserve. v1.1.0 replaces it. Downstream stages are invalidated and rerun against the new output.”
+> “Forgent checks compatibility: same capability, compatible input and output schemas, permissions subset, within reserve. v1.1.0 replaces it. Downstream stages are invalidated and rerun against the new output.”
 
 **At completion:**
 
@@ -211,7 +211,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **Say:**
 
-> “The verifier is not an agent. It is ProofHire's independent deterministic module. It does not trust the agent's success message; it recomputes the quantities from evidence. Ten checks pass. The state diff is 42 → 42 on-hand invariant, pending 10, variance 2. The inventory commit is still blocked. The receipt is tamper-evident and hash-verified with SHA-256.”
+> “The verifier is not an agent. It is Forgent's independent deterministic module. It does not trust the agent's success message; it recomputes the quantities from evidence. Ten checks pass. The state diff is 42 → 42 on-hand invariant, pending 10, variance 2. The inventory commit is still blocked. The receipt is tamper-evident and hash-verified with SHA-256.”
 
 **Point at:** the copyable SHA-256 receipt hash, v1.0.0 and v1.1.0 both present, status `VERIFIED_PENDING_HUMAN_APPROVAL`, and explain hash scope.
 
@@ -223,7 +223,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **Say:**
 
-> “Jordan sees the loop close. Evidence Reader ₹2,000. Reconciliation v1.0.0: ₹0, because it was replaced before an accepted output. v1.1.0: ₹2,500, because it produced the accepted output. Exception Reporter ₹1,000. Total eligible: ₹5,500 — simulated. ProofHire keeps a ₹2,500 fee. No money moves in this demo, but the attribution is real.”
+> “Jordan sees the loop close. Evidence Reader ₹2,000. Reconciliation v1.0.0: ₹0, because it was replaced before an accepted output. v1.1.0: ₹2,500, because it produced the accepted output. Exception Reporter ₹1,000. Total eligible: ₹5,500 — simulated. Forgent keeps a ₹2,500 fee. No money moves in this demo, but the attribution is real.”
 
 **Point at:** v1.0.0 ₹0 reason, v1.1.0 ₹2,500, total ₹5,500, eligible-simulated label.
 
@@ -233,7 +233,7 @@ The demo follows the authoritative 18-step end-to-end journey spanning builder o
 
 **Say:**
 
-> “A marketplace where agents compete, a compiler that selects with evidence, a runtime that survives failure, and verification that pays only accepted work. That is ProofHire.”
+> “A marketplace where agents compete, a compiler that selects with evidence, a runtime that survives failure, and verification that pays only accepted work. That is Forgent.”
 
 **Stop talking.** Invite questions.
 
@@ -282,7 +282,7 @@ If running short:
 | “Why three candidates?” | “To make the selection falsifiable: a baseline, a fixed team and a compiled team, all on the same suite and seed. A and B are rejected for recorded reasons.” |
 | “Is the baseline a Jordan Lee listing?” | “No. It is an evaluation-only baseline, hidden from the marketplace (`registryVisible=false`), so the comparison is fair.” |
 | “Can developers upload arbitrary executable code right now?” | “No. The hackathon MVP uses curated, platform-hosted Execution Agent adapters (`src/server/agents/**`). Arbitrary third-party uploads require sandboxed microVM/container runtimes, resource quotas, and egress firewalls, which are scheduled for our near-term roadmap.” |
-| “Does ProofHire modify our business codebase?” | “No. The Northstar receiving scenario is an operational data-processing workflow mediated by our Tool Gateway. Creation Agents that analyze repos, write code, run tests, and open Pull Requests belong to our long-term software engineering roadmap, not this receiving demo.” |
+| “Does Forgent modify our business codebase?” | “No. The Northstar receiving scenario is an operational data-processing workflow mediated by our Tool Gateway. Creation Agents that analyze repos, write code, run tests, and open Pull Requests belong to our long-term software engineering roadmap, not this receiving demo.” |
 | “What is not real?” | “Auth, payments, inventory integration, public onboarding, historical demand and production scale. Everything simulated is labelled.” |
 | “What would you validate next?” | “Buyer willingness to pay, builder acquisition, verification cost per job, dispute rates and real recovery behaviour on messy evidence.” |
 

@@ -1,6 +1,6 @@
 # 04 — Workstream Ownership
 
-**Status:** `PROPOSED — FREEZE AT P0`  
+**Status:** `ACCEPTED & IMPLEMENTED — PRODUCTION VERIFIED`  
 **Team shape:** Three permanent workstreams, three developers, **no Team D**  
 **Rule:** every file, route, API and domain rule has exactly one accountable owner. Collaboration is expected; unowned work is not.
 
@@ -8,7 +8,7 @@
 
 ## 1. Why three workstreams
 
-ProofHire has three product engines that must be built concurrently:
+Forgent has three product engines that must be built concurrently:
 
 | Engine | Workstream | Mandate |
 |---|---|---|
@@ -65,7 +65,7 @@ A fourth "QA/integration" team does not exist. QA, integration and demo operatio
 | Storage | `src/server/storage/**` (package artifact storage abstraction) |
 | API handlers | `src/app/api/**` |
 | Services | `src/server/services/**` (orchestration/persistence only; domain rules delegated to C) |
-| Auth/role guard | `src/server/auth/**`, session cookie (`proofhire_session`), login/logout, route guards |
+| Auth/role guard | `src/server/auth/**`, session cookie (`forgent_session`), login/logout, route guards |
 | Scripts | `scripts/**`, `package.json` scripts, `.env.example` |
 | Operations | reset, backup, seed verification, health, performance |
 
