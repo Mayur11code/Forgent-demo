@@ -14,6 +14,7 @@ import {
 import { PipelineBuilderTab } from "./pipeline-builder-tab";
 import { TestFlightTab } from "./test-flight-tab";
 import { AuditLedgerTab } from "./audit-ledger-tab";
+import { ToolGatewayConsole } from "./tool-gateway-console";
 import { CustomWorkflowModal } from "./custom-workflow-modal";
 import { useCurrency } from "@/context/currency-context";
 import {
@@ -23,9 +24,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   Sparkles,
+  Lock,
 } from "lucide-react";
 
-export type EnterpriseTab = "orchestration" | "test-flight" | "ledger";
+export type EnterpriseTab =
+  | "orchestration"
+  | "test-flight"
+  | "ledger"
+  | "security-gateway";
 
 interface EnterprisePortalProps {
   initialTab?: EnterpriseTab;
@@ -203,6 +209,19 @@ export function EnterprisePortal({
               <FileSpreadsheet className="w-4 h-4" />
               <span>3. Departmental Spend &amp; Audit Ledger</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("security-gateway")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "security-gateway"
+                  ? "border-cobalt-500 text-cobalt-700 bg-cobalt-50/50"
+                  : "border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300"
+              }`}
+            >
+              <Lock className="w-4 h-4" />
+              <span>4. Tool Gateway &amp; Security</span>
+            </button>
           </div>
         </div>
       </section>
@@ -231,6 +250,8 @@ export function EnterprisePortal({
         {activeTab === "ledger" && (
           <AuditLedgerTab budgets={budgets} auditLogs={auditLogs} />
         )}
+
+        {activeTab === "security-gateway" && <ToolGatewayConsole />}
       </main>
 
       {/* Custom Workflow Generator Modal */}
