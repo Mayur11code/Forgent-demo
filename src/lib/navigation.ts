@@ -28,6 +28,15 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     role: "PUBLIC",
     phase: "P1",
   },
+  {
+    id: "nav-receiving-solution",
+    route: "/solutions/receiving",
+    label: "Receiving Wedge",
+    section: "Public",
+    role: "PUBLIC",
+    phase: "P1",
+    badge: "Northstar",
+  },
 
   // Buyer Persona Navigation
   {
@@ -53,6 +62,15 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     section: "Operations",
     role: "BUYER",
     phase: "P2",
+  },
+  {
+    id: "nav-buyer-receiving-wedge",
+    route: "/solutions/receiving",
+    label: "Receiving Wedge",
+    section: "Operations",
+    role: "BUYER",
+    phase: "P1",
+    badge: "Northstar",
   },
   {
     id: "nav-buyer-jobs-new",
