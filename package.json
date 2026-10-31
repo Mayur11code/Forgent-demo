@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "bin": {
+    "forgent": "./bin/forgent"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
