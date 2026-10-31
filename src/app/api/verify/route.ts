@@ -44,24 +44,37 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const receiptId = searchParams.get("receiptId");
   const jobId = searchParams.get("jobId");
+  const hash = searchParams.get("hash");
 
-  if (!receiptId && !jobId) {
+  if (!receiptId && !jobId && !hash) {
     return NextResponse.json(
-      { error: "Provide either receiptId or jobId query parameter to verify receipt." },
+      { error: "Provide either hash, receiptId, or jobId query parameter to verify receipt." },
       { status: 400 }
     );
   }
 
   // Look up receipt from active job store
   let foundReceipt: EvidenceReceipt | undefined;
+  let matchedJobId = jobId;
 
   for (const job of jobStore.values()) {
     if (jobId && (job.jobId === jobId || job.id === jobId)) {
       foundReceipt = job.receipt;
+      matchedJobId = job.jobId;
       break;
     }
     if (receiptId && job.receipt?.receiptId === receiptId) {
       foundReceipt = job.receipt;
+      matchedJobId = job.jobId;
+      break;
+    }
+    if (
+      hash &&
+      (job.receipt?.integrityHash?.toLowerCase() === hash.toLowerCase() ||
+        job.deliverable?.sha256Receipt?.toLowerCase() === hash.toLowerCase())
+    ) {
+      foundReceipt = job.receipt;
+      matchedJobId = job.jobId;
       break;
     }
   }
@@ -70,7 +83,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         valid: false,
-        error: `No evidence receipt found for ${receiptId ? `receiptId: ${receiptId}` : `jobId: ${jobId}`}`,
+        error: `No evidence receipt found for query parameter: ${hash || receiptId || jobId}`,
       },
       { status: 404 }
     );
@@ -81,6 +94,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ...verification,
     receiptId: foundReceipt.receiptId,
+    jobId: matchedJobId,
+    agentSlug: foundReceipt.agentSlug,
     receipt: foundReceipt,
   });
 }
