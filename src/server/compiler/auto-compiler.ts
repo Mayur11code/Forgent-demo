@@ -56,7 +56,7 @@ export const AutoCompileRequestSchema = z.object({
   maxStages: z.number().int().min(2).max(4).optional().default(3),
 });
 
-export type AutoCompileRequest = z.infer<typeof AutoCompileRequestSchema>;
+export type AutoCompileRequest = z.input<typeof AutoCompileRequestSchema>;
 
 export interface AutoCompileResult {
   pipeline: EnterprisePipeline;
