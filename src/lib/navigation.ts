@@ -47,6 +47,14 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     phase: "P1",
   },
   {
+    id: "nav-enterprise-policies",
+    route: "/enterprise/policies",
+    label: "Compliance & SLA Policies",
+    section: "Operations",
+    role: "BUYER",
+    phase: "P2",
+  },
+  {
     id: "nav-buyer-jobs",
     route: "/buyer/jobs",
     label: "Jobs & Work Orders",
