@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { jobStore, updateJobStatus, findAgentInCatalog } from "@/server/engine/job-store";
 import { executeAgentTask } from "@/server/engine/executor";
 import { generateEvidenceReceipt } from "@/server/engine/receipt";
+import { settleEscrow, refundEscrow } from "@/server/economics/escrow";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,7 @@ export async function GET(
         if (!result.success) {
           updateJobStatus(job.jobId, "FAILED", result.message);
           job.error = result.message;
+          await refundEscrow({ jobId: job.jobId, reason: result.message });
 
           sendEvent("job:failed", {
             jobId: job.jobId,
@@ -135,11 +137,29 @@ export async function GET(
           `Completed in ${result.latencyMs}ms using ${result.modelUsed}`
         );
 
+        // 8. Settle Escrow: Split 85% creator payout and 15% platform infrastructure fee
+        const settlement = await settleEscrow({
+          jobId: job.jobId,
+          builderId: agent?.authorName,
+          payoutMethod: "STRIPE",
+        });
+
+        sendEvent("escrow:settled", {
+          settlementId: settlement.settlementId,
+          builderAmountPaise: settlement.builderAmountPaise,
+          builderAmountCents: settlement.builderAmountCents,
+          platformFeePaise: settlement.platformFeePaise,
+          platformFeeCents: settlement.platformFeeCents,
+          payoutReference: settlement.payoutReference,
+          settledAt: settlement.settledAt,
+        });
+
         sendEvent("job:completed", {
           jobId: job.jobId,
           status: "COMPLETED",
           deliverable: job.deliverable,
           receipt,
+          settlement,
           latencyMs: result.latencyMs,
           tokensUsed: result.tokensUsed,
           modelUsed: result.modelUsed,

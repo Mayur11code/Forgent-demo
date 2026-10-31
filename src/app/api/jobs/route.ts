@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createJob, updateJobStatus, jobStore, findAgentInCatalog } from "@/server/engine/job-store";
+import { lockEscrow } from "@/server/economics/escrow";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,14 @@ export async function POST(req: NextRequest) {
       input: input && typeof input === "object" ? input : {},
     });
 
-    // 2. Transition immediately to ESCROW_LOCKED (holding budget in escrow)
+    // 2. Lock escrow atomically
+    await lockEscrow({
+      jobId: job.jobId,
+      amountPaise: job.budgetPaise,
+      amountCents: job.budgetCents,
+    });
+
+    // 3. Transition immediately to ESCROW_LOCKED (holding budget in escrow)
     updateJobStatus(
       job.jobId,
       "ESCROW_LOCKED",
