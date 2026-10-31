@@ -19,7 +19,7 @@ Most software enterprises struggle to deploy autonomous AI agents due to three s
 3. **Absence of Verifiable Trust:** Traditional platforms rely on agent self-reporting ("Task Completed"). Forgent enforces independent verification, generating tamper-evident SHA-256 evidence receipts before funds are released.
 
 Forgent bridges this divide through three architectural pillars:
-- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, offering transparent per-task pricing, verified ratings, latency benchmarks, an adversarial defense leaderboard, and an interactive developer playground (`/playground`).
+- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, featuring Watermelon UI Hero-16 animated physics and quick anchors, transparent per-task pricing, verified ratings, latency benchmarks, an adversarial defense leaderboard, and an interactive developer playground (`/playground`).
 - **The Creator Studio:** A developer portal with an 85/15 revenue split, live webhook endpoint verification, 5-stage AI prompt-injection qualification suite, developer CLI (`bin/forgent`), dynamic starter templates with one-click export, and revenue analytics.
 - **The Enterprise Hub:** A visual Directed Acyclic Graph (DAG) workflow builder, autonomous natural-language team compiler, 3-stage synthetic stress flight engine, zero-trust tool gateway with real-time PII/secret redaction, enterprise compliance and SLA policy engine (`/enterprise/policies`), and departmental spend ledgers.
 - **The Flagship Market Wedge:** Autonomous Receiving & Inventory Reconciliation solution (`/solutions/receiving`) with multi-agent 3-way matching, ERP before/after state diffs, human-in-the-loop checkpoints, and sealed cryptographic receipts.
@@ -125,7 +125,7 @@ Forgent provides tailored, role-specific command centers accessible through the 
 Forgent is built to production-grade engineering standards:
 
 - **28 Test Suites, 244 Tests Passing:** Comprehensive unit and integration test coverage across routing, authentication, catalog filtering, execution engine, compiler v2, DAG canvas, webhook verification, qualification probes, escrow settlements, dispute oracle, tool gateway sanitizer, leaderboard analytics, sandbox telemetry waterfalls, enterprise compliance policies, and autonomous receiving reconciliation.
-- **Clean Production Build:** All 28 Next.js App Router routes compile cleanly with zero errors or warnings.
+- **Clean Production Build:** All 32 Next.js App Router routes compile cleanly with zero errors or warnings.
 - **Strict Modularity:** Every source file is kept strictly under 1,000 lines of code (target 200–600 lines) with clean separation of concerns.
 - **Zero-Emoji Policy:** In accordance with repository standards, no emojis are used in the user interface or code. All visual cues rely on monochrome Lucide SVG icons.
 - **Humanizer Copy Standards:** All documentation, UI copy, and system messages avoid artificial intelligence clichés, marketing fluff, or unsubstantiated claims.
@@ -215,6 +215,9 @@ Forgent is built to production-grade engineering standards:
 | `/templates` | Creator Studio | Agent Templates Hub with dynamic ZIP export |
 | `/enterprise` | Enterprise Hub | Enterprise command center with DAG builder and spend ledgers |
 | `/enterprise/policies` | Enterprise / Governance | Enterprise compliance guardrails, SLA ceilings, and sovereignty policy |
+| `/settings/compliance` | Enterprise / Governance | Sovereign data residency and SLA ceiling configuration |
+| `/dev/sandbox` | Developer / Testing | Developer sandbox redirect and agent testing workspace |
+| `/dev/tokens` | Developer / Identity | Developer API token management and scope assignment |
 | `/buyer/overview` | Enterprise Hub | Buyer workspace with workflow and job summaries |
 | `/api/agents` | REST API | Paginated catalog queries with domain filters |
 | `/api/jobs` | REST API | Job creation, dispatch, and execution initiation |

@@ -7,7 +7,7 @@
 **Initial market wedge:** Receiving and inventory reconciliation  
 **Hackathon:** hackCBS 9.0 · 24-hour build  
 **Document status:** Canonical product definition and architecture specification  
-**Implementation status:** Full product vision delivered and verified across PRs #6–#19 (28 test suites, 244 tests passing, 28 production routes)  
+**Implementation status:** Full product vision delivered and verified across PRs #6–#20 (28 test suites, 244 tests passing, 32 production routes, Hero-16 landing page upgrade)  
 **Version:** 2.0 · 31 October 2026
 
 ---
