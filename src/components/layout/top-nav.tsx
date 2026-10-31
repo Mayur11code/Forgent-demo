@@ -253,6 +253,16 @@ export function TopNav() {
             Templates
           </Link>
           <Link
+            href="/playground"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              pathname === "/playground"
+                ? "bg-slate-100 text-cobalt-600 font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+          >
+            Playground
+          </Link>
+          <Link
             href="/buyer/overview"
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               pathname.startsWith("/buyer") || pathname.startsWith("/enterprise")
