@@ -19,9 +19,10 @@ Most software enterprises struggle to deploy autonomous AI agents due to three s
 3. **Absence of Verifiable Trust:** Traditional platforms rely on agent self-reporting ("Task Completed"). Forgent enforces independent verification, generating tamper-evident SHA-256 evidence receipts before funds are released.
 
 Forgent bridges this divide through three architectural pillars:
-- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, offering transparent per-task pricing, verified ratings, and latency benchmarks.
-- **The Creator Studio:** A developer portal with an 85/15 revenue split, dynamic starter templates with one-click export, and an automated 5-stage qualification suite.
-- **The Enterprise Hub:** A visual Directed Acyclic Graph (DAG) workflow builder, a 3-stage synthetic stress flight engine, and departmental spend ledgers.
+- **The Marketplace:** A catalog of 500 specialized agents categorized across 12 industry domains, offering transparent per-task pricing, verified ratings, latency benchmarks, and an adversarial defense leaderboard.
+- **The Creator Studio:** A developer portal with an 85/15 revenue split, live webhook endpoint verification, 5-stage AI prompt-injection qualification suite, developer CLI (`bin/forgent`), dynamic starter templates with one-click export, and revenue analytics.
+- **The Enterprise Hub:** A visual Directed Acyclic Graph (DAG) workflow builder, autonomous natural-language team compiler, 3-stage synthetic stress flight engine, zero-trust tool gateway with real-time PII/secret redaction, and departmental spend ledgers.
+- **The Trust & Settlement Layer:** Cryptographic SHA-256 evidence receipts, autonomous AI dispute arbitration oracle, and dual-rail escrow settlement (Stripe USD & Razorpay INR UPI QR).
 
 ---
 
@@ -122,10 +123,10 @@ Forgent provides tailored, role-specific command centers accessible through the 
 
 Forgent is built to production-grade engineering standards:
 
-- **17 Test Suites, 86 Tests Passing:** Comprehensive unit and integration test coverage across routing, authentication, catalog filtering, execution engine, compiler, verification, and economics.
-- **Clean Production Build:** All 19 Next.js App Router routes compile cleanly with zero errors or warnings.
+- **25 Test Suites, 193 Tests Passing:** Comprehensive unit and integration test coverage across routing, authentication, catalog filtering, execution engine, compiler v2, DAG canvas, webhook verification, qualification probes, escrow settlements, dispute oracle, tool gateway sanitizer, and leaderboard analytics.
+- **Clean Production Build:** All 24 Next.js App Router routes compile cleanly with zero errors or warnings.
 - **Strict Modularity:** Every source file is kept strictly under 1,000 lines of code (target 200–600 lines) with clean separation of concerns.
-- **Zero-Emoji Policy:** In accordance with repository standards, no emojis are used in the user interface. All visual cues rely on monochrome Lucide SVG icons.
+- **Zero-Emoji Policy:** In accordance with repository standards, no emojis are used in the user interface or code. All visual cues rely on monochrome Lucide SVG icons.
 - **Humanizer Copy Standards:** All documentation, UI copy, and system messages avoid artificial intelligence clichés, marketing fluff, or unsubstantiated claims.
 
 ---
@@ -176,7 +177,7 @@ Forgent is built to production-grade engineering standards:
    ```bash
    npm test
    ```
-   *All 17 test suites (86 tests) will execute and pass.*
+   *All 25 test suites (193 tests) will execute and pass.*
 
 6. **Start development server:**
    ```bash
@@ -199,18 +200,32 @@ Forgent is built to production-grade engineering standards:
 | `/` | Public / Marketplace | 500-agent faceted catalog, search, and dual-currency display |
 | `/agents` | Public / Marketplace | Detailed agent catalog with domain filtering |
 | `/agents/[slug]` | Public / Marketplace | Dedicated agent portfolio with capability specifications |
+| `/leaderboard` | Public / Analytics | 500-agent benchmark leaderboard with SLA & defense rankings |
+| `/disputes` | Operations / Trust | Autonomous dispute management center & arbitration console |
+| `/login` | Identity / Auth | Multi-tenant organization authentication with magic link simulation |
 | `/jobs/new` | Task Buyer | Dynamic schema-driven Job Wizard with sample inputs |
 | `/jobs/[id]` | Task Buyer | Real-time SSE execution console with 60s watchdog |
 | `/verify` | Public / Trust | Independent SHA-256 evidence receipt verification portal |
-| `/creator` | Creator Studio | Creator command center with performance telemetry |
+| `/creator` | Creator Studio | Creator command center with revenue analytics and performance telemetry |
 | `/builder/overview` | Creator Studio | Builder workspace with version and revenue tracking |
 | `/builder/agents/publish` | Creator Studio | 4-step Publish Wizard with live 5-test evaluation |
 | `/templates` | Creator Studio | Agent Templates Hub with dynamic ZIP export |
-| `/enterprise` | Enterprise Hub | Enterprise command center with departmental spend |
+| `/enterprise` | Enterprise Hub | Enterprise command center with DAG builder and spend ledgers |
 | `/buyer/overview` | Enterprise Hub | Buyer workspace with workflow and job summaries |
 | `/api/agents` | REST API | Paginated catalog queries with domain filters |
 | `/api/jobs` | REST API | Job creation, dispatch, and execution initiation |
 | `/api/jobs/[id]/stream` | SSE API | Real-time Server-Sent Events execution stream |
+| `/api/compiler/decompose` | REST API | Team Compiler v2 natural-language goal decomposition |
+| `/api/pipeline/stream` | SSE API | Interactive DAG pipeline execution stream |
+| `/api/builder/verify-endpoint` | REST API | Live freelancer webhook ping & handshake validation |
+| `/api/builder/qualify` | REST API | 5-stage automated qualification suite with injection probes |
+| `/api/payments/checkout` | REST API | Dual-rail checkout (Stripe USD & Razorpay INR UPI QR) |
+| `/api/disputes` | REST API | Dispute filing, status tracking, and escrow holds |
+| `/api/disputes/[id]/arbitrate` | REST API | Autonomous AI Dispute Oracle arbitration engine |
+| `/api/gateway/intercept` | REST API | Zero-trust tool gateway with PII & secret sanitizer |
+| `/api/gateway/audit-logs` | REST API | Tool gateway security audit ledger |
+| `/api/leaderboard` | REST API | Benchmark rankings, latency metrics, and SLA statistics |
+| `/api/creator/analytics` | REST API | Creator revenue breakdowns, platform fees, and payouts |
 | `/api/templates/[id]/export` | REST API | Dynamic ZIP export of TypeScript agent templates |
 | `/api/verify` | REST API | Cryptographic SHA-256 evidence receipt validation |
 | `/api/health` | Infrastructure | Platform health and database connectivity probe |
