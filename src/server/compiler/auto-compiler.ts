@@ -57,6 +57,7 @@ export const AutoCompileRequestSchema = z.object({
 });
 
 export type AutoCompileRequest = z.input<typeof AutoCompileRequestSchema>;
+export type AutoCompileRequestOutput = z.infer<typeof AutoCompileRequestSchema>;
 
 export interface AutoCompileResult {
   pipeline: EnterprisePipeline;

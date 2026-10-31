@@ -233,6 +233,16 @@ export function TopNav() {
             Marketplace
           </Link>
           <Link
+            href="/leaderboard"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              pathname === "/leaderboard"
+                ? "bg-slate-100 text-cobalt-600 font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+          >
+            Leaderboard
+          </Link>
+          <Link
             href="/templates"
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               pathname === "/templates"
