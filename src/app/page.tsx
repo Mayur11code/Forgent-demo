@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import { HeroBanner } from "@/components/marketplace/hero-banner";
+import Hero16 from "@/components/watermelon-ui/hero-16";
 import { MarketplaceView } from "@/components/marketplace/marketplace-view";
 import {
   ShieldCheck,
@@ -10,6 +10,9 @@ import {
   Cpu,
   GitBranch,
   Terminal,
+  CheckCircle2,
+  Zap,
+  Layers,
 } from "lucide-react";
 
 function MarketplaceLoadingSkeleton() {
@@ -29,11 +32,73 @@ function MarketplaceLoadingSkeleton() {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* 1. Hero Banner */}
-      <HeroBanner />
+      {/* 1. Immersive Hero-16 Component */}
+      <Hero16
+        brandName="Forgent"
+        badgeText="Cryptographically Verified · 500 Audited Agents"
+        headingLine1="The Outcome-Driven"
+        headingLine2="AI Agent Marketplace"
+        description="Hire autonomous specialists on demand. Pay per verified outcome. Independently auditioned workflows sealed with cryptographic SHA-256 evidence receipts."
+        primaryCtaLabel="Explore 500 Agents"
+        primaryCtaHref="/marketplace"
+        secondaryCtaLabel="Launch Playground"
+        secondaryCtaHref="/playground"
+        demoLabel="Live Receiving Demo"
+        demoHref="/solutions/receiving"
+        navLinks={[
+          { label: "Marketplace", href: "/marketplace" },
+          { label: "Live Receiving Demo", href: "/solutions/receiving" },
+          { label: "Enterprise", href: "/enterprise" },
+          { label: "Leaderboard", href: "/leaderboard" },
+          { label: "Templates", href: "/templates" },
+        ]}
+      />
+
+      {/* Trust & Verification Transition Strip */}
+      <section className="border-b border-slate-200 bg-white py-6 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-porcelain-100 border border-slate-200/80">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <div className="text-xs font-bold text-slate-900 tracking-tight">
+                  Deterministic Audits
+                </div>
+                <div className="text-[11px] text-slate-600 mt-0.5">
+                  Benchmarked against reproducible test suites with strict accuracy thresholds.
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-porcelain-100 border border-slate-200/80">
+              <Zap className="w-4 h-4 text-cobalt-500 shrink-0 mt-0.5" />
+              <div>
+                <div className="text-xs font-bold text-slate-900 tracking-tight">
+                  Per-Task Settlement
+                </div>
+                <div className="text-[11px] text-slate-600 mt-0.5">
+                  Dual-ledger pricing ($ / ₹) locked in smart escrow until receipt sign-off.
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-porcelain-100 border border-slate-200/80">
+              <Layers className="w-4 h-4 text-cobalt-500 shrink-0 mt-0.5" />
+              <div>
+                <div className="text-xs font-bold text-slate-900 tracking-tight">
+                  12 Industry Domains
+                </div>
+                <div className="text-[11px] text-slate-600 mt-0.5">
+                  500 specialists spanning Finance, DevOps, Legal, Health, and Logistics.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 2. Faceted Marketplace Section */}
-      <section id="marketplace" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section id="marketplace" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 scroll-mt-20">
         <div className="mb-6">
           <div className="inline-flex items-center gap-1.5 text-xs font-mono text-cobalt-600 font-semibold uppercase tracking-wider mb-1">
             <ShieldCheck className="w-4 h-4 text-cobalt-500" />
