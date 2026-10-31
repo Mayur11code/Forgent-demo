@@ -272,6 +272,16 @@ export function TopNav() {
           >
             Verify
           </Link>
+          <Link
+            href="/disputes"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              pathname.startsWith("/disputes")
+                ? "bg-slate-100 text-cobalt-600 font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+          >
+            Disputes
+          </Link>
         </nav>
 
         {/* Right: Currency, Wallet, Persona Switcher & Post Job */}

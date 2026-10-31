@@ -8,11 +8,14 @@ import { WatchdogBanner } from "@/components/jobs/watchdog-banner";
 import { DeliverableViewer } from "@/components/jobs/deliverable-viewer";
 import { PostJobReviewCard } from "@/components/jobs/post-job-review-card";
 import { generateEvidenceReceipt, EvidenceReceipt } from "@/server/engine/receipt";
+import { FileDisputeModal } from "@/components/disputes/file-dispute-modal";
+import { DisputeRecord } from "@/server/arbitration/oracle-arbiter";
 import {
   ArrowLeft,
   ShieldCheck,
   RotateCcw,
   Layers,
+  Scale,
 } from "lucide-react";
 
 interface JobConsolePageProps {
@@ -39,6 +42,26 @@ export default function JobConsolePage({ params }: JobConsolePageProps) {
   } | null>(null);
 
   const [receipt, setReceipt] = useState<EvidenceReceipt | undefined>(undefined);
+  const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+  const [existingDispute, setExistingDispute] = useState<DisputeRecord | null>(null);
+
+  // Check for existing dispute on load
+  useEffect(() => {
+    async function checkDispute() {
+      try {
+        const res = await fetch(`/api/disputes?jobId=${jobId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.disputes && data.disputes.length > 0) {
+            setExistingDispute(data.disputes[0]);
+          }
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    }
+    checkDispute();
+  }, [jobId]);
 
   // 1. Initial Job Fetch & SSE Stream Setup
   useEffect(() => {
@@ -302,6 +325,25 @@ export default function JobConsolePage({ params }: JobConsolePageProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            {existingDispute ? (
+              <Link
+                href="/disputes"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-mono font-semibold transition-colors"
+              >
+                <Scale className="w-3.5 h-3.5 text-amber-600" />
+                <span>Dispute {existingDispute.status}</span>
+              </Link>
+            ) : (isCompleted || isFailed) ? (
+              <button
+                type="button"
+                onClick={() => setIsDisputeModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-mono font-semibold transition-colors"
+              >
+                <Scale className="w-3.5 h-3.5 text-red-600" />
+                <span>File Dispute</span>
+              </button>
+            ) : null}
+
             <Link
               href="/verify"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-mono font-medium transition-colors"
@@ -362,6 +404,18 @@ export default function JobConsolePage({ params }: JobConsolePageProps) {
             <PostJobReviewCard jobId={jobId} agentTitle={agentTitle} />
           </div>
         )}
+
+        {/* 6. Dispute Modal Trigger */}
+        <FileDisputeModal
+          isOpen={isDisputeModalOpen}
+          onClose={() => setIsDisputeModalOpen(false)}
+          jobId={jobId}
+          agentSlug={agentSlug}
+          deliverableSha256={deliverable?.sha256Receipt}
+          onDisputeCreated={(disp) => {
+            setExistingDispute(disp);
+          }}
+        />
       </div>
     </div>
   );
