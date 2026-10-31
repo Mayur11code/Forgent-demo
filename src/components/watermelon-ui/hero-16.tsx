@@ -94,9 +94,9 @@ export default function Hero16({
   showNav = true,
 }: Hero16Props) {
   return (
-    <section className="relative isolate flex min-h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-950 text-white antialiased">
+    <section className="relative isolate flex min-h-screen w-full overflow-hidden bg-slate-950 text-white antialiased">
       <motion.div
-        className="relative flex h-full min-h-[calc(100vh-4rem)] w-full flex-col overflow-hidden bg-slate-950 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+        className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-slate-950 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
