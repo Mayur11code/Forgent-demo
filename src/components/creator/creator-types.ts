@@ -46,12 +46,14 @@ export interface PublishWizardForm {
   pricePerTaskUsd: number;
 
   // Step 3: Execution Endpoint
-  endpointType: "webhook" | "cli_template";
+  endpointType: "webhook" | "hosted_starter" | "cli_template";
   webhookUrl: string;
+  hmacSecret: string;
   selectedTemplateId: string;
 
   // Step 4: Verification status
   verificationPassed: boolean;
+  verificationHash?: string;
 }
 
 export type PayoutMethod = "UPI" | "BANK_TRANSFER" | "STRIPE";
