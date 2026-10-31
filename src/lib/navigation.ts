@@ -78,6 +78,14 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     role: "BUYER",
     phase: "P6",
   },
+  {
+    id: "nav-disputes",
+    route: "/disputes",
+    label: "Disputes & Arbitration",
+    section: "Operations",
+    role: "BUYER",
+    phase: "P2",
+  },
 
   // Builder Persona Navigation
   {
