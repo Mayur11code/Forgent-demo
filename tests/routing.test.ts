@@ -29,6 +29,15 @@ describe("Root Routing & Navigation Verification", () => {
     expect(builderOverviewNav?.section).toBe("Overview");
   });
 
+  it("verifies that /enterprise is registered in the canonical navigation registry", () => {
+    const enterpriseNav = NAVIGATION_REGISTRY.find(
+      (item) => item.route === "/enterprise"
+    );
+    expect(enterpriseNav).toBeDefined();
+    expect(enterpriseNav?.role).toBe("BUYER");
+    expect(enterpriseNav?.section).toBe("Overview");
+  });
+
   it("verifies that /login is registered as a public route", () => {
     const loginNav = NAVIGATION_REGISTRY.find(
       (item) => item.route === "/login"

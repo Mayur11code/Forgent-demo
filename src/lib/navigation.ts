@@ -39,6 +39,14 @@ export const NAVIGATION_REGISTRY: NavigationItem[] = [
     phase: "P1",
   },
   {
+    id: "nav-enterprise",
+    route: "/enterprise",
+    label: "Enterprise Workflow Hub",
+    section: "Overview",
+    role: "BUYER",
+    phase: "P1",
+  },
+  {
     id: "nav-buyer-jobs",
     route: "/buyer/jobs",
     label: "Jobs & Work Orders",

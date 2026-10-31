@@ -60,7 +60,7 @@ export function Header() {
 
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceOption>(() => {
     if (pathname.startsWith("/builder")) return WORKSPACES[1];
-    if (pathname.startsWith("/buyer")) return WORKSPACES[2];
+    if (pathname.startsWith("/buyer") || pathname.startsWith("/enterprise")) return WORKSPACES[2];
     return WORKSPACES[0];
   });
 
@@ -73,7 +73,7 @@ export function Header() {
   useEffect(() => {
     if (pathname.startsWith("/builder")) {
       setActiveWorkspace(WORKSPACES[1]);
-    } else if (pathname.startsWith("/buyer")) {
+    } else if (pathname.startsWith("/buyer") || pathname.startsWith("/enterprise")) {
       setActiveWorkspace(WORKSPACES[2]);
     } else {
       setActiveWorkspace(WORKSPACES[0]);
@@ -208,7 +208,7 @@ export function Header() {
           <Link
             href="/buyer/overview"
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              pathname.startsWith("/buyer")
+              pathname.startsWith("/buyer") || pathname.startsWith("/enterprise")
                 ? "bg-slate-100 text-cobalt-600 font-semibold"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
