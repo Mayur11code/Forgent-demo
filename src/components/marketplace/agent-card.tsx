@@ -42,7 +42,9 @@ export function AgentCard({ agent }: AgentCardProps) {
 
         {/* Title */}
         <h3 className="font-sans text-base font-bold text-slate-900 group-hover:text-cobalt-600 transition-colors line-clamp-1 mb-1">
-          {agent.title}
+          <Link href={`/agents/${agent.slug}`} className="hover:underline">
+            {agent.title}
+          </Link>
         </h3>
 
         {/* Creator Handle & Version */}
