@@ -82,6 +82,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/verify" className="hover:text-slate-900 transition-colors">
+                  Verify Proof-of-Work
+                </Link>
+              </li>
+              <li>
                 <Link href="/#benchmarks" className="hover:text-slate-900 transition-colors">
                   Benchmark Registry
                 </Link>
