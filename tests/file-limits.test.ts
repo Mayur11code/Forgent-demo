@@ -36,9 +36,11 @@ describe("Forgent Architecture & Repository Guidelines Compliance", () => {
     const targetDirs = [
       path.resolve(__dirname, "../src/components/creator"),
       path.resolve(__dirname, "../src/components/templates"),
+      path.resolve(__dirname, "../src/components/enterprise"),
       path.resolve(__dirname, "../src/server/templates"),
       path.resolve(__dirname, "../src/app/templates"),
       path.resolve(__dirname, "../src/app/creator"),
+      path.resolve(__dirname, "../src/app/enterprise"),
     ];
 
     const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
