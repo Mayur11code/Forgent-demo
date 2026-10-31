@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   EnterprisePipeline,
   DepartmentBudget,
@@ -25,6 +26,7 @@ import {
   CheckCircle2,
   Sparkles,
   Lock,
+  Sliders,
 } from "lucide-react";
 
 export type EnterpriseTab =
@@ -222,6 +224,14 @@ export function EnterprisePortal({
               <Lock className="w-4 h-4" />
               <span>4. Tool Gateway &amp; Security</span>
             </button>
+
+            <Link
+              href="/enterprise/policies"
+              className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-colors whitespace-nowrap"
+            >
+              <Sliders className="w-4 h-4 text-cobalt-600" />
+              <span>5. Compliance &amp; SLA Policies</span>
+            </Link>
           </div>
         </div>
       </section>
