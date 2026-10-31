@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 
 # Phase audit and tracking reports
 track/
+
+# Local demo workspace and API key hashes
+.forgent-demo/
